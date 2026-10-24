@@ -12,6 +12,7 @@ import com.securenet.vpn.di.AppContainer
 import com.securenet.vpn.di.AppProvider
 import com.securenet.vpn.network.NetworkMonitor
 import com.securenet.vpn.nativelib.WgNative
+import com.securenet.vpn.tor.TorMode
 import com.securenet.vpn.util.KeyUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -85,6 +86,16 @@ class SecureNetVpnService : VpnService() {
                 // Reconnect path from the notification: cached config in prefs.
                 connectFromCachedConfig()
                 return START_STICKY
+            }
+            // v1.3: connection-schedule executor actions.
+            ACTION_SCHEDULE_CONNECT -> {
+                logger.appendCustom("schedule_fire", "connect")
+                connectFromCachedConfig()
+                return START_STICKY
+            }
+            ACTION_SCHEDULE_DISCONNECT -> {
+                tearDown(reason = "schedule_window_end")
+                return START_NOT_STICKY
             }
             else -> {
                 val config = intent?.getStringExtra(EXTRA_TUNNEL_CONFIG)
@@ -189,9 +200,41 @@ class SecureNetVpnService : VpnService() {
         (application as AppProvider).provideContainer().securePrefs
             .wasConnectedBeforeShutdown = true
 
+        orchestrateTorMode()
+
         notificationManager.updateState(ConnectionState.CONNECTED, server.name)
         startStatsSampler()
         startNetworkWatcher()
+    }
+
+    /**
+     * v1.3: Tor-over-VPN orchestration. When the mode is armed the tunnel
+     * additionally rides Orbot's local SOCKS endpoint; the service verifies
+     * Orbot's presence, requests Tor start and records the decision in the
+     * session log so the user can audit exactly what happened.
+     */
+    private fun orchestrateTorMode() {
+        val container = (application as AppProvider).provideContainer()
+        val enabled = container.securePrefs.torOverVpnEnabled
+        val tor = container.torOverVpnManager
+        val status = tor.refresh(enabled)
+        val installed = tor.isOrbotInstalled()
+        when (TorMode.decide(enabled, installed, status)) {
+            TorMode.Action.TOR_OFF -> Unit
+            TorMode.Action.NEED_ORBOT -> {
+                logger.appendCustom("tor_over_vpn", "orbot_missing")
+            }
+            TorMode.Action.WAITING -> {
+                logger.appendCustom("tor_over_vpn", "waiting_for_tor")
+                tor.requestStart()
+            }
+            TorMode.Action.ACTIVE -> {
+                logger.appendCustom(
+                    "tor_over_vpn",
+                    "active:${TorMode.SOCKS_HOST}:${TorMode.SOCKS_PORT}"
+                )
+            }
+        }
     }
 
     private fun startStatsSampler() {
@@ -475,6 +518,10 @@ class SecureNetVpnService : VpnService() {
 
         /** v1.2: widget stop action — kept separate from the notification one. */
         const val ACTION_DISCONNECT_WIDGET = "com.securenet.vpn.action.WIDGET_DISCONNECT"
+
+        /** v1.3: fired by the connection-schedule window. */
+        const val ACTION_SCHEDULE_CONNECT = "com.securenet.vpn.action.SCHEDULE_CONNECT"
+        const val ACTION_SCHEDULE_DISCONNECT = "com.securenet.vpn.action.SCHEDULE_DISCONNECT"
         private const val DEFAULT_LOCAL_V4 = "10.66.66.2"
         private const val INVALID_HANDLE = -1
         private const val SIMULATED_HANDLE = Int.MIN_VALUE
@@ -530,6 +577,19 @@ class SecureNetVpnService : VpnService() {
         fun requestReconnect(context: Context) {
             val intent = Intent(context, SecureNetVpnService::class.java)
                 .setAction(VpnNotificationManager.ACTION_CONNECT)
+            context.startService(intent)
+        }
+
+        /** v1.3: schedule entry points (use cached server config). */
+        fun scheduleConnect(context: Context) {
+            val intent = Intent(context, SecureNetVpnService::class.java)
+                .setAction(ACTION_SCHEDULE_CONNECT)
+            context.startService(intent)
+        }
+
+        fun scheduleDisconnect(context: Context) {
+            val intent = Intent(context, SecureNetVpnService::class.java)
+                .setAction(ACTION_SCHEDULE_DISCONNECT)
             context.startService(intent)
         }
 

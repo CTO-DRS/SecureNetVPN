@@ -85,6 +85,26 @@ class SettingsFragment : Fragment() {
             viewModel.setDnsShield(checked)
         }
 
+        // v1.3: Tor-over-VPN + connection schedule
+        binding.switchTor.isChecked = ui.torOverVpn
+        binding.switchTor.setOnCheckedChangeListener { _, checked ->
+            viewModel.setTorOverVpn(checked)
+            binding.tvTorState.text =
+                getString(R.string.settings_tor_state, viewModel.torStatusLine())
+            if (checked) {
+                Toast.makeText(
+                    requireContext(), R.string.settings_tor_hint, Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+        binding.tvTorState.text =
+            getString(R.string.settings_tor_state, viewModel.torStatusLine())
+
+        binding.rowSchedule.setOnClickListener {
+            ScheduleDialogFragment().show(parentFragmentManager, "schedule_dialog")
+        }
+        binding.tvScheduleSummary.text = ui.scheduleSummary
+
         binding.rowSplitTunnel.setOnClickListener {
             SplitTunnelDialogFragment().show(parentFragmentManager, "split_tunnel")
         }
@@ -164,6 +184,9 @@ class SettingsFragment : Fragment() {
         // Refresh the split-tunnel summary in case the dialog changed it.
         viewModel.refreshSplitTunnelLabel()
         renderSplitTunnelLabel(viewModel.ui.value.splitTunnelLabel)
+        // v1.3: refresh schedule summary after the editor dialog saved.
+        viewModel.refreshScheduleSummary()
+        binding.tvScheduleSummary.text = viewModel.ui.value.scheduleSummary
     }
 
     override fun onDestroyView() {

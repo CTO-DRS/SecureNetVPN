@@ -206,6 +206,19 @@
                         android:id="@+id/switchSmartRules"
                         style="@style/SettingSwitch" />
                 </LinearLayout>
+
+                <LinearLayout style="@style/SettingRow" android:id="@+id/rowTor">
+                    <LinearLayout style="@style/SettingTextColumn">
+                        <TextView style="@style/SettingTitle" android:text="@string/settings_tor" />
+                        <TextView
+                            android:id="@+id/tvTorState"
+                            style="@style/SettingDesc"
+                            android:text="@string/settings_tor_desc" />
+                    </LinearLayout>
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/switchTor"
+                        style="@style/SettingSwitch" />
+                </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -270,6 +283,42 @@
                     <com.google.android.material.materialswitch.MaterialSwitch
                         android:id="@+id/switchMtuAuto"
                         style="@style/SettingSwitch" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- v1.3: Connection schedule -->
+        <TextView style="@style/SectionTitle" android:text="@string/settings_section_schedule" />
+
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.SecureNet.GlassCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    style="@style/SettingRow"
+                    android:id="@+id/rowSchedule"
+                    android:background="?attr/selectableItemBackground">
+
+                    <LinearLayout style="@style/SettingTextColumn">
+                        <TextView style="@style/SettingTitle" android:text="@string/settings_schedule" />
+                        <TextView
+                            android:id="@+id/tvScheduleSummary"
+                            style="@style/SettingDesc"
+                            android:text="@string/schedule_summary_off" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_arrow_right"
+                        app:tint="@color/on_glass_secondary" />
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>

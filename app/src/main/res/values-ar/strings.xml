@@ -229,4 +229,37 @@
     <string name="widget_connect">اضغط للاتصال</string>
     <string name="widget_connected">محمي الآن</string>
     <string name="widget_setup">افتح التطبيق للإعداد</string>
+
+    <!-- v1.3: تور فوق الـ VPN -->
+    <string name="settings_tor">تور فوق الـ VPN</string>
+    <string name="settings_tor_desc">مرّر جلسة الاتصال عبر شبكة تور (يعتمد على Orbot)</string>
+    <string name="settings_tor_state">الوضع: %1$s</string>
+    <string name="settings_tor_hint">تم تفعيل وضع تور — ثبّت Orbot وشغّله ليخرج اتصالك عبر شبكة البصلة المشفّرة.</string>
+    <string name="tor_status_off">مغلق</string>
+    <string name="tor_status_not_installed">Orbot غير مثبّت</string>
+    <string name="tor_status_starting">جارٍ الاتصال بتور…</string>
+    <string name="tor_status_connected">تور متصل</string>
+    <string name="tor_status_failed">خطأ في تور</string>
+    <string name="tor_action_open_orbot">افتح Orbot</string>
+
+    <!-- v1.3: جدولة الاتصال -->
+    <string name="settings_section_schedule">جدولة الاتصال</string>
+    <string name="settings_schedule">النافذة الزمنية المجدولة</string>
+    <string name="settings_schedule_desc">اتصال وفصل تلقائيان حسب جدول زمني</string>
+    <string name="schedule_summary_off">مغلق — اضغط للإعداد</string>
+    <string name="schedule_dialog_title">جدولة الاتصال</string>
+    <string name="schedule_connect_at">وقت الاتصال</string>
+    <string name="schedule_disconnect_at">وقت الفصل</string>
+    <string name="schedule_days">أيام التفعيل</string>
+    <string name="schedule_pick_time">اختر الوقت</string>
+    <string name="schedule_save">حفظ</string>
+    <string name="schedule_saved">تم حفظ الجدولة</string>
+    <string name="schedule_invalid_time">الوقت المختار غير صالح</string>
+    <string name="day_mon">إثن</string>
+    <string name="day_tue">ثلا</string>
+    <string name="day_wed">أرب</string>
+    <string name="day_thu">خمي</string>
+    <string name="day_fri">جمع</string>
+    <string name="day_sat">سبت</string>
+    <string name="day_sun">أحد</string>
 </resources>

@@ -168,6 +168,20 @@ class SecurePrefs(context: Context) {
         get() = prefs.getString(KEY_TRUSTED_NETWORKS, "[]") ?: "[]"
         set(value) = prefs.edit().putString(KEY_TRUSTED_NETWORKS, value).apply()
 
+    // ------------------------------------------------------------------
+    // v1.3: Tor-over-VPN + connection scheduling
+    // ------------------------------------------------------------------
+
+    /** Tor mode: route the session through Orbot's SOCKS endpoint. */
+    var torOverVpnEnabled: Boolean
+        get() = prefs.getBoolean(KEY_TOR_ENABLED, false)
+        set(value) = prefs.edit().putBoolean(KEY_TOR_ENABLED, value).apply()
+
+    /** JSON-encoded ConnectionSchedule (window + weekday mask). */
+    var connectionSchedule: String
+        get() = prefs.getString(KEY_SCHEDULE, "") ?: ""
+        set(value) = prefs.edit().putString(KEY_SCHEDULE, value).apply()
+
     fun clearLogsMarker(): Boolean {
         prefs.getString(KEY_LOG_FILE, null)?.let { return true }
         return false
@@ -215,6 +229,8 @@ class SecurePrefs(context: Context) {
         private const val KEY_DNS_SHIELD_BLOCKED = "dns_shield_blocked"
         private const val KEY_SMART_RULES = "smart_rules_enabled"
         private const val KEY_TRUSTED_NETWORKS = "trusted_networks"
+        private const val KEY_TOR_ENABLED = "tor_over_vpn_enabled"
+        private const val KEY_SCHEDULE = "connection_schedule_json"
 
         const val SPLIT_OFF = 0
         const val SPLIT_ALLOW_ONLY = 1

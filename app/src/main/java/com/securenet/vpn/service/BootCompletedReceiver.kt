@@ -18,6 +18,9 @@ class BootCompletedReceiver : BroadcastReceiver() {
         val container = (context.applicationContext as AppProvider).provideContainer()
         val prefs = container.securePrefs
 
+        // v1.3: re-arm the connection-schedule tick after reboot.
+        com.securenet.vpn.work.ScheduleWorker.syncFromPrefs(context.applicationContext)
+
         if (!prefs.autoConnectOnBoot || !prefs.wasConnectedBeforeShutdown) return
 
         val go = Intent(context, SecureNetVpnService::class.java)

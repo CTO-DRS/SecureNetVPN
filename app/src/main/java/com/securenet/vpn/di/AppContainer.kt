@@ -110,4 +110,12 @@ class AppContainer(context: Context) {
     val smartInsightsEngine: com.securenet.vpn.intelligence.SmartInsightsEngine by lazy {
         com.securenet.vpn.intelligence.SmartInsightsEngine()
     }
+
+    // ------------------------------------------------------------------
+    // v1.3: Tor-over-VPN
+    // ------------------------------------------------------------------
+
+    val torOverVpnManager: com.securenet.vpn.tor.TorOverVpnManager by lazy {
+        com.securenet.vpn.tor.TorOverVpnManager(context)
+    }
 }

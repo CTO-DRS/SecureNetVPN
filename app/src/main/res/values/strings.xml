@@ -229,4 +229,37 @@
     <string name="widget_connect">Tap to connect</string>
     <string name="widget_connected">Protected</string>
     <string name="widget_setup">Open app to set up</string>
+
+    <!-- v1.3: Tor-over-VPN -->
+    <string name="settings_tor">Tor over VPN</string>
+    <string name="settings_tor_desc">Route the session through the Tor network (uses Orbot)</string>
+    <string name="settings_tor_state">Mode: %1$s</string>
+    <string name="settings_tor_hint">Tor mode armed — install and start Orbot so traffic exits through the onion network.</string>
+    <string name="tor_status_off">Off</string>
+    <string name="tor_status_not_installed">Orbot not installed</string>
+    <string name="tor_status_starting">Connecting to Tor…</string>
+    <string name="tor_status_connected">Tor connected</string>
+    <string name="tor_status_failed">Tor error</string>
+    <string name="tor_action_open_orbot">Open Orbot</string>
+
+    <!-- v1.3: Connection schedule -->
+    <string name="settings_section_schedule">Connection schedule</string>
+    <string name="settings_schedule">Scheduled window</string>
+    <string name="settings_schedule_desc">Auto-connect and auto-disconnect on a timetable</string>
+    <string name="schedule_summary_off">Off — tap to set up</string>
+    <string name="schedule_dialog_title">Connection schedule</string>
+    <string name="schedule_connect_at">Connect at</string>
+    <string name="schedule_disconnect_at">Disconnect at</string>
+    <string name="schedule_days">Active days</string>
+    <string name="schedule_pick_time">Pick time</string>
+    <string name="schedule_save">Save</string>
+    <string name="schedule_saved">Schedule saved</string>
+    <string name="schedule_invalid_time">Invalid time selected</string>
+    <string name="day_mon">Mon</string>
+    <string name="day_tue">Tue</string>
+    <string name="day_wed">Wed</string>
+    <string name="day_thu">Thu</string>
+    <string name="day_fri">Fri</string>
+    <string name="day_sat">Sat</string>
+    <string name="day_sun">Sun</string>
 </resources>

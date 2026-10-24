@@ -28,6 +28,9 @@ class SecureNetApp : Application(), AppProvider {
 
         // Periodic connection-log flush + daily usage aggregation.
         WorkScheduler.scheduleAll(this)
+
+        // v1.3: re-arm the connection-schedule tick when a schedule is set.
+        com.securenet.vpn.work.ScheduleWorker.syncFromPrefs(this)
     }
 
     override fun provideContainer(): AppContainer = container

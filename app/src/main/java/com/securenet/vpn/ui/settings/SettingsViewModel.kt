@@ -32,7 +32,10 @@ class SettingsViewModel(
         val autoLaunch: Boolean = false,
         val splitTunnelLabel: String = "",
         val dnsShield: Boolean = false,
-        val smartRules: Boolean = false
+        val smartRules: Boolean = false,
+        val torOverVpn: Boolean = false,
+        val torStatusLine: String = "",
+        val scheduleSummary: String = ""
     )
 
     private val _ui = MutableStateFlow(load())
@@ -62,8 +65,23 @@ class SettingsViewModel(
             autoLaunch = securePrefs.autoConnectOnLaunch,
             splitTunnelLabel = splitTunnelLabel(),
             dnsShield = securePrefs.dnsShieldEnabled,
-            smartRules = securePrefs.smartRulesEnabled
+            smartRules = securePrefs.smartRulesEnabled,
+            torOverVpn = securePrefs.torOverVpnEnabled,
+            torStatusLine = torStatusLine(),
+            scheduleSummary = scheduleSummary()
         )
+    }
+
+    /** v1.3: human-readable Tor mode state for the settings row. */
+    fun torStatusLine(): String =
+        if (securePrefs.torOverVpnEnabled) "Armed" else "Off"
+
+    /** v1.3: schedule summary for the settings row. */
+    fun scheduleSummary(): String {
+        val schedule = com.securenet.vpn.schedule.ConnectionSchedule.fromJson(
+            securePrefs.connectionSchedule
+        )
+        return com.securenet.vpn.schedule.ConnectionScheduleEngine.describe(schedule)
     }
 
     fun splitTunnelLabel(): String {
@@ -139,6 +157,17 @@ class SettingsViewModel(
     fun setSmartRules(enabled: Boolean) {
         securePrefs.smartRulesEnabled = enabled
         _ui.value = _ui.value.copy(smartRules = enabled)
+    }
+
+    /** v1.3: Tor-over-VPN mode toggle. */
+    fun setTorOverVpn(enabled: Boolean) {
+        securePrefs.torOverVpnEnabled = enabled
+        _ui.value = _ui.value.copy(torOverVpn = enabled, torStatusLine = torStatusLine())
+    }
+
+    /** v1.3: refresh the schedule summary after the dialog saved. */
+    fun refreshScheduleSummary() {
+        _ui.value = _ui.value.copy(scheduleSummary = scheduleSummary())
     }
 
     fun refreshSplitTunnelLabel() {
