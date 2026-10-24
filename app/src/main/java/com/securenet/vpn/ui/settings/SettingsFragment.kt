@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.securenet.vpn.R
 import com.securenet.vpn.databinding.FragmentSettingsBinding
+import com.securenet.vpn.ui.splittunnel.SplitTunnelDialogFragment
 
 class SettingsFragment : Fragment() {
 
@@ -36,6 +37,7 @@ class SettingsFragment : Fragment() {
         val ui = viewModel.ui.value
 
         bindTheme(ui.themeMode)
+        bindLanguage(ui.languageTag)
 
         binding.rgTheme.setOnCheckedChangeListener { _, checkedId ->
             val mode = when (checkedId) {
@@ -59,6 +61,31 @@ class SettingsFragment : Fragment() {
         binding.switchAutoReconnect.isChecked = ui.autoReconnect
         binding.switchAutoReconnect.setOnCheckedChangeListener { _, checked ->
             viewModel.setAutoReconnect(checked)
+        }
+
+        // v1.1: kill switch + auto-launch + split tunneling + language
+        binding.switchKillSwitch.isChecked = ui.killSwitch
+        binding.switchKillSwitch.setOnCheckedChangeListener { _, checked ->
+            viewModel.setKillSwitch(checked)
+        }
+
+        binding.switchAutoLaunch.isChecked = ui.autoLaunch
+        binding.switchAutoLaunch.setOnCheckedChangeListener { _, checked ->
+            viewModel.setAutoLaunch(checked)
+        }
+
+        binding.rowSplitTunnel.setOnClickListener {
+            SplitTunnelDialogFragment().show(parentFragmentManager, "split_tunnel")
+        }
+        renderSplitTunnelLabel(viewModel.splitTunnelLabel())
+
+        binding.rgLanguage.setOnCheckedChangeListener { _, checkedId ->
+            val tag = when (checkedId) {
+                R.id.rbLangEnglish -> "en"
+                R.id.rbLangArabic -> "ar"
+                else -> ""
+            }
+            viewModel.setLanguage(tag)
         }
 
         binding.switchDnsCache.isChecked = ui.dnsCache
@@ -97,6 +124,35 @@ class SettingsFragment : Fragment() {
             else -> R.id.rbThemeSystem
         }
         binding.rgTheme.check(checkId)
+    }
+
+    private fun bindLanguage(tag: String) {
+        val checkId = when (tag) {
+            "en" -> R.id.rbLangEnglish
+            "ar" -> R.id.rbLangArabic
+            else -> R.id.rbLangSystem
+        }
+        binding.rgLanguage.check(checkId)
+    }
+
+    private fun renderSplitTunnelLabel(label: String) {
+        val res = when {
+            label.startsWith("Allow") -> R.string.split_mode_allow
+            label.startsWith("Exclude") -> R.string.split_mode_exclude
+            else -> R.string.split_mode_off
+        }
+        val summary = getString(res) +
+            if (label.startsWith("Allow") || label.startsWith("Exclude"))
+                " · " + label.substringAfter('(').trim('(', ')') + " apps"
+            else ""
+        binding.tvSplitTunnelState.text = summary
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Refresh the split-tunnel summary in case the dialog changed it.
+        viewModel.refreshSplitTunnelLabel()
+        renderSplitTunnelLabel(viewModel.ui.value.splitTunnelLabel)
     }
 
     override fun onDestroyView() {

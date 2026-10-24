@@ -90,6 +90,28 @@
             </intent-filter>
         </receiver>
 
+        <!-- v1.1: Quick Settings tile (one-tap VPN toggle) -->
+        <service
+            android:name=".service.VpnTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_notification_shield"
+            android:label="@string/app_name"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
+        <!-- v1.1: per-app language persistence (pre-API 33 backport) -->
+        <service
+            android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
+            android:enabled="false"
+            android:exported="false">
+            <meta-data
+                android:name="autoStoreLocales"
+                android:value="true" />
+        </service>
+
         <!-- WorkManager: on-demand initializer keeps default configuration -->
         <provider
             android:name="androidx.startup.InitializationProvider"

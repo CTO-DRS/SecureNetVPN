@@ -10,6 +10,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.securenet.vpn.R
 import com.securenet.vpn.databinding.FragmentServersBinding
 import kotlinx.coroutines.launch
 
@@ -45,6 +46,7 @@ class ServersFragment : Fragment() {
         binding.serversList.adapter = adapter
 
         binding.btnRefresh.setOnClickListener { viewModel.refresh(forceRefresh = true) }
+        binding.btnSmartConnect.setOnClickListener { viewModel.smartConnect() }
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -61,6 +63,27 @@ class ServersFragment : Fragment() {
                 launch {
                     viewModel.loading.collect { loading ->
                         binding.btnRefresh.isEnabled = !loading
+                    }
+                }
+                launch {
+                    viewModel.smartProbing.collect { probing ->
+                        binding.btnSmartConnect.isEnabled = !probing
+                        binding.btnSmartConnect.setText(
+                            if (probing) R.string.server_smart_probing
+                            else R.string.server_smart_connect
+                        )
+                    }
+                }
+                launch {
+                    viewModel.smartPicked.collect { picked ->
+                        if (picked != null) {
+                            com.google.android.material.snackbar.Snackbar.make(
+                                binding.root,
+                                getString(R.string.server_smart_picked,
+                                    "${picked.city} (${picked.countryCode})"),
+                                com.google.android.material.snackbar.Snackbar.LENGTH_SHORT
+                            ).show()
+                        }
                     }
                 }
             }

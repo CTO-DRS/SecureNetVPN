@@ -1,6 +1,7 @@
 package com.securenet.vpn.ui.settings
 
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.securenet.vpn.data.local.ConnectionLogger
@@ -25,7 +26,11 @@ class SettingsViewModel(
         val dnsCache: Boolean = true,
         val autoMtu: Boolean = true,
         val nativeInfo: String = "",
-        val logsCleared: Boolean = false
+        val logsCleared: Boolean = false,
+        val languageTag: String = "",
+        val killSwitch: Boolean = false,
+        val autoLaunch: Boolean = false,
+        val splitTunnelLabel: String = ""
     )
 
     private val _ui = MutableStateFlow(load())
@@ -49,8 +54,25 @@ class SettingsViewModel(
             autoReconnect = securePrefs.autoReconnect,
             dnsCache = securePrefs.dnsCacheEnabled,
             autoMtu = securePrefs.autoMtu,
-            nativeInfo = nativeInfo
+            nativeInfo = nativeInfo,
+            languageTag = securePrefs.languageTag,
+            killSwitch = securePrefs.killSwitchEnabled,
+            autoLaunch = securePrefs.autoConnectOnLaunch,
+            splitTunnelLabel = splitTunnelLabel()
         )
+    }
+
+    fun splitTunnelLabel(): String {
+        val policy = com.securenet.vpn.ui.splittunnel.SplitTunnelStore.decode(
+            securePrefs.splitTunnelApps, securePrefs.splitTunnelMode
+        )
+        return when (policy.mode) {
+            com.securenet.vpn.ui.splittunnel.SplitTunnelStore.Mode.OFF -> "Off"
+            com.securenet.vpn.ui.splittunnel.SplitTunnelStore.Mode.ALLOW_ONLY ->
+                "Allow (${policy.packages.size})"
+            com.securenet.vpn.ui.splittunnel.SplitTunnelStore.Mode.EXCLUDE ->
+                "Exclude (${policy.packages.size})"
+        }
     }
 
     fun setThemeMode(mode: Int) {
@@ -82,6 +104,29 @@ class SettingsViewModel(
     fun setAutoMtu(enabled: Boolean) {
         securePrefs.autoMtu = enabled
         _ui.value = _ui.value.copy(autoMtu = enabled)
+    }
+
+    /** Per-app language (works back to API 24 via appcompat storage). */
+    fun setLanguage(tag: String) {
+        securePrefs.languageTag = tag
+        val locales = if (tag.isEmpty()) LocaleListCompat.getEmptyLocaleList()
+        else LocaleListCompat.forLanguageTags(tag)
+        AppCompatDelegate.setApplicationLocales(locales)
+        _ui.value = _ui.value.copy(languageTag = tag)
+    }
+
+    fun setKillSwitch(enabled: Boolean) {
+        securePrefs.killSwitchEnabled = enabled
+        _ui.value = _ui.value.copy(killSwitch = enabled)
+    }
+
+    fun setAutoLaunch(enabled: Boolean) {
+        securePrefs.autoConnectOnLaunch = enabled
+        _ui.value = _ui.value.copy(autoLaunch = enabled)
+    }
+
+    fun refreshSplitTunnelLabel() {
+        _ui.value = _ui.value.copy(splitTunnelLabel = splitTunnelLabel())
     }
 
     fun clearLogs() {

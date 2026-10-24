@@ -131,4 +131,51 @@
     <string name="scan_complete">Scan complete</string>
     <string name="battery_request_title">Disable battery optimization?</string>
     <string name="battery_request_desc">Android may pause the VPN in the background. Excluding SecureNet from battery optimization keeps the tunnel stable.</string>
+
+    <!-- v1.1: Language -->
+    <string name="settings_language">Language / اللغة</string>
+    <string name="lang_system">Follow system</string>
+    <string name="lang_english">English</string>
+    <string name="lang_arabic">العربية</string>
+
+    <!-- v1.1: Kill switch + auto-launch -->
+    <string name="settings_kill_switch">Kill switch</string>
+    <string name="settings_kill_switch_desc">Instantly re-establishes the tunnel if it drops, so real traffic never leaks</string>
+    <string name="settings_auto_launch">Auto-connect on app start</string>
+    <string name="settings_auto_launch_desc">Reconnects the tunnel automatically when SecureNet opens</string>
+
+    <!-- v1.1: Split tunneling -->
+    <string name="settings_split_tunnel">Split tunneling</string>
+    <string name="split_title">Split tunneling</string>
+    <string name="split_mode_off">Off</string>
+    <string name="split_mode_allow">Allow only</string>
+    <string name="split_mode_exclude">Exclude</string>
+    <string name="split_hint_off">All apps route through the encrypted tunnel.</string>
+    <string name="split_hint_allow">Only the selected apps use the VPN. Everything else uses the direct connection.</string>
+    <string name="split_hint_exclude">Selected apps bypass the VPN. Everything else stays encrypted.</string>
+
+    <!-- v1.1: Smart Connect -->
+    <string name="server_smart_connect">Smart Connect</string>
+    <string name="server_smart_probing">Measuring servers…</string>
+    <string name="server_smart_picked">Smart Connect selected %1$s</string>
+
+    <!-- v1.1: Dashboard intelligence -->
+    <string name="dashboard_smart_title">Smart suggestion</string>
+    <string name="dashboard_smart_text">%1$s looks faster for you right now</string>
+    <string name="dashboard_smart_apply">Switch</string>
+    <string name="dashboard_score_title">Protection score</string>
+    <string name="action_run_scan">Run a device scan to complete your score</string>
+    <string name="action_remove_threats">Remove the flagged apps to raise your score</string>
+    <string name="action_connect">Activate the tunnel to complete your protection</string>
+    <string name="action_enable_dns">Enable the smart DNS cache to cut latency</string>
+    <string name="action_enable_mtu">Enable automatic MTU tuning for best throughput</string>
+    <string name="action_enable_reconnect">Enable auto-reconnect so you stay protected</string>
+    <string name="action_all_good">Everything is optimized. Nice work!</string>
+
+    <!-- v1.1: Speed test -->
+    <string name="speed_label_ping">Ping</string>
+    <string name="speed_label_down">Down</string>
+    <string name="speed_label_up">Up</string>
+    <string name="speed_btn_run">Run speed test</string>
+    <string name="speed_btn_running">Testing…</string>
 </resources>

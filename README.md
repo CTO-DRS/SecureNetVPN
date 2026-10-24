@@ -13,6 +13,24 @@ malware auditing and network performance optimization in a single app.
 
 ---
 
+## 0. What's new in v1.1
+
+| Area | Addition |
+|---|---|
+| Arabic localization | Full `values-ar/strings.xml` (every string translated), RTL-aware, in-app language switcher (System / English / العربية) backed by `AppCompatDelegate.setApplicationLocales` + `AppLocalesMetadataHolderService` persistence |
+| On-device ML threat classifier | `intelligence/ThreatClassifier.kt` — logistic-regression model with embedded weights; re-scores every app during scans, surfaces top contributing factors, fully offline |
+| Smart Connect | `intelligence/ServerRecommender.kt` + `ServerLatencyProber.kt` — parallel TCP latency sweep of all endpoints, on-device scoring (latency + load + stickiness), one-tap best-server pick |
+| Network anomaly detection | `intelligence/NetworkAnomalyDetector.kt` — EWMA + prior-variance z-score latency watchdog, DNS-hijack pin table for critical resolvers |
+| Composite protection score | `intelligence/SecurityScoreEngine.kt` — 0-100 score across 4 pillars with prioritized, localized action list on the dashboard |
+| Speed test | `intelligence/SpeedTestEngine.kt` — ping (TCP median), download/upload throughput via Cloudflare endpoints, 10-entry encrypted history |
+| Split tunneling | Whitelist / blacklist per-app routing (`ui/splittunnel/`), applied in `VpnService.Builder` on establish |
+| Kill switch | Watchdog reconnect loop with capped backoff in the service when the tunnel dies (`SecureNetVpnService.scheduleKillSwitchRecovery`) |
+| Auto-connect on launch | `MainActivity.maybeAutoConnectOnLaunch()` from cached server config |
+| Quick Settings tile | `service/VpnTileService.kt` — one-tap connect/disconnect from the notification shade |
+| New tests | 35 new unit tests across 5 suites (ThreatClassifier, ServerRecommender, NetworkAnomalyDetector, SecurityScoreEngine, SplitTunnel + SpeedTest) — 78 total, all green |
+
+---
+
 ## 1. Feature map (spec -> implementation)
 
 | Requirement | Where it lives |

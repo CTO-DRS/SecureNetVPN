@@ -9,6 +9,7 @@ import com.securenet.vpn.data.model.InstallerSource
 import com.securenet.vpn.data.model.ScanResult
 import com.securenet.vpn.data.model.ThreatReport
 import com.securenet.vpn.domain.repository.ScannerRepository
+import com.securenet.vpn.intelligence.ThreatClassifier
 import com.securenet.vpn.security.AppThreatAnalyzer
 import com.securenet.vpn.security.FileThreatScanner
 import com.securenet.vpn.security.RootDetector
@@ -18,8 +19,9 @@ import kotlinx.coroutines.withContext
 /**
  * On-device audit pipeline:
  *  1. app permission/behavior analysis (pure logic, unit-tested)
- *  2. known-bad file hash sweep of the user-visible storage
- *  3. root/tampering indicators
+ *  2. on-device ML threat re-scoring (logistic-regression ThreatClassifier)
+ *  3. known-bad file hash sweep of the user-visible storage
+ *  4. root/tampering indicators
  * Nothing ever leaves the device; no network calls are involved.
  */
 class ScannerRepositoryImpl(
@@ -30,6 +32,7 @@ class ScannerRepositoryImpl(
     private val threatAnalyzer = AppThreatAnalyzer()
     private val fileScanner = FileThreatScanner()
     private val rootDetector = RootDetector()
+    private val classifier = ThreatClassifier()
 
     override suspend fun fullScan(): ScanResult = withContext(Dispatchers.Default) {
         val startedAt = System.currentTimeMillis()
@@ -55,8 +58,43 @@ class ScannerRepositoryImpl(
         result
     }
 
+    /**
+     * Rule engine (AppThreatAnalyzer) + on-device ML (ThreatClassifier) run
+     * side by side. The more severe of the two verdicts wins; when ML lifts
+     * the severity it appends the top contributing factors so the user sees
+     * WHY an app was flagged.
+     */
     private fun scanInstalledApps(): List<ThreatReport> =
-        installedAppProfiles().flatMap { threatAnalyzer.analyze(it) }
+        installedAppProfiles().flatMap { profile ->
+            val ruleReports = threatAnalyzer.analyze(profile)
+            val prediction = classifier.predict(profile)
+
+            val bestRule = ruleReports.maxByOrNull { it.level.severity }
+            val mlStronger = bestRule == null ||
+                prediction.level.severity > bestRule.level.severity
+
+            if (!mlStronger) {
+                ruleReports
+            } else if (prediction.level.isActionable) {
+                val factors = prediction.topFactors.joinToString(", ")
+                listOf(
+                    ThreatReport(
+                        id = "ml_${profile.packageName}",
+                        title = "ML: ${profile.label}",
+                        description = buildString {
+                            append("On-device model rated this app ")
+                            append("%.0f%% risk".format(prediction.probability * 100))
+                            if (factors.isNotEmpty()) append(". Signals: $factors")
+                        },
+                        recommendation = "Review this app's permissions or remove it if you do not recognize it.",
+                        level = prediction.level,
+                        packageName = profile.packageName
+                    )
+                ) + ruleReports
+            } else {
+                ruleReports
+            }
+        }
 
     private fun scanFiles(): List<ThreatReport> =
         fileScanner.scanPublicDirectories(context)

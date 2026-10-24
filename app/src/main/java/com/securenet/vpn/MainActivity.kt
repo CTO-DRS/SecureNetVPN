@@ -74,7 +74,24 @@ class MainActivity : AppCompatActivity(), PermissionRequestHost {
 
         if (savedInstanceState == null) {
             binding.bottomNav.selectedItemId = R.id.nav_dashboard
+            maybeAutoConnectOnLaunch()
         }
+    }
+
+    /**
+     * v1.1: auto-connect on app start. Only fires when the user enabled it,
+     * the essential permission pipeline is already done, and no tunnel is
+     * up. The service reconnects from the cached server config.
+     */
+    private fun maybeAutoConnectOnLaunch() {
+        val container = (application as com.securenet.vpn.di.AppProvider).provideContainer()
+        if (!container.securePrefs.autoConnectOnLaunch) return
+        if (!hasEssentialPermissions()) return
+        if (SecureNetVpnService.currentState() !=
+            com.securenet.vpn.data.model.ConnectionState.DISCONNECTED
+        ) return
+        if (container.securePrefs.cachedSelectedServer == null) return
+        SecureNetVpnService.requestReconnect(this)
     }
 
     /**

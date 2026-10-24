@@ -74,4 +74,24 @@ class AppContainer(context: Context) {
     val scanDeviceUseCase: ScanDeviceUseCase by lazy {
         ScanDeviceUseCase(scannerRepository, connectionLogger)
     }
+
+    // ------------------------------------------------------------------
+    // v1.1: local intelligence engines
+    // ------------------------------------------------------------------
+
+    val serverRecommender: com.securenet.vpn.intelligence.ServerRecommender by lazy {
+        com.securenet.vpn.intelligence.ServerRecommender()
+    }
+
+    val latencyProber: com.securenet.vpn.intelligence.ServerLatencyProber by lazy {
+        com.securenet.vpn.intelligence.ServerLatencyProber()
+    }
+
+    val securityScoreEngine: com.securenet.vpn.intelligence.SecurityScoreEngine by lazy {
+        com.securenet.vpn.intelligence.SecurityScoreEngine()
+    }
+
+    val speedTestEngine: com.securenet.vpn.intelligence.SpeedTestEngine by lazy {
+        com.securenet.vpn.intelligence.SpeedTestEngine()
+    }
 }

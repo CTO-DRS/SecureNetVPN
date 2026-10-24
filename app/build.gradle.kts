@@ -11,8 +11,8 @@ android {
         applicationId = "com.securenet.vpn"
         minSdk = 30
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         ndk {
@@ -120,6 +120,8 @@ dependencies {
     // Unit tests
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
+    // Real org.json implementation for JVM unit tests (android.jar stubs return nulls)
+    testImplementation("org.json:json:20240303")
 
     // Instrumented tests
     androidTestImplementation("androidx.test.ext:junit:1.2.1")

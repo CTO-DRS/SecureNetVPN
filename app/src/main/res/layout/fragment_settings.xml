@@ -69,6 +69,72 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- v1.1: Language / اللغة -->
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.SecureNet.GlassCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_md">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_language"
+                        app:tint="@color/on_glass_primary" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="@string/settings_language"
+                        android:textColor="@color/on_glass_primary"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <RadioGroup
+                    android:id="@+id/rgLanguage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/rbLangSystem"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/lang_system"
+                        android:textColor="@color/on_glass_primary" />
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/rbLangEnglish"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/lang_english"
+                        android:textColor="@color/on_glass_primary" />
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/rbLangArabic"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/lang_arabic"
+                        android:textColor="@color/on_glass_primary" />
+                </RadioGroup>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
         <TextView style="@style/SectionTitle" android:text="@string/settings_section_protection" />
 
         <com.google.android.material.card.MaterialCardView
@@ -110,6 +176,26 @@
                         android:id="@+id/switchAutoReconnect"
                         style="@style/SettingSwitch" />
                 </LinearLayout>
+
+                <LinearLayout style="@style/SettingRow" android:id="@+id/rowKillSwitch">
+                    <LinearLayout style="@style/SettingTextColumn">
+                        <TextView style="@style/SettingTitle" android:text="@string/settings_kill_switch" />
+                        <TextView style="@style/SettingDesc" android:text="@string/settings_kill_switch_desc" />
+                    </LinearLayout>
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/switchKillSwitch"
+                        style="@style/SettingSwitch" />
+                </LinearLayout>
+
+                <LinearLayout style="@style/SettingRow" android:id="@+id/rowAutoLaunch">
+                    <LinearLayout style="@style/SettingTextColumn">
+                        <TextView style="@style/SettingTitle" android:text="@string/settings_auto_launch" />
+                        <TextView style="@style/SettingDesc" android:text="@string/settings_auto_launch_desc" />
+                    </LinearLayout>
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/switchAutoLaunch"
+                        style="@style/SettingSwitch" />
+                </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -124,6 +210,27 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
+
+                <LinearLayout
+                    style="@style/SettingRow"
+                    android:id="@+id/rowSplitTunnel"
+                    android:background="?attr/selectableItemBackground">
+
+                    <LinearLayout style="@style/SettingTextColumn">
+                        <TextView style="@style/SettingTitle" android:text="@string/settings_split_tunnel" />
+                        <TextView
+                            android:id="@+id/tvSplitTunnelState"
+                            style="@style/SettingDesc"
+                            android:text="@string/split_mode_off" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_arrow_right"
+                        app:tint="@color/on_glass_secondary" />
+                </LinearLayout>
 
                 <LinearLayout style="@style/SettingRow" android:id="@+id/rowDnsCache">
                     <LinearLayout style="@style/SettingTextColumn">

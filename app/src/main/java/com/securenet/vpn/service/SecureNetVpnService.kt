@@ -60,6 +60,7 @@ class SecureNetVpnService : VpnService() {
     private var activeLocalPrefix: Int = 32
     private var statsJob: Job? = null
     private var monitorJob: Job? = null
+    private var recoveryJob: Job? = null
 
     private val lastRx = MutableStateFlow(0L)
     private val lastTx = MutableStateFlow(0L)
@@ -143,6 +144,7 @@ class SecureNetVpnService : VpnService() {
         if (server.supportsIpv6) {
             builder.addRoute(KeyUtilsRoute.V6_ADDR, KeyUtilsRoute.V6_PREFIX)
         }
+        applySplitTunnel(builder)
         val established = runCatching { builder.establish() }
             .onFailure { publishState(ConnectionState.FAILED, "tun_error: ${it.message}") }
             .getOrNull()
@@ -234,6 +236,40 @@ class SecureNetVpnService : VpnService() {
                     WgNative.wgGetState(wgHandle) != WG_STATE_UP
                 ) {
                     publishState(ConnectionState.RECONNECTING, "go_backend_down")
+                    if (killSwitchArmed()) {
+                        scheduleKillSwitchRecovery()
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Kill-switch watchdog: when enabled, a dead tunnel is recovered with an
+     * aggressive capped-backoff reconnect loop instead of waiting for the
+     * user to notice. Escape hatch: the loop only arms while the user still
+     * wants the tunnel up (state stays RECONNECTING).
+     */
+    private fun killSwitchArmed(): Boolean =
+        (application as AppProvider).provideContainer().securePrefs.killSwitchEnabled
+
+    private fun scheduleKillSwitchRecovery() {
+        if (recoveryJob?.isActive == true) return
+        recoveryJob = serviceScope.launch {
+            var backoff = 500L
+            while (isActive && stateFlow.value == ConnectionState.RECONNECTING) {
+                delay(backoff)
+                if (stateFlow.value != ConnectionState.RECONNECTING) break
+                logger.appendEvent(ConnectionState.RECONNECTING, activeServer?.id,
+                    "kill_switch_recovery:${backoff}ms")
+                tearDownTunnelOnly()
+                establishTunnel()
+                backoff = (backoff * 2).coerceAtMost(5_000L)
+                // establishTunnel flips state to CONNECTING on success or
+                // FAILED on hard failure; FAILED loops back here via the
+                // sampler's next detection tick.
+                if (stateFlow.value == ConnectionState.FAILED) {
+                    publishState(ConnectionState.RECONNECTING, "kill_switch_retry")
                 }
             }
         }
@@ -260,6 +296,8 @@ class SecureNetVpnService : VpnService() {
     private fun tearDownTunnelOnly() {
         statsJob?.cancel()
         statsJob = null
+        recoveryJob?.cancel()
+        recoveryJob = null
         if (wgHandle > 0 && WgNative.isAvailable) {
             runCatching { WgNative.wgTurnOff(wgHandle) }
         }
@@ -366,6 +404,36 @@ class SecureNetVpnService : VpnService() {
         const val V4_PREFIX = 0
         const val V6_ADDR = "::"
         const val V6_PREFIX = 0
+    }
+
+    /**
+     * Split tunneling: whitelist / blacklist app routing policy.
+     * Packages that fail to resolve (uninstalled since selection) are
+     * skipped silently so the tunnel still comes up.
+     */
+    private fun applySplitTunnel(builder: Builder) {
+        val container = (application as AppProvider).provideContainer()
+        val policy = com.securenet.vpn.ui.splittunnel.SplitTunnelStore.decode(
+            container.securePrefs.splitTunnelApps,
+            container.securePrefs.splitTunnelMode
+        )
+        if (policy.mode == com.securenet.vpn.ui.splittunnel.SplitTunnelStore.Mode.OFF) return
+        val pm = packageManager
+        policy.packages.forEach { pkg ->
+            val ok = runCatching {
+                pm.getPackageInfo(pkg, 0)
+                if (policy.mode == com.securenet.vpn.ui.splittunnel.SplitTunnelStore.Mode.ALLOW_ONLY) {
+                    builder.addAllowedApplication(pkg)
+                } else {
+                    builder.addDisallowedApplication(pkg)
+                }
+                true
+            }.getOrDefault(false)
+            if (!ok) {
+                logger.appendEvent(ConnectionState.CONNECTING, activeServer?.id,
+                    "split_tunnel_skip:$pkg")
+            }
+        }
     }
 
     companion object {

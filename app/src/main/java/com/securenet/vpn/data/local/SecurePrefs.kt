@@ -89,6 +89,49 @@ class SecurePrefs(context: Context) {
         get() = prefs.getBoolean(KEY_ESSENTIAL_PERMS, false)
         set(value) = prefs.edit().putBoolean(KEY_ESSENTIAL_PERMS, value).apply()
 
+    // ------------------------------------------------------------------
+    // v1.1: local intelligence + new features
+    // ------------------------------------------------------------------
+
+    /** App language tag: "" (system), "en" or "ar". */
+    var languageTag: String
+        get() = prefs.getString(KEY_LANGUAGE, "") ?: ""
+        set(value) = prefs.edit().putString(KEY_LANGUAGE, value).apply()
+
+    /** Kill switch: aggressive reconnect + system always-on hand-off. */
+    var killSwitchEnabled: Boolean
+        get() = prefs.getBoolean(KEY_KILL_SWITCH, false)
+        set(value) = prefs.edit().putBoolean(KEY_KILL_SWITCH, value).apply()
+
+    /** Connect automatically when the app opens. */
+    var autoConnectOnLaunch: Boolean
+        get() = prefs.getBoolean(KEY_AUTO_LAUNCH, false)
+        set(value) = prefs.edit().putBoolean(KEY_AUTO_LAUNCH, value).apply()
+
+    /** 0 = off, 1 = allow only listed apps, 2 = exclude listed apps. */
+    var splitTunnelMode: Int
+        get() = prefs.getInt(KEY_SPLIT_MODE, SPLIT_OFF)
+        set(value) = prefs.edit().putInt(KEY_SPLIT_MODE, value).apply()
+
+    /** Raw JSON array of package names for the split tunnel policy. */
+    var splitTunnelApps: String
+        get() = prefs.getString(KEY_SPLIT_APPS, "[]") ?: "[]"
+        set(value) = prefs.edit().putString(KEY_SPLIT_APPS, value).apply()
+
+    /** Last speed-test result JSON + history ring buffer JSON. */
+    var lastSpeedTest: String?
+        get() = prefs.getString(KEY_SPEED_LAST, null)
+        set(value) = prefs.edit().putString(KEY_SPEED_LAST, value).apply()
+
+    var speedTestHistory: String
+        get() = prefs.getString(KEY_SPEED_HISTORY, "[]") ?: "[]"
+        set(value) = prefs.edit().putString(KEY_SPEED_HISTORY, value).apply()
+
+    /** Live latency cache: {serverId: ms} JSON, refreshed by Smart Connect. */
+    var latencyCache: String
+        get() = prefs.getString(KEY_LATENCY_CACHE, "{}") ?: "{}"
+        set(value) = prefs.edit().putString(KEY_LATENCY_CACHE, value).apply()
+
     var lastScanAt: Long
         get() = prefs.getLong(KEY_LAST_SCAN, 0L)
         set(value) = prefs.edit().putLong(KEY_LAST_SCAN, value).apply()
@@ -136,5 +179,17 @@ class SecurePrefs(context: Context) {
         private const val KEY_LAST_SCAN_SUMMARY = "last_scan_summary"
         private const val KEY_LAST_SCAN_JSON = "last_scan_json"
         private const val KEY_LOG_FILE = "log_file_name"
+        private const val KEY_LANGUAGE = "app_language"
+        private const val KEY_KILL_SWITCH = "kill_switch"
+        private const val KEY_AUTO_LAUNCH = "auto_connect_launch"
+        private const val KEY_SPLIT_MODE = "split_tunnel_mode"
+        private const val KEY_SPLIT_APPS = "split_tunnel_apps"
+        private const val KEY_SPEED_LAST = "speed_test_last"
+        private const val KEY_SPEED_HISTORY = "speed_test_history"
+        private const val KEY_LATENCY_CACHE = "latency_cache"
+
+        const val SPLIT_OFF = 0
+        const val SPLIT_ALLOW_ONLY = 1
+        const val SPLIT_EXCLUDE = 2
     }
 }

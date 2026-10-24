@@ -5,6 +5,8 @@
     <color name="brand_secondary">#11998E</color>
     <color name="gradient_start">#1A2A6C</color>
     <color name="gradient_end">#11998E</color>
+    <color name="accent_teal">#11998E</color>
+    <color name="accent_amber">#FFB300</color>
 
     <!-- Glass-morphism surfaces on the branded gradient -->
     <color name="glass_fill">#26FFFFFF</color>

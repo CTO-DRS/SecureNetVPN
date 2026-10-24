@@ -258,5 +258,217 @@
             app:drawableTint="@color/on_glass_secondary"
             tools:visibility="visible" />
 
+        <!-- v1.1: Smart Connect suggestion banner -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardSmartSuggest"
+            style="@style/Widget.SecureNet.GlassCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_md"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_auto_awesome"
+                    app:tint="@color/accent_teal" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/spacing_md"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/dashboard_smart_title"
+                        android:textColor="@color/on_glass_primary"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvSmartSuggest"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:textColor="@color/on_glass_secondary"
+                        android:textSize="12sp"
+                        tools:text="Frankfurt looks 2x faster right now" />
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSmartApply"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/dashboard_smart_apply"
+                    android:textSize="12sp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- v1.1: on-device security score card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardSecurityScore"
+            style="@style/Widget.SecureNet.GlassCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_md">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <FrameLayout
+                    android:layout_width="64dp"
+                    android:layout_height="64dp">
+
+                    <com.google.android.material.progressindicator.CircularProgressIndicator
+                        android:id="@+id/progressScore"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:indeterminate="false"
+                        app:indicatorColor="@color/accent_teal"
+                        app:indicatorSize="64dp"
+                        app:trackColor="@color/glass_fill_strong"
+                        app:trackThickness="6dp" />
+
+                    <TextView
+                        android:id="@+id/tvScoreValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:textColor="@color/on_glass_primary"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        tools:text="78" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/spacing_md"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvScoreTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/dashboard_score_title"
+                        android:textColor="@color/on_glass_primary"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvScoreAction"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:textColor="@color/on_glass_secondary"
+                        android:textSize="12sp"
+                        tools:text="Run a device scan to complete your score" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvScoreGrade"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/accent_teal"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    tools:text="B" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- v1.1: speed test card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardSpeedTest"
+            style="@style/Widget.SecureNet.GlassCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_md">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        style="@style/StatColumn"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
+
+                        <TextView
+                            android:id="@+id/tvSpeedPing"
+                            style="@style/StatValue"
+                            tools:text="—" />
+
+                        <TextView
+                            style="@style/StatLabel"
+                            android:text="@string/speed_label_ping" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        style="@style/StatColumn"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
+
+                        <TextView
+                            android:id="@+id/tvSpeedDown"
+                            style="@style/StatValue"
+                            tools:text="—" />
+
+                        <TextView
+                            style="@style/StatLabel"
+                            android:text="@string/speed_label_down" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        style="@style/StatColumn"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
+
+                        <TextView
+                            android:id="@+id/tvSpeedUp"
+                            style="@style/StatValue"
+                            tools:text="—" />
+
+                        <TextView
+                            style="@style/StatLabel"
+                            android:text="@string/speed_label_up" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSpeedTest"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:text="@string/speed_btn_run" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App -->
+    <string name="app_name">SecureNet VPN</string>
+
+    <!-- Bottom navigation -->
+    <string name="tab_dashboard">الرئيسية</string>
+    <string name="tab_servers">الخوادم</string>
+    <string name="tab_scanner">الفحص</string>
+    <string name="tab_settings">الإعدادات</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_status_disconnected">غير متصل</string>
+    <string name="dashboard_status_connecting">جارٍ الاتصال…</string>
+    <string name="dashboard_status_connected">محمي</string>
+    <string name="dashboard_status_disconnecting">جارٍ قطع الاتصال…</string>
+    <string name="dashboard_status_reconnecting">جارٍ إعادة الاتصال…</string>
+    <string name="dashboard_status_failed">فشل الاتصال</string>
+    <string name="btn_activate">فعّل الحماية</string>
+    <string name="btn_disconnect">قطع الاتصال</string>
+    <string name="label_current_server">الخادم الحالي</string>
+    <string name="label_download">تنزيل</string>
+    <string name="label_upload">رفع</string>
+    <string name="label_duration">الجلسة</string>
+    <string name="label_dns_cache">ذاكرة DNS</string>
+    <string name="dashboard_tip_disconnected">انقر على الدرع لتشفير كل حركة البيانات عبر WireGuard.</string>
+    <string name="dashboard_tip_connected">جهازك محمي بالكامل. البيانات مشفّرة من الطرف إلى الطرف.</string>
+    <string name="dashboard_battery_mode_on">وضع توفير البطارية مفعّل — تم تخفيض معدل التحديث</string>
+    <string name="speed_zero">0 ب/ث</string>
+    <string name="duration_zero">00:00:00</string>
+    <string name="dns_cache_idle">خامل</string>
+    <string name="no_server_selected">لم يتم اختيار خادم</string>
+    <string name="error_no_server">اختر خادماً أولاً</string>
+    <string name="error_vpn_permission">إذن VPN مطلوب لتفعيل الحماية</string>
+    <string name="vpn_permission_needed">يحتاج SecureNet موافقتك لإنشاء نفق VPN</string>
+    <string name="reconnecting_network_change">تغيّرت الشبكة — جارٍ إعادة بناء النفق</string>
+
+    <!-- Servers -->
+    <string name="server_title">مواقع الخوادم</string>
+    <string name="server_select">اختيار</string>
+    <string name="server_selected">مُختار</string>
+    <string name="server_latency_ms">%1$s ملّي ثانية</string>
+    <string name="server_load">الحمل %1$d٪</string>
+    <string name="server_best">مُوصى به</string>
+    <string name="server_refresh">تحديث القائمة</string>
+    <string name="server_empty">لا توجد خوادم. اسحب القائمة الأخيرة من الإعدادات.</string>
+
+    <!-- Scanner -->
+    <string name="scanner_title">أمان الجهاز</string>
+    <string name="scanner_summary_safe">لا توجد تهديدات. جهازك يبدو نظيفاً.</string>
+    <string name="scanner_summary_threats">عُثر على %1$d مشكلة محتملة</string>
+    <string name="scanner_btn_scan">افحص الجهاز</string>
+    <string name="scanner_scanning">جارٍ الفحص…</string>
+    <string name="scanner_apps_scanned">%1$d تطبيق · %2$d ملف تم تحليله</string>
+    <string name="scanner_no_threats">كل شيء سليم</string>
+    <string name="scanner_last_scan">آخر فحص: %1$s</string>
+    <string name="scanner_root_detected">تم اكتشاف صلاحيات Root على هذا الجهاز</string>
+    <string name="threat_level_safe">آمن</string>
+    <string name="threat_level_low">خطر منخفض</string>
+    <string name="threat_level_medium">خطر متوسط</string>
+    <string name="threat_level_high">خطر مرتفع</string>
+    <string name="threat_level_critical">خطر حرج</string>
+
+    <!-- Settings -->
+    <string name="settings_title">الإعدادات</string>
+    <string name="settings_section_appearance">المظهر</string>
+    <string name="settings_theme">السمة</string>
+    <string name="theme_system">حسب النظام</string>
+    <string name="theme_light">فاتح</string>
+    <string name="theme_dark">داكن</string>
+    <string name="settings_section_protection">الحماية</string>
+    <string name="settings_battery_saver">وضع تحسين البطارية</string>
+    <string name="settings_battery_saver_desc">يقلل استطلاع الإحصائيات وتحديثات الإشعار أثناء الاتصال</string>
+    <string name="settings_auto_boot">اتصال تلقائي بعد إعادة التشغيل</string>
+    <string name="settings_auto_boot_desc">يستعيد النفق عند تشغيل الجهاز</string>
+    <string name="settings_auto_reconnect">إعادة اتصال تلقائية عند تغيّر الشبكة</string>
+    <string name="settings_auto_reconnect_desc">يعيد بناء النفق عند التبديل بين واي فاي والبيانات</string>
+    <string name="settings_section_network">الشبكة</string>
+    <string name="settings_dns_cache">ذاكرة DNS الذكية</string>
+    <string name="settings_dns_cache_desc">تخزّن الاستعلامات مع مدة صلاحية لتقليل الزمن وتسريبات DNS</string>
+    <string name="settings_mtu_auto">ضبط MTU تلقائي</string>
+    <string name="settings_mtu_auto_desc">يبحث ثنائياً عن أفضل MTU لأسرع نفق مستقر</string>
+    <string name="settings_section_data">البيانات والخصوصية</string>
+    <string name="settings_clear_logs">مسح سجل الاتصالات</string>
+    <string name="settings_logs_cleared">تم مسح السجل</string>
+    <string name="settings_section_about">حول</string>
+    <string name="settings_version">الإصدار %1$s</string>
+    <string name="settings_protocol">البروتوكول: WireGuard® (نطاق المستخدم wireguard-go)</string>
+    <string name="settings_native_lib">نواة التشفير: %1$s</string>
+    <string name="settings_backend_unavailable">نواة Go غير محمّلة — وضع المحاكاة</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_skip">تخطي</string>
+    <string name="onboarding_next">التالي</string>
+    <string name="onboarding_get_started">ابدأ الآن</string>
+    <string name="onboarding_title_1">خصوصية بمعايير عسكرية</string>
+    <string name="onboarding_desc_1">تشفير WireGuard® بخوارزمية ChaCha20-Poly1305 يؤمّن كل حزمة تغادر جهازك. بلا سجلات، بلا تتبع، بلا تنازلات.</string>
+    <string name="onboarding_title_2">افحص قبل أن تثق</string>
+    <string name="onboarding_desc_2">مراجع الأمان المحلي يفحص التطبيقات المثبتة والأذونات والملفات ليكتشف البرمجيات الخبيثة والتجسس والسلوك الخطير — بالكامل على جهازك.</string>
+    <string name="onboarding_title_3">مُحسَّن للسرعة</string>
+    <string name="onboarding_desc_3">ذاكرة DNS الذكية وضبط MTU التلقائي يحققان أقصى سرعة وأدنى زمن استجابة على أي شبكة.</string>
+
+    <!-- Permission flow -->
+    <string name="rationale_continue">متابعة</string>
+    <string name="rationale_not_now">ليس الآن</string>
+    <string name="permission_denied_hint">يمكنك تفعيله لاحقاً من الإعدادات &gt; التطبيقات &gt; SecureNet VPN</string>
+    <string name="perm_notif_title">إشعارات الاتصال</string>
+    <string name="perm_notif_desc">الإشعار الدائم يُبقي النفق حياً ويعرض حالة حمايتك. أندرويد يتطلب هذا لتشغيل VPN بشكل موثوق.</string>
+    <string name="perm_storage_title">وصول فحص الملفات</string>
+    <string name="perm_storage_desc">فاحص الأمان يبحث في الملفات المنزّلة عن توقيعات برمجيات خبيثة معروفة. ملفاتك لا تغادر الجهاز أبداً.</string>
+    <string name="perm_camera_title">الكاميرا لإعداد QR</string>
+    <string name="perm_camera_desc">امسح رموز QR الخاصة بإعدادات WireGuard لاستيراد الأنفاق فوراً. تُستخدم الكاميرا أثناء الاستيراد فقط.</string>
+    <string name="perm_contacts_title">تدقيق خصوصية جهات الاتصال</string>
+    <string name="perm_contacts_desc">يتحقق التدقيق مما إذا كان أي تطبيق مثبت يزامن جهات اتصالك مع خوادم مجهولة بصمت. التحليل محلي فقط.</string>
+    <string name="perm_location_title">وعي بشبكة الواي فاي</string>
+    <string name="perm_location_desc">أندرويد يتطلب إذن الموقع لقراءة اسم شبكة الواي فاي الحالية، وهو ما يشغّل قواعد الاتصال التلقائي بالشبكات الموثوقة.</string>
+
+    <!-- Notifications -->
+    <string name="notification_channel_name">حالة VPN</string>
+    <string name="notification_channel_desc">حالة دائمة لنفق VPN النشط</string>
+    <string name="notif_title_connecting">جارٍ تأمين اتصالك…</string>
+    <string name="notif_title_connected">محمي عبر %1$s</string>
+    <string name="notif_title_disconnected">تم قطع اتصال SecureNet</string>
+    <string name="notif_action_disconnect">قطع الاتصال</string>
+    <string name="notif_action_connect">اتصال</string>
+
+    <!-- Misc -->
+    <string name="ok">حسناً</string>
+    <string name="cancel">إلغاء</string>
+    <string name="close">إغلاق</string>
+    <string name="scan_complete">اكتمل الفحص</string>
+    <string name="battery_request_title">تعطيل تحسين البطارية؟</string>
+    <string name="battery_request_desc">قد يوقف أندرويد الـ VPN في الخلفية. استثناء SecureNet من تحسين البطارية يحافظ على استقرار النفق.</string>
+
+    <!-- v1.1: Language -->
+    <string name="settings_language">اللغة / Language</string>
+    <string name="lang_system">حسب النظام</string>
+    <string name="lang_english">English</string>
+    <string name="lang_arabic">العربية</string>
+
+    <!-- v1.1: Kill switch + auto-launch -->
+    <string name="settings_kill_switch">مفتاح الإيقاف (Kill Switch)</string>
+    <string name="settings_kill_switch_desc">يعيد بناء النفق فوراً إذا سقط، فلا تتسرب بياناتك أبداً</string>
+    <string name="settings_auto_launch">اتصال تلقائي عند فتح التطبيق</string>
+    <string name="settings_auto_launch_desc">يعيد الاتصال تلقائياً عند فتح SecureNet</string>
+
+    <!-- v1.1: Split tunneling -->
+    <string name="settings_split_tunnel">تقسيم النفق</string>
+    <string name="split_title">تقسيم النفق</string>
+    <string name="split_mode_off">مُعطّل</string>
+    <string name="split_mode_allow">السماح فقط</string>
+    <string name="split_mode_exclude">استثناء</string>
+    <string name="split_hint_off">جميع التطبيقات تمر عبر النفق المشفّر.</string>
+    <string name="split_hint_allow">التطبيقات المحددة فقط تستخدم الـ VPN، والباقي يتصل مباشرة.</string>
+    <string name="split_hint_exclude">التطبيقات المحددة تتجاوز الـ VPN، والباقي يبقى مشفّراً.</string>
+
+    <!-- v1.1: Smart Connect -->
+    <string name="server_smart_connect">اتصال ذكي</string>
+    <string name="server_smart_probing">جارٍ قياس الخوادم…</string>
+    <string name="server_smart_picked">اختار الاتصال الذكي %1$s</string>
+
+    <!-- v1.1: Dashboard intelligence -->
+    <string name="dashboard_smart_title">اقتراح ذكي</string>
+    <string name="dashboard_smart_text">يبدو أن %1$s أسرع لك الآن</string>
+    <string name="dashboard_smart_apply">تبديل</string>
+    <string name="dashboard_score_title">درجة الحماية</string>
+    <string name="action_run_scan">أجرِ فحصاً للجهاز لإكمال درجتك</string>
+    <string name="action_remove_threats">أزل التطبيقات المُعلَّمة لرفع درجتك</string>
+    <string name="action_connect">فعّل النفق لإكمال حمايتك</string>
+    <string name="action_enable_dns">فعّل ذاكرة DNS الذكية لتقليل الزمن</string>
+    <string name="action_enable_mtu">فعّل ضبط MTU التلقائي لأفضل سرعة</string>
+    <string name="action_enable_reconnect">فعّل إعادة الاتصال التلقائية لتبقى محمياً</string>
+    <string name="action_all_good">كل شيء مُحسَّن. عمل رائع!</string>
+
+    <!-- v1.1: Speed test -->
+    <string name="speed_label_ping">زمن الاستجابة</string>
+    <string name="speed_label_down">تنزيل</string>
+    <string name="speed_label_up">رفع</string>
+    <string name="speed_btn_run">ابدأ اختبار السرعة</string>
+    <string name="speed_btn_running">جارٍ الاختبار…</string>
+</resources>

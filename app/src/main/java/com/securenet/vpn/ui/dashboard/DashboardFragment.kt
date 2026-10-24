@@ -56,8 +56,20 @@ class DashboardFragment : Fragment() {
             (activity as? MainActivity)?.bottomNav()?.selectedItemId = R.id.nav_servers
         }
 
+        // v1.1: speed test + smart connect interactions
+        binding.btnSpeedTest.setOnClickListener {
+            viewModel.runSpeedTest(viewModel.selectedServer.value)
+        }
+        binding.btnSmartApply.setOnClickListener {
+            viewModel.smartSuggestion.value?.let { target ->
+                viewModel.selectServer(target)
+                binding.cardSmartSuggest.visibility = View.GONE
+            }
+        }
+
         observeState()
         observeStats()
+        observeIntelligence()
     }
 
     private fun onPowerPressed() {
@@ -117,6 +129,70 @@ class DashboardFragment : Fragment() {
         // DNS cache badge refreshes on resume only (cheap, non-ticking).
         binding.tvDnsCache.text = viewModel.dnsStats.value.ifEmpty {
             getString(R.string.dns_cache_idle)
+        }
+    }
+
+    /** v1.1: security score + speed test + smart suggestion rendering. */
+    private fun observeIntelligence() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.securityScore.collect { report ->
+                    val score = report?.score ?: return@collect
+                    binding.tvScoreValue.text = score.total.toString()
+                    binding.tvScoreGrade.text = score.grade.name.let { grade ->
+                        when (grade) {
+                            "EXCELLENT" -> "A+"; "GOOD" -> "B"; "FAIR" -> "C"
+                            "POOR" -> "D"; else -> "F"
+                        }
+                    }
+                    binding.progressScore.setProgressCompat(score.total, true)
+                    binding.tvScoreAction.setText(when (report.actions.firstOrNull()) {
+                        com.securenet.vpn.intelligence.SecurityScoreEngine.Action.RUN_DEVICE_SCAN ->
+                            R.string.action_run_scan
+                        com.securenet.vpn.intelligence.SecurityScoreEngine.Action.UNINSTALL_HIGH_RISK_APPS ->
+                            R.string.action_remove_threats
+                        com.securenet.vpn.intelligence.SecurityScoreEngine.Action.CONNECT_VPN ->
+                            R.string.action_connect
+                        com.securenet.vpn.intelligence.SecurityScoreEngine.Action.ENABLE_DNS_CACHE ->
+                            R.string.action_enable_dns
+                        com.securenet.vpn.intelligence.SecurityScoreEngine.Action.ENABLE_AUTO_MTU ->
+                            R.string.action_enable_mtu
+                        com.securenet.vpn.intelligence.SecurityScoreEngine.Action.ENABLE_AUTO_RECONNECT ->
+                            R.string.action_enable_reconnect
+                        null -> R.string.action_all_good
+                        else -> R.string.action_all_good
+                    })
+                }
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.speedTest.collect { ui ->
+                    binding.btnSpeedTest.isEnabled = !ui.running
+                    binding.btnSpeedTest.setText(
+                        if (ui.running) R.string.speed_btn_running else R.string.speed_btn_run
+                    )
+                    binding.tvSpeedPing.text = if (ui.pingMs > 0) "${ui.pingMs} ms" else "—"
+                    binding.tvSpeedDown.text = if (ui.downMbps > 0)
+                        String.format(Locale.US, "%.1f", ui.downMbps) else "—"
+                    binding.tvSpeedUp.text = if (ui.upMbps > 0)
+                        String.format(Locale.US, "%.1f", ui.upMbps) else "—"
+                }
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.smartSuggestion.collect { server ->
+                    if (server == null) {
+                        binding.cardSmartSuggest.visibility = View.GONE
+                    } else {
+                        binding.tvSmartSuggest.text = getString(
+                            R.string.dashboard_smart_text, "${server.city} (${server.countryCode})"
+                        )
+                        binding.cardSmartSuggest.visibility = View.VISIBLE
+                    }
+                }
+            }
         }
     }
 
@@ -221,6 +297,8 @@ class DashboardFragment : Fragment() {
         if (WgNative.isAvailable && NativeBridge.isAvailable) {
             NativeBridge.selfTest()
         }
+        // Keep the on-device intelligence fresh.
+        viewModel.refreshSecurityScore()
     }
 
     override fun onDestroyView() {

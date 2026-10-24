@@ -6,16 +6,21 @@ import androidx.lifecycle.viewModelScope
 import com.securenet.vpn.data.local.SecurePrefs
 import com.securenet.vpn.data.model.ConnectionState
 import com.securenet.vpn.data.model.ConnectionStats
+import com.securenet.vpn.data.model.ScanResult
 import com.securenet.vpn.data.model.VpnServer
 import com.securenet.vpn.di.AppContainer
 import com.securenet.vpn.domain.usecase.ConnectVpnUseCase
 import com.securenet.vpn.domain.usecase.DisconnectVpnUseCase
 import com.securenet.vpn.domain.usecase.ObserveVpnStateUseCase
+import com.securenet.vpn.intelligence.SecurityScoreEngine
+import com.securenet.vpn.intelligence.SpeedTestEngine
 import com.securenet.vpn.network.DnsCacheManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.Dispatchers
 
 /**
  * MVVM dashboard state: tunnel state, live stats, selected server.
@@ -27,7 +32,8 @@ class DashboardViewModel(
     private val observeState: ObserveVpnStateUseCase,
     private val serverRepository: com.securenet.vpn.domain.repository.ServerRepository,
     private val securePrefs: SecurePrefs,
-    private val dnsCacheManager: DnsCacheManager
+    private val dnsCacheManager: DnsCacheManager,
+    container: AppContainer
 ) : ViewModel() {
 
     val connectionState: StateFlow<ConnectionState> = observeState.state
@@ -40,12 +46,129 @@ class DashboardViewModel(
     private val _dnsStats = MutableStateFlow("")
     val dnsStats: StateFlow<String> = _dnsStats.asStateFlow()
 
+    /** v1.1: composite on-device security score + recommendation actions. */
+    private val _securityScore = MutableStateFlow<SecurityScoreEngine.ScoreReport?>(null)
+    val securityScore: StateFlow<SecurityScoreEngine.ScoreReport?> =
+        _securityScore.asStateFlow()
+
+    /** v1.1: speed test UI state. */
+    data class SpeedUi(
+        val running: Boolean = false,
+        val pingMs: Int = -1,
+        val downMbps: Double = 0.0,
+        val upMbps: Double = 0.0,
+        val error: Boolean = false
+    )
+
+    private val _speedTest = MutableStateFlow(loadLastSpeed())
+    val speedTest: StateFlow<SpeedUi> = _speedTest.asStateFlow()
+
+    /** v1.1: Smart Connect suggestion from the on-device recommender. */
+    private val _smartSuggestion = MutableStateFlow<VpnServer?>(null)
+    val smartSuggestion: StateFlow<VpnServer?> = _smartSuggestion.asStateFlow()
+
     init {
         viewModelScope.launch {
             _selectedServer.value = serverRepository.getSelectedServer()
                 ?: serverRepository.getBestServer()
         }
         refreshDnsStats()
+        refreshSecurityScore()
+        refreshSmartSuggestion()
+    }
+
+    /** Recompute the composite score from the last scan + live state. */
+    fun refreshSecurityScore(scanOverride: ScanResult? = null) {
+        viewModelScope.launch {
+            val scan = scanOverride ?: withContext(Dispatchers.IO) {
+                securePrefs.lastScanJson?.let { raw ->
+                    runCatching {
+                        val o = org.json.JSONObject(raw)
+                        val threatsJson = o.optJSONArray("threats")
+                        val threats = (0 until (threatsJson?.length() ?: 0)).mapNotNull { i ->
+                            val t = threatsJson!!.getJSONObject(i)
+                            com.securenet.vpn.data.model.ThreatReport(
+                                id = t.optString("id"),
+                                title = t.optString("title"),
+                                description = t.optString("description"),
+                                recommendation = t.optString("recommendation"),
+                                level = com.securenet.vpn.data.model.ThreatLevel.entries
+                                    .firstOrNull { it.name == t.optString("level") }
+                                    ?: com.securenet.vpn.data.model.ThreatLevel.SAFE,
+                                packageName = t.optString("packageName").ifEmpty { null }
+                            )
+                        }
+                        ScanResult(
+                            threats = threats,
+                            appsScanned = o.optInt("appsScanned", 0),
+                            filesScanned = o.optInt("filesScanned", 0),
+                            durationMillis = o.optLong("durationMillis", 0),
+                            rootDetected = o.optBoolean("rootDetected", false),
+                            completedAtMillis = o.optLong("completedAtMillis", 0)
+                        )
+                    }.getOrNull()
+                }
+            }
+            _securityScore.value = containerRef.securityScoreEngine.compute(
+                lastScan = scan,
+                connectionState = connectionState.value,
+                dnsCacheEnabled = securePrefs.dnsCacheEnabled,
+                autoMtuEnabled = securePrefs.autoMtu,
+                autoReconnectEnabled = securePrefs.autoReconnect,
+                batterySaverEnabled = securePrefs.batterySaverMode
+            )
+        }
+    }
+
+    /** Run the Cloudflare-backed speed probe and persist the history. */
+    fun runSpeedTest(target: VpnServer?) {
+        if (_speedTest.value.running) return
+        _speedTest.value = SpeedUi(running = true)
+        viewModelScope.launch {
+            val result = runCatching {
+                withContext(Dispatchers.IO) {
+                    containerRef.speedTestEngine.run(
+                        target?.endpointHost ?: "speed.cloudflare.com",
+                        target?.endpointPort ?: 443
+                    )
+                }
+            }.getOrNull()
+            if (result != null) {
+                securePrefs.lastSpeedTest = result.toJson()
+                val history = SpeedTestEngine.History.fromJson(securePrefs.speedTestHistory)
+                val updated = SpeedTestEngine.History.appended(history, result)
+                securePrefs.speedTestHistory = updated.toJson()
+                _speedTest.value = SpeedUi(
+                    running = false,
+                    pingMs = result.pingMs,
+                    downMbps = result.downloadMbps,
+                    upMbps = result.uploadMbps
+                )
+            } else {
+                _speedTest.value = SpeedUi(running = false, error = true)
+            }
+        }
+    }
+
+    /** Compute (and persist) the Smart Connect recommendation. */
+    fun refreshSmartSuggestion() {
+        viewModelScope.launch {
+            val servers = runCatching { serverRepository.getServers(false) }
+                .getOrDefault(emptyList())
+            if (servers.isEmpty()) return@launch
+            val current = _selectedServer.value
+            val lastUsed = current?.id ?: securePrefs.selectedServerId
+            val latencies = runCatching {
+                org.json.JSONObject(securePrefs.latencyCache).let { o ->
+                    servers.mapNotNull { s ->
+                        if (o.has(s.id)) s.id to o.getInt(s.id) else null
+                    }.toMap()
+                }
+            }.getOrDefault(emptyMap())
+            val best = containerRef.serverRecommender.recommend(servers, lastUsed, latencies)
+            _smartSuggestion.value = best?.server?.takeIf { it.id != current?.id }
+        }
+
     }
 
     /** One-click activation entry point (permission handling sits in UI). */
@@ -71,6 +194,21 @@ class DashboardViewModel(
 
     fun batterySaverEnabled(): Boolean = securePrefs.batterySaverMode
 
+    private fun loadLastSpeed(): SpeedUi {
+        val last = securePrefs.lastSpeedTest
+            ?.let { SpeedTestEngine.Result.fromJson(it) }
+            ?: return SpeedUi()
+        return SpeedUi(
+            running = false,
+            pingMs = last.pingMs,
+            downMbps = last.downloadMbps,
+            upMbps = last.uploadMbps
+        )
+    }
+
+    // Container handle for the intelligence engines (kept private).
+    private val containerRef: AppContainer = container
+
     fun refreshDnsStats() {
         if (securePrefs.dnsCacheEnabled) {
             _dnsStats.value = dnsCacheManager.statsSnapshot()
@@ -87,7 +225,8 @@ class DashboardViewModel(
             container.observeVpnStateUseCase,
             container.serverRepository,
             container.securePrefs,
-            container.dnsCacheManager
+            container.dnsCacheManager,
+            container
         ) as T
     }
 }

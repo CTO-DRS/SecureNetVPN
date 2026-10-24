@@ -64,24 +64,25 @@ jobs:
 
       - name: Rename APK for distribution
         run: |
-          cp app/build/outputs/apk/debug/app-debug.apk SecureNetVPN-debug-v1.0.0.apk
-          ls -la SecureNetVPN-debug-v1.0.0.apk
+          VERSION=$(grep -oP 'versionName\s*=\s*"\K[^"]+' app/build.gradle.kts | head -1)
+          cp app/build/outputs/apk/debug/app-debug.apk "SecureNetVPN-debug-v${VERSION}.apk"
+          ls -la SecureNetVPN-debug-v*.apk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: SecureNetVPN-debug-APK
-          path: SecureNetVPN-debug-v1.0.0.apk
+          path: SecureNetVPN-debug-v*.apk
           if-no-files-found: error
 
       - name: Create GitHub Release with APK (tag builds only)
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          name: SecureNet VPN v1.0.0 — Full Build
-          tag_name: v1.0.0
+          name: "SecureNet VPN ${{ github.ref_name }} — Full Build"
+          tag_name: ${{ github.ref_name }}
           body: |
-            ## SecureNet VPN v1.0.0 — Enterprise-Grade Privacy Solution
+            ## SecureNet VPN ${{ github.ref_name }} — Enterprise-Grade Privacy Solution
 
             **Full production build** — this APK contains the real WireGuard-Go
             data plane (`libwgcore.so`) compiled for `arm64-v8a`, `armeabi-v7a`
@@ -89,20 +90,23 @@ jobs:
 
             ### Features
             - WireGuard VPN (wireguard-go via JNI, foreground service, `vpn_channel` notifications)
+            - On-device intelligence: ML threat classifier, Smart Connect server recommender,
+              network anomaly detector, composite protection score
             - Local device security scanner (anti-malware, permission risk scoring)
-            - Network optimizer (DNS cache + MTU tuning)
-            - One-tap activation with sequential permission rationale flow
-            - Battery optimization mode, auto-reconnect on network changes
+            - Network optimizer (DNS cache + MTU tuning) + built-in speed test
+            - Split tunneling (allow-only / exclude), Kill switch, auto-connect,
+              Quick Settings tile, notification actions
+            - Full Arabic + English localization (RTL-aware)
             - Material Design 3, glass-morphism server cards, Lottie animations
             - EncryptedSharedPreferences, WorkManager jobs, HPKP-style pinning
 
             ### Install
-            1. Download `SecureNetVPN-debug-v1.0.0.apk`
+            1. Download `SecureNetVPN-debug-v*.apk`
             2. Enable "Install from unknown sources"
             3. Install and open (Android 11 / API 30+)
 
             > Built automatically by GitHub Actions from source. Signed with the
             > project debug keystore — for store distribution, replace with your
             > own release keystore.
-          files: SecureNetVPN-debug-v1.0.0.apk
+          files: SecureNetVPN-debug-v*.apk
           fail_on_unmatched_files: true
