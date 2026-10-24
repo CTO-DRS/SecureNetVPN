@@ -12,7 +12,9 @@ import com.securenet.vpn.di.AppContainer
 import com.securenet.vpn.domain.usecase.ConnectVpnUseCase
 import com.securenet.vpn.domain.usecase.DisconnectVpnUseCase
 import com.securenet.vpn.domain.usecase.ObserveVpnStateUseCase
+import com.securenet.vpn.intelligence.NetworkTrustEngine
 import com.securenet.vpn.intelligence.SecurityScoreEngine
+import com.securenet.vpn.intelligence.SmartInsightsEngine
 import com.securenet.vpn.intelligence.SpeedTestEngine
 import com.securenet.vpn.network.DnsCacheManager
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -67,6 +69,29 @@ class DashboardViewModel(
     private val _smartSuggestion = MutableStateFlow<VpnServer?>(null)
     val smartSuggestion: StateFlow<VpnServer?> = _smartSuggestion.asStateFlow()
 
+    /** v1.2: DNS Shield live state. */
+    data class ShieldUi(val enabled: Boolean = false, val blocked: Long = 0)
+
+    private val _dnsShield = MutableStateFlow(loadShield())
+    val dnsShield: StateFlow<ShieldUi> = _dnsShield.asStateFlow()
+
+    /** v1.2: current network trust state. */
+    data class TrustUi(
+        val transport: String,
+        val metered: Boolean,
+        val trusted: Boolean,
+        val smartRulesEnabled: Boolean
+    )
+
+    private val _trust = MutableStateFlow<TrustUi?>(null)
+    val trust: StateFlow<TrustUi?> = _trust.asStateFlow()
+
+    /** v1.2: prioritized on-device recommendations. */
+    private val _insights =
+        MutableStateFlow<List<SmartInsightsEngine.Insight>>(emptyList())
+    val insights: StateFlow<List<SmartInsightsEngine.Insight>> =
+        _insights.asStateFlow()
+
     init {
         viewModelScope.launch {
             _selectedServer.value = serverRepository.getSelectedServer()
@@ -75,6 +100,8 @@ class DashboardViewModel(
         refreshDnsStats()
         refreshSecurityScore()
         refreshSmartSuggestion()
+        refreshInsights()
+        refreshTrust()
     }
 
     /** Recompute the composite score from the last scan + live state. */
@@ -214,6 +241,88 @@ class DashboardViewModel(
             _dnsStats.value = dnsCacheManager.statsSnapshot()
         } else {
             _dnsStats.value = "off"
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // v1.2: DNS Shield + trust + insights
+    // ------------------------------------------------------------------
+
+    private fun loadShield(): ShieldUi = ShieldUi(
+        enabled = securePrefs.dnsShieldEnabled,
+        blocked = securePrefs.dnsShieldBlocked
+    )
+
+    fun refreshDnsShield() {
+        _dnsShield.value = loadShield()
+    }
+
+    fun setDnsShield(enabled: Boolean) {
+        securePrefs.dnsShieldEnabled = enabled
+        _dnsShield.value = ShieldUi(enabled, securePrefs.dnsShieldBlocked)
+        refreshInsights()
+    }
+
+    fun refreshTrust() {
+        viewModelScope.launch {
+            val snapshot = withContext(Dispatchers.IO) {
+                runCatching { containerRef.networkMonitor.currentSnapshot() }.getOrNull()
+            } ?: return@launch
+            val trusted = containerRef.networkTrustEngine.trustListFromJson(
+                securePrefs.trustedNetworks
+            ).contains(
+                NetworkTrustEngine.Fingerprint(
+                    snapshot.transportDescription, snapshot.isMetered
+                )
+            )
+            _trust.value = TrustUi(
+                transport = snapshot.transportDescription,
+                metered = snapshot.isMetered,
+                trusted = trusted,
+                smartRulesEnabled = securePrefs.smartRulesEnabled
+            )
+        }
+    }
+
+    /** Trust / un-trust the current network fingerprint. */
+    fun toggleCurrentNetworkTrust() {
+        val current = _trust.value ?: return
+        val engine = containerRef.networkTrustEngine
+        val fp = NetworkTrustEngine.Fingerprint(current.transport, current.metered)
+        val list = engine.trustListFromJson(securePrefs.trustedNetworks).toMutableList()
+        if (!list.remove(fp)) list.add(fp)
+        securePrefs.trustedNetworks = engine.trustListToJson(list)
+        refreshTrust()
+    }
+
+    fun refreshInsights() {
+        viewModelScope.launch {
+            val scan = runCatching { securePrefs.lastScanJson }.getOrNull()
+            val threats = scan?.let { raw ->
+                runCatching {
+                    val o = org.json.JSONObject(raw)
+                    val arr = o.optJSONArray("threats")
+                    (0 until (arr?.length() ?: 0)).count { i ->
+                        arr!!.getJSONObject(i).optString("level") != "SAFE"
+                    }
+                }.getOrDefault(0)
+            } ?: 0
+            val scanAge = securePrefs.lastScanAt.takeIf { it > 0 }?.let {
+                System.currentTimeMillis() - it
+            }
+            _insights.value = containerRef.smartInsightsEngine.generate(
+                SmartInsightsEngine.Inputs(
+                    killSwitchEnabled = securePrefs.killSwitchEnabled,
+                    dnsShieldEnabled = securePrefs.dnsShieldEnabled,
+                    smartRulesEnabled = securePrefs.smartRulesEnabled,
+                    autoConnectOnLaunch = securePrefs.autoConnectOnLaunch,
+                    hasScanResults = securePrefs.lastScanAt > 0,
+                    scanAgeMillis = scanAge,
+                    openThreats = threats,
+                    connected = connectionState.value == ConnectionState.CONNECTED,
+                    batterySaver = securePrefs.batterySaverMode
+                )
+            )
         }
     }
 

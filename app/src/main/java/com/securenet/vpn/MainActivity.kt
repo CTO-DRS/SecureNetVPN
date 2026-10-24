@@ -13,6 +13,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.securenet.vpn.databinding.ActivityMainBinding
 import com.securenet.vpn.service.SecureNetVpnService
 import com.securenet.vpn.ui.dashboard.DashboardFragment
+import com.securenet.vpn.ui.history.HistoryFragment
 import com.securenet.vpn.ui.permissions.PermissionManager
 import com.securenet.vpn.ui.scanner.ScannerFragment
 import com.securenet.vpn.ui.servers.ServersFragment
@@ -63,6 +64,7 @@ class MainActivity : AppCompatActivity(), PermissionRequestHost {
             val fragment: Fragment = when (item.itemId) {
                 R.id.nav_servers -> ServersFragment()
                 R.id.nav_scanner -> ScannerFragment()
+                R.id.nav_history -> HistoryFragment()
                 R.id.nav_settings -> SettingsFragment()
                 else -> DashboardFragment()
             }

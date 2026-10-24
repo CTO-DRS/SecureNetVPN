@@ -94,4 +94,20 @@ class AppContainer(context: Context) {
     val speedTestEngine: com.securenet.vpn.intelligence.SpeedTestEngine by lazy {
         com.securenet.vpn.intelligence.SpeedTestEngine()
     }
+
+    // ------------------------------------------------------------------
+    // v1.2: DNS Shield + smart rules + insights
+    // ------------------------------------------------------------------
+
+    val dnsShieldEngine: com.securenet.vpn.intelligence.DnsShieldEngine by lazy {
+        com.securenet.vpn.intelligence.DnsShieldEngine()
+    }
+
+    val networkTrustEngine: com.securenet.vpn.intelligence.NetworkTrustEngine by lazy {
+        com.securenet.vpn.intelligence.NetworkTrustEngine()
+    }
+
+    val smartInsightsEngine: com.securenet.vpn.intelligence.SmartInsightsEngine by lazy {
+        com.securenet.vpn.intelligence.SmartInsightsEngine()
+    }
 }

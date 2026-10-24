@@ -144,6 +144,30 @@ class SecurePrefs(context: Context) {
         get() = prefs.getString(KEY_LAST_SCAN_JSON, null)
         set(value) = prefs.edit().putString(KEY_LAST_SCAN_JSON, value).apply()
 
+    // ------------------------------------------------------------------
+    // v1.2: DNS Shield + smart network rules
+    // ------------------------------------------------------------------
+
+    /** DNS Shield: filter DNS through blocking resolvers + local blocklist. */
+    var dnsShieldEnabled: Boolean
+        get() = prefs.getBoolean(KEY_DNS_SHIELD, false)
+        set(value) = prefs.edit().putBoolean(KEY_DNS_SHIELD, value).apply()
+
+    /** Lifetime count of locally blocked lookups (shown on the dashboard). */
+    var dnsShieldBlocked: Long
+        get() = prefs.getLong(KEY_DNS_SHIELD_BLOCKED, 0L)
+        set(value) = prefs.edit().putLong(KEY_DNS_SHIELD_BLOCKED, value).apply()
+
+    /** Smart rules: auto-connect on untrusted networks. */
+    var smartRulesEnabled: Boolean
+        get() = prefs.getBoolean(KEY_SMART_RULES, false)
+        set(value) = prefs.edit().putBoolean(KEY_SMART_RULES, value).apply()
+
+    /** JSON list of trusted network fingerprints. */
+    var trustedNetworks: String
+        get() = prefs.getString(KEY_TRUSTED_NETWORKS, "[]") ?: "[]"
+        set(value) = prefs.edit().putString(KEY_TRUSTED_NETWORKS, value).apply()
+
     fun clearLogsMarker(): Boolean {
         prefs.getString(KEY_LOG_FILE, null)?.let { return true }
         return false
@@ -187,6 +211,10 @@ class SecurePrefs(context: Context) {
         private const val KEY_SPEED_LAST = "speed_test_last"
         private const val KEY_SPEED_HISTORY = "speed_test_history"
         private const val KEY_LATENCY_CACHE = "latency_cache"
+        private const val KEY_DNS_SHIELD = "dns_shield_enabled"
+        private const val KEY_DNS_SHIELD_BLOCKED = "dns_shield_blocked"
+        private const val KEY_SMART_RULES = "smart_rules_enabled"
+        private const val KEY_TRUSTED_NETWORKS = "trusted_networks"
 
         const val SPLIT_OFF = 0
         const val SPLIT_ALLOW_ONLY = 1

@@ -67,9 +67,17 @@ class DashboardFragment : Fragment() {
             }
         }
 
+        // v1.2: DNS Shield + network trust interactions
+        binding.switchDnsShield.setOnCheckedChangeListener { _, checked ->
+            viewModel.setDnsShield(checked)
+            renderShieldStatus(viewModel.dnsShield.value)
+        }
+        binding.btnTrustToggle.setOnClickListener { viewModel.toggleCurrentNetworkTrust() }
+
         observeState()
         observeStats()
         observeIntelligence()
+        observeV12()
     }
 
     private fun onPowerPressed() {
@@ -196,6 +204,113 @@ class DashboardFragment : Fragment() {
         }
     }
 
+    /** v1.2: DNS Shield + network trust + smart insights rendering. */
+    private fun observeV12() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.dnsShield.collect { ui ->
+                    binding.switchDnsShield.setOnCheckedChangeListener(null)
+                    binding.switchDnsShield.isChecked = ui.enabled
+                    binding.switchDnsShield.setOnCheckedChangeListener { _, checked ->
+                        viewModel.setDnsShield(checked)
+                        renderShieldStatus(viewModel.dnsShield.value)
+                    }
+                    renderShieldStatus(ui)
+                }
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.trust.collect { ui ->
+                    if (ui == null) return@collect
+                    binding.tvTrustStatus.text = getString(
+                        R.string.trust_status,
+                        transportLabel(ui.transport),
+                        getString(
+                            if (ui.trusted) R.string.trust_is_trusted
+                            else R.string.trust_not_trusted
+                        )
+                    )
+                    binding.btnTrustToggle.setText(
+                        if (ui.trusted) R.string.trust_unmark else R.string.trust_mark
+                    )
+                }
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.insights.collect { insights ->
+                    renderInsights(insights)
+                }
+            }
+        }
+    }
+
+    private fun renderShieldStatus(ui: DashboardViewModel.ShieldUi) {
+        binding.tvDnsShieldStatus.text = if (ui.enabled) {
+            getString(R.string.shield_dns_on, formatCount(ui.blocked))
+        } else {
+            getString(R.string.shield_dns_off)
+        }
+    }
+
+    private fun renderInsights(insights: List<com.securenet.vpn.intelligence.SmartInsightsEngine.Insight>) {
+        binding.insightsContainer.removeAllViews()
+        binding.tvInsightsAllGood.visibility =
+            if (insights.isEmpty()) View.VISIBLE else View.GONE
+        insights.forEach { insight ->
+            val tv = TextView(requireContext()).apply {
+                setText(
+                    when (insight.key) {
+                        "threats" -> R.string.insight_threats
+                        "kill_switch" -> R.string.insight_kill_switch
+                        "dns_shield" -> R.string.insight_dns_shield
+                        "scan_missing" -> R.string.insight_scan_missing
+                        "scan_stale" -> R.string.insight_scan_stale
+                        "smart_rules" -> R.string.insight_smart_rules
+                        else -> R.string.insight_auto_launch
+                    }
+                )
+                setTextColor(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        when (insight.severity) {
+                            com.securenet.vpn.intelligence.SmartInsightsEngine.Severity.HIGH ->
+                                R.color.status_failed
+                            com.securenet.vpn.intelligence.SmartInsightsEngine.Severity.MEDIUM ->
+                                R.color.status_connecting
+                            else -> R.color.on_glass_secondary
+                        }
+                    )
+                )
+                textSize = 12.5f
+                setLineSpacing(0f, 1.1f)
+                compoundDrawablePadding = resources.getDimensionPixelSize(
+                    com.securenet.vpn.R.dimen.spacing_xs
+                )
+                setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    com.securenet.vpn.R.drawable.ic_dot_active, 0, 0, 0
+                )
+            }
+            binding.insightsContainer.addView(tv)
+        }
+    }
+
+    private fun transportLabel(transport: String): String = getString(
+        when (transport) {
+            "wifi" -> R.string.trust_transport_wifi
+            "cellular" -> R.string.trust_transport_cellular
+            "vpn" -> R.string.trust_transport_vpn
+            else -> R.string.trust_transport_other
+        }
+    )
+
+    private fun formatCount(count: Long): String = when {
+        count >= 1_000_000 -> String.format(Locale.US, "%.1fM", count / 1_000_000.0)
+        count >= 1_000 -> String.format(Locale.US, "%.1fK", count / 1_000.0)
+        else -> count.toString()
+    }
+
     private fun render(state: ConnectionState) {
         val (statusRes, colorRes) = when (state) {
             ConnectionState.CONNECTED ->
@@ -299,6 +414,9 @@ class DashboardFragment : Fragment() {
         }
         // Keep the on-device intelligence fresh.
         viewModel.refreshSecurityScore()
+        viewModel.refreshDnsShield()
+        viewModel.refreshTrust()
+        viewModel.refreshInsights()
     }
 
     override fun onDestroyView() {

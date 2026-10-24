@@ -196,6 +196,16 @@
                         android:id="@+id/switchAutoLaunch"
                         style="@style/SettingSwitch" />
                 </LinearLayout>
+
+                <LinearLayout style="@style/SettingRow" android:id="@+id/rowSmartRules">
+                    <LinearLayout style="@style/SettingTextColumn">
+                        <TextView style="@style/SettingTitle" android:text="@string/settings_smart_rules" />
+                        <TextView style="@style/SettingDesc" android:text="@string/settings_smart_rules_desc" />
+                    </LinearLayout>
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/switchSmartRules"
+                        style="@style/SettingSwitch" />
+                </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -239,6 +249,16 @@
                     </LinearLayout>
                     <com.google.android.material.materialswitch.MaterialSwitch
                         android:id="@+id/switchDnsCache"
+                        style="@style/SettingSwitch" />
+                </LinearLayout>
+
+                <LinearLayout style="@style/SettingRow" android:id="@+id/rowDnsShield">
+                    <LinearLayout style="@style/SettingTextColumn">
+                        <TextView style="@style/SettingTitle" android:text="@string/settings_dns_shield" />
+                        <TextView style="@style/SettingDesc" android:text="@string/settings_dns_shield_desc" />
+                    </LinearLayout>
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/switchDnsShield"
                         style="@style/SettingSwitch" />
                 </LinearLayout>
 

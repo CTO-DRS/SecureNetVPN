@@ -57,7 +57,13 @@ class VpnRepositoryImpl(
                 server = server,
                 wgSettings = settings,
                 mtu = mtuOptimizer.recommendedMtu(useIpv6 = ipv6),
-                dnsServers = listOf(server.dnsPrimary, server.dnsSecondary),
+                // v1.2: when the shield is on, hand the tunnel filtering
+                // resolvers so ad/tracker domains die at the network level.
+                dnsServers = if (securePrefs.dnsShieldEnabled) {
+                    com.securenet.vpn.intelligence.DnsShieldEngine.SHIELD_DNS_V4
+                } else {
+                    listOf(server.dnsPrimary, server.dnsSecondary)
+                },
                 localAddress = server.localAddressV4,
                 localPrefix = server.localPrefixV4
             )

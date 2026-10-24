@@ -178,4 +178,55 @@
     <string name="speed_label_up">Up</string>
     <string name="speed_btn_run">Run speed test</string>
     <string name="speed_btn_running">Testing…</string>
+
+    <!-- v1.2: History tab -->
+    <string name="tab_history">History</string>
+    <string name="history_title">Connection history</string>
+    <string name="history_meta">%1$d events logged · encrypted on your device</string>
+    <string name="history_meta_zero">No events yet — your first connection will appear here</string>
+    <string name="history_empty">No sessions yet. Activate protection to start the log.</string>
+    <string name="history_session_open">Session in progress</string>
+    <string name="history_session_ok">Session ended</string>
+    <string name="history_session_failed">Session failed</string>
+    <string name="history_unknown_server">Unknown server</string>
+    <string name="history_usage_title">Daily usage</string>
+    <string name="history_usage_bytes">Down %1$s · Up %2$s</string>
+    <string name="history_usage_time">Connected %1$s</string>
+
+    <!-- v1.2: DNS Shield -->
+    <string name="shield_dns_title">DNS Shield</string>
+    <string name="shield_dns_off">Off — ads and trackers unfiltered</string>
+    <string name="shield_dns_on">On · %1$s blocked</string>
+    <string name="settings_dns_shield">DNS Shield</string>
+    <string name="settings_dns_shield_desc">Block ads and trackers at the DNS level</string>
+
+    <!-- v1.2: Network trust -->
+    <string name="trust_title">Network trust</string>
+    <string name="trust_status">%1$s · %2$s</string>
+    <string name="trust_mark">Trust this network</string>
+    <string name="trust_unmark">Remove trust</string>
+    <string name="trust_is_trusted">trusted</string>
+    <string name="trust_not_trusted">not trusted</string>
+    <string name="trust_transport_wifi">Wi-Fi</string>
+    <string name="trust_transport_cellular">Mobile data</string>
+    <string name="trust_transport_vpn">VPN</string>
+    <string name="trust_transport_other">Other network</string>
+    <string name="settings_smart_rules">Smart network rules</string>
+    <string name="settings_smart_rules_desc">Auto-connect on untrusted networks</string>
+
+    <!-- v1.2: Smart insights -->
+    <string name="insight_title">Smart insights</string>
+    <string name="insight_all_good">Everything looks great — no recommendations right now</string>
+    <string name="insight_threats">Suspicious apps found — open the scanner and resolve them</string>
+    <string name="insight_kill_switch">Enable the kill switch so traffic dies with the tunnel</string>
+    <string name="insight_dns_shield">Turn on DNS Shield to block ads and trackers</string>
+    <string name="insight_scan_missing">Run a device scan to complete your protection profile</string>
+    <string name="insight_scan_stale">Your last scan is old — run a fresh one</string>
+    <string name="insight_smart_rules">Enable Smart Rules to auto-connect on untrusted networks</string>
+    <string name="insight_auto_launch">Enable connect-on-launch for instant protection</string>
+
+    <!-- v1.2: Quick connect widget -->
+    <string name="widget_connect">Tap to connect</string>
+    <string name="widget_connected">Protected</string>
+    <string name="widget_setup">Open app to set up</string>
 </resources>

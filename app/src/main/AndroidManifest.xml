@@ -102,6 +102,18 @@
             </intent-filter>
         </service>
 
+        <!-- v1.2: home-screen quick connect widget -->
+        <receiver
+            android:name=".widget.QuickConnectWidgetProvider"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/quick_connect_widget_info" />
+        </receiver>
+
         <!-- v1.1: per-app language persistence (pre-API 33 backport) -->
         <service
             android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"

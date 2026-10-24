@@ -30,7 +30,9 @@ class SettingsViewModel(
         val languageTag: String = "",
         val killSwitch: Boolean = false,
         val autoLaunch: Boolean = false,
-        val splitTunnelLabel: String = ""
+        val splitTunnelLabel: String = "",
+        val dnsShield: Boolean = false,
+        val smartRules: Boolean = false
     )
 
     private val _ui = MutableStateFlow(load())
@@ -58,7 +60,9 @@ class SettingsViewModel(
             languageTag = securePrefs.languageTag,
             killSwitch = securePrefs.killSwitchEnabled,
             autoLaunch = securePrefs.autoConnectOnLaunch,
-            splitTunnelLabel = splitTunnelLabel()
+            splitTunnelLabel = splitTunnelLabel(),
+            dnsShield = securePrefs.dnsShieldEnabled,
+            smartRules = securePrefs.smartRulesEnabled
         )
     }
 
@@ -123,6 +127,18 @@ class SettingsViewModel(
     fun setAutoLaunch(enabled: Boolean) {
         securePrefs.autoConnectOnLaunch = enabled
         _ui.value = _ui.value.copy(autoLaunch = enabled)
+    }
+
+    /** v1.2: DNS Shield toggle (blocklist + filtering tunnel resolvers). */
+    fun setDnsShield(enabled: Boolean) {
+        securePrefs.dnsShieldEnabled = enabled
+        _ui.value = _ui.value.copy(dnsShield = enabled)
+    }
+
+    /** v1.2: Smart Network Rules (auto-connect on untrusted networks). */
+    fun setSmartRules(enabled: Boolean) {
+        securePrefs.smartRulesEnabled = enabled
+        _ui.value = _ui.value.copy(smartRules = enabled)
     }
 
     fun refreshSplitTunnelLabel() {

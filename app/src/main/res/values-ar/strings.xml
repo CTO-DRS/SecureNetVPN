@@ -178,4 +178,55 @@
     <string name="speed_label_up">رفع</string>
     <string name="speed_btn_run">ابدأ اختبار السرعة</string>
     <string name="speed_btn_running">جارٍ الاختبار…</string>
+
+    <!-- v1.2: سجل الاتصالات -->
+    <string name="tab_history">السجل</string>
+    <string name="history_title">سجل الاتصالات</string>
+    <string name="history_meta">%1$d حدث مسجل · مشفر على جهازك</string>
+    <string name="history_meta_zero">لا أحداث بعد — أول اتصال سيظهر هنا</string>
+    <string name="history_empty">لا جلسات بعد. فعّل الحماية لبدء السجل.</string>
+    <string name="history_session_open">جلسة جارية الآن</string>
+    <string name="history_session_ok">انتهت الجلسة</string>
+    <string name="history_session_failed">فشلت الجلسة</string>
+    <string name="history_unknown_server">خادم غير معروف</string>
+    <string name="history_usage_title">الاستخدام اليومي</string>
+    <string name="history_usage_bytes">تنزيل %1$s · رفع %2$s</string>
+    <string name="history_usage_time">وقت الاتصال %1$s</string>
+
+    <!-- v1.2: درع DNS -->
+    <string name="shield_dns_title">درع DNS</string>
+    <string name="shield_dns_off">غير مفعّل — الإعلانات والمتتبعات غير محجوبة</string>
+    <string name="shield_dns_on">مفعّل · %1$s محجوب</string>
+    <string name="settings_dns_shield">درع DNS</string>
+    <string name="settings_dns_shield_desc">حجب الإعلانات والمتتبعات على مستوى DNS</string>
+
+    <!-- v1.2: الثقة بالشبكة -->
+    <string name="trust_title">الثقة بالشبكة</string>
+    <string name="trust_status">%1$s · %2$s</string>
+    <string name="trust_mark">وثق هذه الشبكة</string>
+    <string name="trust_unmark">إزالة الثقة</string>
+    <string name="trust_is_trusted">موثوقة</string>
+    <string name="trust_not_trusted">غير موثوقة</string>
+    <string name="trust_transport_wifi">شبكة Wi-Fi</string>
+    <string name="trust_transport_cellular">بيانات الجوال</string>
+    <string name="trust_transport_vpn">شبكة VPN</string>
+    <string name="trust_transport_other">شبكة أخرى</string>
+    <string name="settings_smart_rules">القواعد الذكية للشبكات</string>
+    <string name="settings_smart_rules_desc">اتصال تلقائي عند الشبكات غير الموثوقة</string>
+
+    <!-- v1.2: التوصيات الذكية -->
+    <string name="insight_title">توصيات ذكية</string>
+    <string name="insight_all_good">كل شيء ممتاز — لا توصيات حالياً</string>
+    <string name="insight_threats">وُجدت تطبيقات مشتبه بها — افتح الماسح وتعامل معها</string>
+    <string name="insight_kill_switch">فعّل مفتاح القتل ليتوقف الاتصال فور سقوط النفق</string>
+    <string name="insight_dns_shield">فعّل درع DNS لحجب الإعلانات والمتتبعات</string>
+    <string name="insight_scan_missing">شغّل فحصاً أمنياً للجهاز لاستكمال ملف حمايتك</string>
+    <string name="insight_scan_stale">آخر فحص قديم — أعد الفحص للتأكد</string>
+    <string name="insight_smart_rules">فعّل القواعد الذكية للاتصال التلقائي على الشبكات غير الموثوقة</string>
+    <string name="insight_auto_launch">فعّل الاتصال التلقائي عند فتح التطبيق لحماية فورية</string>
+
+    <!-- v1.2: ودجت الاتصال السريع -->
+    <string name="widget_connect">اضغط للاتصال</string>
+    <string name="widget_connected">محمي الآن</string>
+    <string name="widget_setup">افتح التطبيق للإعداد</string>
 </resources>

@@ -74,6 +74,17 @@ class SettingsFragment : Fragment() {
             viewModel.setAutoLaunch(checked)
         }
 
+        // v1.2: smart rules + DNS shield
+        binding.switchSmartRules.isChecked = ui.smartRules
+        binding.switchSmartRules.setOnCheckedChangeListener { _, checked ->
+            viewModel.setSmartRules(checked)
+        }
+
+        binding.switchDnsShield.isChecked = ui.dnsShield
+        binding.switchDnsShield.setOnCheckedChangeListener { _, checked ->
+            viewModel.setDnsShield(checked)
+        }
+
         binding.rowSplitTunnel.setOnClickListener {
             SplitTunnelDialogFragment().show(parentFragmentManager, "split_tunnel")
         }

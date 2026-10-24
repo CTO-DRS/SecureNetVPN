@@ -76,8 +76,9 @@ class SecureNetVpnService : VpnService() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
-            VpnNotificationManager.ACTION_DISCONNECT -> {
-                tearDown(reason = "notification_action")
+            VpnNotificationManager.ACTION_DISCONNECT,
+            ACTION_DISCONNECT_WIDGET -> {
+                tearDown(reason = "stop_action")
                 return START_NOT_STICKY
             }
             VpnNotificationManager.ACTION_CONNECT -> {
@@ -278,7 +279,7 @@ class SecureNetVpnService : VpnService() {
     private fun startNetworkWatcher() {
         monitorJob?.cancel()
         monitorJob = serviceScope.launch {
-            networkMonitor.networkChanges.collect {
+            networkMonitor.networkChanges.collect { snapshot ->
                 val current = stateFlow.value
                 if (current == ConnectionState.CONNECTED &&
                     (application as AppProvider).provideContainer().securePrefs.autoReconnect
@@ -289,7 +290,35 @@ class SecureNetVpnService : VpnService() {
                     delay(RECONNECT_BACKOFF_MS)
                     establishTunnel()
                 }
+                evaluateSmartRules(snapshot)
             }
+        }
+    }
+
+    /**
+     * v1.2: Smart Network Rules — when the device lands on an untrusted
+     * network while the tunnel is down and the user opted in, bring the
+     * tunnel back up from the cached server config.
+     */
+    private suspend fun evaluateSmartRules(snapshot: NetworkMonitor.NetworkSnapshot) {
+        val container = (application as AppProvider).provideContainer()
+        val prefs = container.securePrefs
+        if (!prefs.smartRulesEnabled) return
+        if (prefs.cachedSelectedServer == null) return
+        val decision = container.networkTrustEngine.decide(
+            fingerprint = com.securenet.vpn.intelligence.NetworkTrustEngine.Fingerprint(
+                transport = snapshot.transportDescription,
+                metered = snapshot.isMetered
+            ),
+            trusted = container.networkTrustEngine.trustListFromJson(prefs.trustedNetworks),
+            smartRulesEnabled = true,
+            connected = stateFlow.value == ConnectionState.CONNECTED ||
+                stateFlow.value == ConnectionState.CONNECTING,
+            hasInternet = snapshot.hasInternet
+        )
+        if (decision == com.securenet.vpn.intelligence.NetworkTrustEngine.Action.CONNECT) {
+            logger.appendEvent(ConnectionState.CONNECTING, activeServer?.id, "smart_rules_auto_connect")
+            connectFromCachedConfig()
         }
     }
 
@@ -380,6 +409,10 @@ class SecureNetVpnService : VpnService() {
         if (state != ConnectionState.CONNECTED && state != ConnectionState.CONNECTING) {
             notificationManager.updateState(state, activeServer?.name)
         }
+        // v1.2: keep the home-screen widget in sync with the tunnel state.
+        runCatching {
+            com.securenet.vpn.widget.QuickConnectWidgetProvider.pushState(applicationContext)
+        }
     }
 
     private fun publishStats(stats: ConnectionStats) {
@@ -439,6 +472,9 @@ class SecureNetVpnService : VpnService() {
     companion object {
         private const val EXTRA_TUNNEL_CONFIG = "tunnel_config"
         private const val DEFAULT_MTU = 1420
+
+        /** v1.2: widget stop action — kept separate from the notification one. */
+        const val ACTION_DISCONNECT_WIDGET = "com.securenet.vpn.action.WIDGET_DISCONNECT"
         private const val DEFAULT_LOCAL_V4 = "10.66.66.2"
         private const val INVALID_HANDLE = -1
         private const val SIMULATED_HANDLE = Int.MIN_VALUE

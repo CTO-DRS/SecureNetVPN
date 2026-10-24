@@ -13,6 +13,19 @@ malware auditing and network performance optimization in a single app.
 
 ---
 
+## 0. What's new in v1.2
+
+| Area | Addition |
+|---|---|
+| DNS Shield (ad/tracker blocker) | `intelligence/DnsShieldEngine.kt` — 170+ embedded domains across ads/trackers/malware categories, subdomain-suffix matching, blocked-lookup counter; when enabled the tunnel itself is handed filtering resolvers (AdGuard DNS) so blocking works device-wide at the network level |
+| Smart Network Rules | `intelligence/NetworkTrustEngine.kt` — privacy-friendly network fingerprinting (transport + metered, no SSID/location), user trust list, auto-connect on untrusted networks wired into `SecureNetVpnService.startNetworkWatcher()`; "Trust this network" card on the dashboard |
+| Smart Insights | `intelligence/SmartInsightsEngine.kt` — merges kill switch, DNS shield, scan freshness, smart rules and auto-launch into a severity-ordered, localized recommendation list rendered live on the dashboard |
+| Connection history | New **History** tab — `data/local/HistoryParser.kt` reconstructs VPN sessions (open/ok/failed) and per-day usage roll-ups from the encrypted JSONL session log; RecyclerView timeline UI |
+| Quick connect widget | `widget/QuickConnectWidgetProvider.kt` — home-screen one-tap connect/disconnect, gradient widget, state synced from every tunnel transition |
+| New tests | 38 new unit tests across 4 suites (DnsShieldEngine, NetworkTrustEngine, SmartInsightsEngine, HistoryParser) |
+
+---
+
 ## 0. What's new in v1.1
 
 | Area | Addition |
