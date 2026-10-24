@@ -36,7 +36,8 @@ class SettingsViewModel(
         val torOverVpn: Boolean = false,
         val torStatusLine: String = "",
         val scheduleSummary: String = "",
-        val multiHopSummary: String = ""
+        val multiHopSummary: String = "",
+        val alwaysOn: Boolean = false
     )
 
     private val _ui = MutableStateFlow(load())
@@ -70,7 +71,8 @@ class SettingsViewModel(
             torOverVpn = securePrefs.torOverVpnEnabled,
             torStatusLine = torStatusLine(),
             scheduleSummary = scheduleSummary(),
-            multiHopSummary = multiHopSummary()
+            multiHopSummary = multiHopSummary(),
+            alwaysOn = securePrefs.alwaysOnEnabled
         )
     }
 
@@ -180,6 +182,12 @@ class SettingsViewModel(
     /** v1.3: refresh the schedule summary after the dialog saved. */
     fun refreshScheduleSummary() {
         _ui.value = _ui.value.copy(scheduleSummary = scheduleSummary())
+    }
+
+    /** v1.6: Always-on VPN toggle (boot / launch / swipe-away persistence). */
+    fun setAlwaysOn(enabled: Boolean) {
+        securePrefs.alwaysOnEnabled = enabled
+        _ui.value = _ui.value.copy(alwaysOn = enabled)
     }
 
     fun refreshSplitTunnelLabel() {

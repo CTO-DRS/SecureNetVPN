@@ -251,6 +251,17 @@
                     android:textColor="@color/on_glass_secondary"
                     android:textSize="10sp" />
             </LinearLayout>
+
+            <!-- v1.6: per-server usage statistics -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnServerStats"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xs"
+                android:gravity="start|center_vertical"
+                android:text="@string/stats_per_server"
+                android:textColor="@color/on_glass_primary" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 

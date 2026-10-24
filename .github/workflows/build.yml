@@ -90,6 +90,8 @@ jobs:
 
             ### Features
             - WireGuard VPN (wireguard-go via JNI, foreground service, `vpn_channel` notifications)
+            - **NEW v1.6: Encrypted log backup — export/import the session log as a passphrase-protected .snback file (PBKDF2 120k + AES-256-GCM), non-destructive merge on restore**
+            - **NEW v1.6: Always-on VPN mode — tunnel re-arms after reboot, app launch and swipe-away + per-server usage statistics (time, sessions, failures, share bars)**
             - **NEW v1.5: WireGuard profile import — scan a QR code, open a `.conf` file, or paste the config; export any profile as a scannable QR / PNG**
             - **NEW v1.5: Monthly stats dashboard — stacked daily traffic bar chart, totals, active days, sessions & connected time, month navigation (all on-device, encrypted log)**
             - On-device intelligence: ML threat classifier, Smart Connect server recommender,
