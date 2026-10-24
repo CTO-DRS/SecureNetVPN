@@ -262,4 +262,25 @@
     <string name="day_fri">Fri</string>
     <string name="day_sat">Sat</string>
     <string name="day_sun">Sun</string>
+
+    <!-- v1.4: Multi-hop chain -->
+    <string name="settings_section_advanced">Advanced networking</string>
+    <string name="settings_multihop">Multi-hop chain (Double VPN)</string>
+    <string name="multihop_summary_off">Off — tap to build a chain</string>
+    <string name="multihop_summary_incomplete">incomplete</string>
+    <string name="multihop_dialog_title">Multi-hop chain</string>
+    <string name="multihop_enable">Enable multi-hop routing</string>
+    <string name="multihop_entry">Entry server (relay)</string>
+    <string name="multihop_exit">Exit server (where traffic leaves)</string>
+    <string name="multihop_explainer">Traffic path: device → entry (relay) → exit → internet. The inner tunnel MTU is reduced automatically for the extra hop.</string>
+    <string name="multihop_no_servers">No servers available yet — check your connection</string>
+    <string name="multihop_same_server">Entry and exit must be different servers</string>
+
+    <!-- v1.4: VPN Hotspot sharing -->
+    <string name="settings_hotspot">VPN Hotspot sharing</string>
+    <string name="hotspot_summary_off">Off — tap to open tethering settings</string>
+    <string name="hotspot_summary_active">Active · %1$s</string>
+    <string name="hotspot_protected">clients ride the VPN</string>
+    <string name="hotspot_unprotected">WARNING: enable kill switch</string>
+    <string name="hotspot_unsupported">Tethering not supported on this device</string>
 </resources>

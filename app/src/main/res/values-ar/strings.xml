@@ -262,4 +262,25 @@
     <string name="day_fri">جمع</string>
     <string name="day_sat">سبت</string>
     <string name="day_sun">أحد</string>
+
+    <!-- v1.4: سلسلة الخوادم -->
+    <string name="settings_section_advanced">إعدادات الشبكة المتقدمة</string>
+    <string name="settings_multihop">القفزة المتعددة (Double VPN)</string>
+    <string name="multihop_summary_off">مغلقة — اضغط لبناء سلسلة</string>
+    <string name="multihop_summary_incomplete">غير مكتملة</string>
+    <string name="multihop_dialog_title">سلسلة القفزات المتعددة</string>
+    <string name="multihop_enable">تفعيل التوجيه متعدد القفزات</string>
+    <string name="multihop_entry">الخادم المدخل (مُمرِّر)</string>
+    <string name="multihop_exit">الخادم المخرج (نقطة خروج اتصالك)</string>
+    <string name="multihop_explainer">مسار الاتصال: الجهاز → المدخل (مُمرِّر) → المخرج → الإنترنت. تُخفَّض MTU للنفق الداخلي تلقائياً لتعويض القفزة الإضافية.</string>
+    <string name="multihop_no_servers">لا توجد خوادم بعد — تحقق من اتصالك</string>
+    <string name="multihop_same_server">يجب أن يختلف المدخل عن المخرج</string>
+
+    <!-- v1.4: مشاركة VPN عبر Hotspot -->
+    <string name="settings_hotspot">مشاركة VPN عبر Hotspot</string>
+    <string name="hotspot_summary_off">مغلقة — اضغط لفتح إعدادات التوصيل</string>
+    <string name="hotspot_summary_active">نشطة · %1$s</string>
+    <string name="hotspot_protected">الأجهزة المتصلة تمر عبر الـ VPN</string>
+    <string name="hotspot_unprotected">تحذير: فعّل مفتاح القتل</string>
+    <string name="hotspot_unsupported">التوصيل غير مدعوم على هذا الجهاز</string>
 </resources>

@@ -12,3 +12,4 @@ app/build
 go/libwg/libwgcore
 *.so
 !gradle/wrapper/gradle-wrapper.jar
+.kotlin/

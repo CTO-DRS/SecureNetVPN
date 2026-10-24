@@ -182,6 +182,15 @@ class SecurePrefs(context: Context) {
         get() = prefs.getString(KEY_SCHEDULE, "") ?: ""
         set(value) = prefs.edit().putString(KEY_SCHEDULE, value).apply()
 
+    // ------------------------------------------------------------------
+    // v1.4: Multi-hop chain + hotspot sharing
+    // ------------------------------------------------------------------
+
+    /** JSON-encoded MultiHopChain (enabled + entry/exit server payloads). */
+    var multiHopChain: String
+        get() = prefs.getString(KEY_MULTI_HOP, "") ?: ""
+        set(value) = prefs.edit().putString(KEY_MULTI_HOP, value).apply()
+
     fun clearLogsMarker(): Boolean {
         prefs.getString(KEY_LOG_FILE, null)?.let { return true }
         return false
@@ -231,6 +240,7 @@ class SecurePrefs(context: Context) {
         private const val KEY_TRUSTED_NETWORKS = "trusted_networks"
         private const val KEY_TOR_ENABLED = "tor_over_vpn_enabled"
         private const val KEY_SCHEDULE = "connection_schedule_json"
+        private const val KEY_MULTI_HOP = "multihop_chain_json"
 
         const val SPLIT_OFF = 0
         const val SPLIT_ALLOW_ONLY = 1

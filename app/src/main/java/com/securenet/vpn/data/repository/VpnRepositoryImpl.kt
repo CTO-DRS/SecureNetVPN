@@ -39,12 +39,34 @@ class VpnRepositoryImpl(
 
         // The service owns MTU computation (auto-tuning + WireGuard overhead).
         val ipv6 = server.supportsIpv6
+
+        // v1.4: multi-hop chain rewrite — the entry server becomes the
+        // transport relay, the exit server owns the peer key and DNS.
+        val chain = com.securenet.vpn.multihop.MultiHopChain.fromJson(securePrefs.multiHopChain)
+        val hopPlan = if (chain.enabled) {
+            com.securenet.vpn.multihop.MultiHopEngine.plan(chain.entryServer(), chain.exitServer())
+        } else {
+            null
+        }
+        val effectiveServer = hopPlan?.exit ?: server
+        val effectiveIpv6 = effectiveServer.supportsIpv6
+        val effectiveMtu = if (hopPlan != null) {
+            com.securenet.vpn.multihop.MultiHopEngine.innerMtu(
+                mtuOptimizer.recommendedMtu(useIpv6 = effectiveIpv6)
+            )
+        } else {
+            mtuOptimizer.recommendedMtu(useIpv6 = effectiveIpv6)
+        }
+        if (hopPlan != null) {
+            logger.appendCustom("multihop_active", hopPlan.label)
+        }
+
         val settings = KeyUtils.buildWgUserspaceSettings(
             privateKeyBase64 = obtainDevicePrivateKey(),
-            peerPublicKeyBase64 = server.publicKey,
-            endpointHost = server.endpointHost,
-            endpointPort = server.endpointPort,
-            allowedIps = if (ipv6) {
+            peerPublicKeyBase64 = effectiveServer.publicKey,
+            endpointHost = hopPlan?.relayHost ?: effectiveServer.endpointHost,
+            endpointPort = hopPlan?.relayPort ?: effectiveServer.endpointPort,
+            allowedIps = if (effectiveIpv6) {
                 listOf(KeyUtils.ROUTE_ALL_V4, KeyUtils.ROUTE_ALL_V6)
             } else {
                 listOf(KeyUtils.ROUTE_ALL_V4)
@@ -54,23 +76,23 @@ class VpnRepositoryImpl(
         return try {
             SecureNetVpnService.start(
                 context = context,
-                server = server,
+                server = effectiveServer,
                 wgSettings = settings,
-                mtu = mtuOptimizer.recommendedMtu(useIpv6 = ipv6),
+                mtu = effectiveMtu,
                 // v1.2: when the shield is on, hand the tunnel filtering
                 // resolvers so ad/tracker domains die at the network level.
                 dnsServers = if (securePrefs.dnsShieldEnabled) {
                     com.securenet.vpn.intelligence.DnsShieldEngine.SHIELD_DNS_V4
                 } else {
-                    listOf(server.dnsPrimary, server.dnsSecondary)
+                    listOf(effectiveServer.dnsPrimary, effectiveServer.dnsSecondary)
                 },
-                localAddress = server.localAddressV4,
-                localPrefix = server.localPrefixV4
+                localAddress = effectiveServer.localAddressV4,
+                localPrefix = effectiveServer.localPrefixV4
             )
-            securePrefs.cachedSelectedServer = server.toVpnServerJson()
+            securePrefs.cachedSelectedServer = effectiveServer.toVpnServerJson()
             Result.success(Unit)
         } catch (e: Exception) {
-            logger.appendEvent(ConnectionState.FAILED, server.id, e.message)
+            logger.appendEvent(ConnectionState.FAILED, effectiveServer.id, e.message)
             Result.failure(e)
         }
     }

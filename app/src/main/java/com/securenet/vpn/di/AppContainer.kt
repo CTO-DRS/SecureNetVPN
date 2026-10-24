@@ -118,4 +118,12 @@ class AppContainer(context: Context) {
     val torOverVpnManager: com.securenet.vpn.tor.TorOverVpnManager by lazy {
         com.securenet.vpn.tor.TorOverVpnManager(context)
     }
+
+    // ------------------------------------------------------------------
+    // v1.4: Hotspot sharing
+    // ------------------------------------------------------------------
+
+    val hotspotShareManager: com.securenet.vpn.hotspot.HotspotShareManager by lazy {
+        com.securenet.vpn.hotspot.HotspotShareManager(context)
+    }
 }

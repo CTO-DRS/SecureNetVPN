@@ -105,6 +105,19 @@ class SettingsFragment : Fragment() {
         }
         binding.tvScheduleSummary.text = ui.scheduleSummary
 
+        // v1.4: multi-hop + hotspot sharing
+        binding.rowMultiHop.setOnClickListener {
+            MultiHopDialogFragment().show(parentFragmentManager, "multihop_dialog")
+        }
+        binding.tvMultiHopState.text = ui.multiHopSummary
+
+        binding.rowHotspot.setOnClickListener {
+            val container = (requireActivity().application as
+                com.securenet.vpn.di.AppProvider).provideContainer()
+            container.hotspotShareManager.openTetheringSettings()
+        }
+        refreshHotspotState()
+
         binding.rowSplitTunnel.setOnClickListener {
             SplitTunnelDialogFragment().show(parentFragmentManager, "split_tunnel")
         }
@@ -187,6 +200,28 @@ class SettingsFragment : Fragment() {
         // v1.3: refresh schedule summary after the editor dialog saved.
         viewModel.refreshScheduleSummary()
         binding.tvScheduleSummary.text = viewModel.ui.value.scheduleSummary
+        // v1.4: refresh multi-hop summary after the editor dialog saved.
+        viewModel.refreshMultiHopSummary()
+        binding.tvMultiHopState.text = viewModel.ui.value.multiHopSummary
+        refreshHotspotState()
+ }
+
+    /** v1.4: live tether state for the hotspot row. */
+    private fun refreshHotspotState() {
+        val container = (requireActivity().application as
+            com.securenet.vpn.di.AppProvider).provideContainer()
+        val hotspot = container.hotspotShareManager
+        val tetherActive = hotspot.refresh()
+        val vpnUp = com.securenet.vpn.service.SecureNetVpnService.currentState() ==
+            com.securenet.vpn.data.model.ConnectionState.CONNECTED
+        binding.tvHotspotState.text = when {
+            !hotspot.isTetheringSupported() -> getString(R.string.hotspot_unsupported)
+            tetherActive -> getString(
+                R.string.hotspot_summary_active,
+                getString(if (vpnUp) R.string.hotspot_protected else R.string.hotspot_unprotected)
+            )
+            else -> getString(R.string.hotspot_summary_off)
+        }
     }
 
     override fun onDestroyView() {
