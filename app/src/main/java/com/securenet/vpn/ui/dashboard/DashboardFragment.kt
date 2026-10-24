@@ -290,7 +290,7 @@ class DashboardFragment : Fragment() {
                     com.securenet.vpn.R.dimen.spacing_xs
                 )
                 setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    com.securenet.vpn.R.drawable.ic_dot_active, 0, 0, 0
+                    R.drawable.dot_active, 0, 0, 0
                 )
             }
             binding.insightsContainer.addView(tv)
