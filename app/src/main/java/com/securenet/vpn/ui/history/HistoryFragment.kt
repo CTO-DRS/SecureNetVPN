@@ -10,6 +10,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.securenet.vpn.R
 import com.securenet.vpn.databinding.FragmentHistoryBinding
 import kotlinx.coroutines.launch
 

@@ -94,7 +94,7 @@ class QuickConnectWidgetProvider : AppWidgetProvider() {
                 val action = if (active) {
                     SecureNetVpnService.ACTION_DISCONNECT_WIDGET
                 } else {
-                    SecureNetVpnService.ACTION_CONNECT
+                    com.securenet.vpn.service.VpnNotificationManager.ACTION_CONNECT
                 }
                 val intent = Intent(context, SecureNetVpnService::class.java).setAction(action)
                 PendingIntent.getService(context, 0, intent, flags)
