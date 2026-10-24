@@ -35,7 +35,8 @@ class SettingsViewModel(
         val smartRules: Boolean = false,
         val torOverVpn: Boolean = false,
         val torStatusLine: String = "",
-        val scheduleSummary: String = ""
+        val scheduleSummary: String = "",
+        val multiHopSummary: String = ""
     )
 
     private val _ui = MutableStateFlow(load())
@@ -68,7 +69,8 @@ class SettingsViewModel(
             smartRules = securePrefs.smartRulesEnabled,
             torOverVpn = securePrefs.torOverVpnEnabled,
             torStatusLine = torStatusLine(),
-            scheduleSummary = scheduleSummary()
+            scheduleSummary = scheduleSummary(),
+            multiHopSummary = multiHopSummary()
         )
     }
 
@@ -82,6 +84,16 @@ class SettingsViewModel(
             securePrefs.connectionSchedule
         )
         return com.securenet.vpn.schedule.ConnectionScheduleEngine.describe(schedule)
+    }
+
+    /** v1.4: multi-hop chain summary for the settings row. */
+    fun multiHopSummary(): String = com.securenet.vpn.multihop.MultiHopEngine.describe(
+        com.securenet.vpn.multihop.MultiHopChain.fromJson(securePrefs.multiHopChain)
+    )
+
+    /** v1.4: recompute after the chain editor dialog saved. */
+    fun refreshMultiHopSummary() {
+        _ui.value = _ui.value.copy(multiHopSummary = multiHopSummary())
     }
 
     fun splitTunnelLabel(): String {

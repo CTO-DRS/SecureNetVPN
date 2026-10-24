@@ -201,10 +201,35 @@ class SecureNetVpnService : VpnService() {
             .wasConnectedBeforeShutdown = true
 
         orchestrateTorMode()
+        guardHotspotClients()
 
         notificationManager.updateState(ConnectionState.CONNECTED, server.name)
         startStatsSampler()
         startNetworkWatcher()
+    }
+
+    /**
+     * v1.4: VPN Hotspot leak guard. When the phone shares its connection
+     * over a hotspot, every client rides this tunnel — if the kill switch
+     * is off, a silent tunnel drop would expose all of them. The guard
+     * records the risk in the session log so the user can audit it.
+     */
+    private fun guardHotspotClients() {
+        val container = (application as AppProvider).provideContainer()
+        val hotspot = container.hotspotShareManager
+        val tetherActive = hotspot.refresh()
+        val risk = com.securenet.vpn.hotspot.HotspotShare.leakRisk(
+            tetherActive = tetherActive,
+            vpnConnected = true,
+            killSwitchEnabled = container.securePrefs.killSwitchEnabled
+        )
+        when (risk) {
+            com.securenet.vpn.hotspot.HotspotLeakRisk.HIGH ->
+                logger.appendCustom("hotspot_leak_risk", "high_enable_kill_switch")
+            com.securenet.vpn.hotspot.HotspotLeakRisk.LOW ->
+                logger.appendCustom("hotspot_shared", "clients_protected")
+            com.securenet.vpn.hotspot.HotspotLeakRisk.NONE -> Unit
+        }
     }
 
     /**
@@ -417,16 +442,58 @@ class SecureNetVpnService : VpnService() {
             return
         }
         activeServer = server
+
+        // v1.4: multi-hop on the cached path — swap endpoint to the entry
+        // relay, peer keys to the exit server, shrink MTU for the extra hop.
+        val chain = com.securenet.vpn.multihop.MultiHopChain.fromJson(
+            container.securePrefs.multiHopChain
+        )
+        val hopPlan = if (chain.enabled) {
+            com.securenet.vpn.multihop.MultiHopEngine.plan(
+                chain.entryServer(), chain.exitServer()
+            )
+        } else {
+            null
+        }
+        val effectiveServer = hopPlan?.exit ?: server
+        if (hopPlan != null) {
+            activeServer = effectiveServer
+            logger.appendCustom("multihop_active", hopPlan.label)
+        }
+
         // Rebuild settings from the cached server; private key stays encrypted.
-        val settings = buildCachedSettings(server)
+        val settings = if (hopPlan != null) {
+            val privateKey = container.securePrefs.devicePrivateKey ?: run {
+                publishState(ConnectionState.FAILED, "no_cached_key")
+                stopSelf()
+                return
+            }
+            KeyUtils.buildWgUserspaceSettings(
+                privateKeyBase64 = privateKey,
+                peerPublicKeyBase64 = hopPlan.exit.publicKey,
+                endpointHost = hopPlan.relayHost,
+                endpointPort = hopPlan.relayPort,
+                allowedIps = if (hopPlan.exit.supportsIpv6) {
+                    listOf(KeyUtils.ROUTE_ALL_V4, KeyUtils.ROUTE_ALL_V6)
+                } else {
+                    listOf(KeyUtils.ROUTE_ALL_V4)
+                }
+            )
+        } else {
+            buildCachedSettings(server)
+        }
         if (settings == null) {
             publishState(ConnectionState.FAILED, "no_cached_key")
             stopSelf()
             return
         }
         activeSettings = settings
-        activeMtu = DEFAULT_MTU
-        activeDnsServers = listOf(server.dnsPrimary, server.dnsSecondary)
+        activeMtu = if (hopPlan != null) {
+            com.securenet.vpn.multihop.MultiHopEngine.innerMtu(DEFAULT_MTU)
+        } else {
+            DEFAULT_MTU
+        }
+        activeDnsServers = listOf(effectiveServer.dnsPrimary, effectiveServer.dnsSecondary)
         establishTunnel()
     }
 
