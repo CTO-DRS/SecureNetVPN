@@ -1,0 +1,32 @@
+package com.securenet.vpn.service
+
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import com.securenet.vpn.di.AppProvider
+
+/**
+ * Restores the tunnel after a reboot when auto-connect is enabled and the
+ * session was active before shutdown. Foreground-service starts are permitted
+ * from BOOT_COMPLETED as long as the notification is shown immediately.
+ */
+class BootCompletedReceiver : BroadcastReceiver() {
+
+    override fun onReceive(context: Context, intent: Intent) {
+        if (intent.action != Intent.ACTION_BOOT_COMPLETED) return
+
+        val container = (context.applicationContext as AppProvider).provideContainer()
+        val prefs = container.securePrefs
+
+        if (!prefs.autoConnectOnBoot || !prefs.wasConnectedBeforeShutdown) return
+
+        val go = Intent(context, SecureNetVpnService::class.java)
+            .setAction(VpnNotificationManager.ACTION_CONNECT)
+        goAsync()
+        try {
+            context.startForegroundService(go)
+        } catch (_: Exception) {
+            // If the OS refuses (rare OEM policy), the user reconnects manually.
+        }
+    }
+}

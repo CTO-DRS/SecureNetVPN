@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Certificate pinning (HPKP-style) for SecureNet API traffic.
+
+  Pins below are PLACEHOLDERS for the bootstrap build. Production pins are
+  delivered via the remote-config endpoint (RemoteConfigRepository) and are
+  enforced at the OkHttp layer with CertificatePinner, so a pin rotation
+  never requires an app update. Keep this file as a defense-in-depth floor.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">api.securenet-vpn.example.com</domain>
+        <pin-set expiration="2027-10-24">
+            <!-- Primary: intermediate CA (placeholder SHA-256 pin) -->
+            <pin digest="SHA-256">kXN5jGyfFeco1Gp3pCeDh2VvTLI1mVS7utLPPKVNYmA=</pin>
+            <!-- Backup: leaf key pinned for emergency rotation -->
+            <pin digest="SHA-256">grX4Ta9HpZx6tSHkmCrvpApTQGo67CYDnvprLg5yRME=</pin>
+        </pin-set>
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </domain-config>
+</network-security-config>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand palette: gradient anchors from the design spec -->
+    <color name="brand_primary">#1A2A6C</color>
+    <color name="brand_secondary">#11998E</color>
+    <color name="gradient_start">#1A2A6C</color>
+    <color name="gradient_end">#11998E</color>
+
+    <!-- Glass-morphism surfaces on the branded gradient -->
+    <color name="glass_fill">#26FFFFFF</color>
+    <color name="glass_fill_strong">#33FFFFFF</color>
+    <color name="glass_stroke">#40FFFFFF</color>
+    <color name="on_glass_primary">#FFFFFF</color>
+    <color name="on_glass_secondary">#C8FFFFFF</color>
+
+    <!-- Power button -->
+    <color name="power_button_fill">#2EFFFFFF</color>
+    <color name="power_button_stroke">#59FFFFFF</color>
+    <color name="power_connected">#1DE9B6</color>
+    <color name="power_disconnected">#FFFFFF</color>
+
+    <!-- Status colors -->
+    <color name="status_connected">#2ECC9A</color>
+    <color name="status_connecting">#FFC46B</color>
+    <color name="status_disconnected">#B9C3D8</color>
+    <color name="status_failed">#FF6B6B</color>
+    <color name="status_reconnecting">#FFC46B</color>
+
+    <!-- Threat severity -->
+    <color name="threat_safe">#2ECC9A</color>
+    <color name="threat_low">#A8D96C</color>
+    <color name="threat_medium">#FFC46B</color>
+    <color name="threat_high">#FF9A5B</color>
+    <color name="threat_critical">#FF6B6B</color>
+
+    <!-- Neutrals -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#0B0F1A</color>
+    <color name="text_primary_dark_bg">#F4F6FB</color>
+    <color name="text_secondary_dark_bg">#B9C3D8</color>
+    <color name="surface_light">#FFFFFF</color>
+    <color name="surface_dark">#10182B</color>
+    <color name="background_light">#F5F7FC</color>
+    <color name="background_dark">#0B0F1A</color>
+
+    <!-- Launcher background -->
+    <color name="ic_launcher_background">#1A2A6C</color>
+</resources>

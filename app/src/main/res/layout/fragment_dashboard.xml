@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_lg">
+
+        <TextView
+            android:id="@+id/tvStatusPill"
+            style="@style/TextAppearance.SecureNet.StatusPill"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/bg_status_pill"
+            android:paddingStart="@dimen/spacing_md"
+            android:paddingEnd="@dimen/spacing_md"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            tools:text="Disconnected" />
+
+        <!-- Activation button with Lottie connection animation layered behind it -->
+        <FrameLayout
+            android:layout_width="@dimen/power_button_size"
+            android:layout_height="@dimen/power_button_size"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/spacing_md">
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/connectionAnimation"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                app:lottie_autoPlay="false"
+                app:lottie_loop="true" />
+
+            <FrameLayout
+                android:layout_width="@dimen/power_button_inner"
+                android:layout_height="@dimen/power_button_inner"
+                android:layout_gravity="center"
+                android:background="@drawable/bg_power_button_outer">
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/btnPower"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:contentDescription="@string/btn_activate"
+                    android:src="@drawable/ic_power"
+                    app:backgroundTint="@color/power_button_fill"
+                    app:borderWidth="1dp"
+                    app:elevation="0dp"
+                    app:fabCustomSize="@dimen/power_button_fab"
+                    app:maxImageSize="56dp"
+                    app:rippleColor="@color/glass_fill_strong"
+                    app:tint="@color/power_disconnected" />
+            </FrameLayout>
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/tvConnectionTip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/spacing_sm"
+            android:gravity="center"
+            android:text="@string/dashboard_tip_disconnected"
+            android:textColor="@color/on_glass_secondary"
+            android:textSize="13sp" />
+
+        <!-- Current server glass card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardCurrentServer"
+            style="@style/Widget.SecureNet.GlassCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_lg">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <FrameLayout
+                    android:layout_width="@dimen/server_icon_size"
+                    android:layout_height="@dimen/server_icon_size"
+                    android:background="@drawable/bg_icon_circle">
+
+                    <ImageView
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:layout_gravity="center"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_globe" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/spacing_md"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/label_current_server"
+                        android:textColor="@color/on_glass_secondary"
+                        android:textSize="11sp"
+                        android:letterSpacing="0.08"
+                        android:textAllCaps="true" />
+
+                    <TextView
+                        android:id="@+id/tvCurrentServer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="@string/no_server_selected"
+                        android:textColor="@color/on_glass_primary"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_arrow_right"
+                    app:tint="@color/on_glass_secondary" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Live stats glass card -->
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.SecureNet.GlassCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_md">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:baselineAligned="false"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    style="@style/StatColumn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
+                    <ImageView
+                        style="@style/StatIcon"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_arrow_right"
+                        android:rotation="90" />
+
+                    <TextView
+                        android:id="@+id/tvDownload"
+                        style="@style/StatValue"
+                        android:text="@string/speed_zero" />
+
+                    <TextView
+                        style="@style/StatLabel"
+                        android:text="@string/label_download" />
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/StatColumn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
+                    <ImageView
+                        style="@style/StatIcon"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_arrow_right"
+                        android:rotation="-90" />
+
+                    <TextView
+                        android:id="@+id/tvUpload"
+                        style="@style/StatValue"
+                        android:text="@string/speed_zero" />
+
+                    <TextView
+                        style="@style/StatLabel"
+                        android:text="@string/label_upload" />
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/StatColumn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
+                    <ImageView
+                        style="@style/StatIcon"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_bolt" />
+
+                    <TextView
+                        android:id="@+id/tvDuration"
+                        style="@style/StatValue"
+                        android:text="@string/duration_zero" />
+
+                    <TextView
+                        style="@style/StatLabel"
+                        android:text="@string/label_duration" />
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/StatColumn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
+                    <ImageView
+                        style="@style/StatIcon"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_dns" />
+
+                    <TextView
+                        android:id="@+id/tvDnsCache"
+                        style="@style/StatValue"
+                        android:text="@string/dns_cache_idle" />
+
+                    <TextView
+                        style="@style/StatLabel"
+                        android:text="@string/label_dns_cache" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Battery saver hint -->
+        <TextView
+            android:id="@+id/tvBatteryMode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/spacing_md"
+            android:drawablePadding="@dimen/spacing_xs"
+            android:gravity="center"
+            android:text="@string/dashboard_battery_mode_on"
+            android:textColor="@color/on_glass_secondary"
+            android:textSize="12sp"
+            android:visibility="gone"
+            app:drawableStartCompat="@drawable/ic_battery"
+            app:drawableTint="@color/on_glass_secondary"
+            tools:visibility="visible" />
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

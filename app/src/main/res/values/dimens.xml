@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="spacing_xs">4dp</dimen>
+    <dimen name="spacing_sm">8dp</dimen>
+    <dimen name="spacing_md">16dp</dimen>
+    <dimen name="spacing_lg">24dp</dimen>
+    <dimen name="spacing_xl">32dp</dimen>
+    <dimen name="corner_glass">24dp</dimen>
+    <dimen name="power_button_size">210dp</dimen>
+    <dimen name="power_button_inner">150dp</dimen>
+    <dimen name="power_button_fab">122dp</dimen>
+    <dimen name="server_icon_size">44dp</dimen>
+    <dimen name="threat_icon_size">36dp</dimen>
+    <dimen name="stat_value_text">16sp</dimen>
+    <dimen name="stat_label_text">11sp</dimen>
+</resources>

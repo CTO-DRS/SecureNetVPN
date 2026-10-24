@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App -->
+    <string name="app_name">SecureNet VPN</string>
+
+    <!-- Bottom navigation -->
+    <string name="tab_dashboard">Dashboard</string>
+    <string name="tab_servers">Servers</string>
+    <string name="tab_scanner">Scanner</string>
+    <string name="tab_settings">Settings</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_status_disconnected">Disconnected</string>
+    <string name="dashboard_status_connecting">Connecting…</string>
+    <string name="dashboard_status_connected">Protected</string>
+    <string name="dashboard_status_disconnecting">Disconnecting…</string>
+    <string name="dashboard_status_reconnecting">Reconnecting…</string>
+    <string name="dashboard_status_failed">Connection failed</string>
+    <string name="btn_activate">Activate Protection</string>
+    <string name="btn_disconnect">Disconnect</string>
+    <string name="label_current_server">Current server</string>
+    <string name="label_download">Download</string>
+    <string name="label_upload">Upload</string>
+    <string name="label_duration">Session</string>
+    <string name="label_dns_cache">DNS cache</string>
+    <string name="dashboard_tip_disconnected">Tap the shield to encrypt all traffic with WireGuard.</string>
+    <string name="dashboard_tip_connected">Your device is fully protected. Traffic is tunneled end-to-end.</string>
+    <string name="dashboard_battery_mode_on">Battery saver active – update rate reduced</string>
+    <string name="speed_zero">0 B/s</string>
+    <string name="duration_zero">00:00:00</string>
+    <string name="dns_cache_idle">idle</string>
+    <string name="no_server_selected">No server selected</string>
+    <string name="error_no_server">Select a server first</string>
+    <string name="error_vpn_permission">VPN permission is required to activate protection</string>
+    <string name="vpn_permission_needed">SecureNet needs your consent to create the VPN tunnel</string>
+    <string name="reconnecting_network_change">Network changed – re-establishing tunnel</string>
+
+    <!-- Servers -->
+    <string name="server_title">Server Locations</string>
+    <string name="server_select">Select</string>
+    <string name="server_selected">Selected</string>
+    <string name="server_latency_ms">%1$s ms</string>
+    <string name="server_load">Load %1$d%%</string>
+    <string name="server_best">Recommended</string>
+    <string name="server_refresh">Refresh list</string>
+    <string name="server_empty">No servers available. Pull the latest list from Settings.</string>
+
+    <!-- Scanner -->
+    <string name="scanner_title">Device Security</string>
+    <string name="scanner_summary_safe">No threats found. Your device looks clean.</string>
+    <string name="scanner_summary_threats">%1$d potential issue(s) found</string>
+    <string name="scanner_btn_scan">Scan device</string>
+    <string name="scanner_scanning">Scanning…</string>
+    <string name="scanner_apps_scanned">%1$d apps · %2$d files analyzed</string>
+    <string name="scanner_no_threats">All clear</string>
+    <string name="scanner_last_scan">Last scan: %1$s</string>
+    <string name="scanner_root_detected">Root access detected on this device</string>
+    <string name="threat_level_safe">Safe</string>
+    <string name="threat_level_low">Low risk</string>
+    <string name="threat_level_medium">Medium risk</string>
+    <string name="threat_level_high">High risk</string>
+    <string name="threat_level_critical">Critical</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_section_appearance">Appearance</string>
+    <string name="settings_theme">Theme</string>
+    <string name="theme_system">Follow system</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="settings_section_protection">Protection</string>
+    <string name="settings_battery_saver">Battery optimization mode</string>
+    <string name="settings_battery_saver_desc">Reduces stats polling and notification updates while connected</string>
+    <string name="settings_auto_boot">Auto-connect after reboot</string>
+    <string name="settings_auto_boot_desc">Restores the tunnel when the device starts</string>
+    <string name="settings_auto_reconnect">Auto-reconnect on network change</string>
+    <string name="settings_auto_reconnect_desc">Re-establishes the tunnel when Wi-Fi or mobile data switches</string>
+    <string name="settings_section_network">Network</string>
+    <string name="settings_dns_cache">Smart DNS cache</string>
+    <string name="settings_dns_cache_desc">Caches lookups with TTL to cut latency and DNS leaks</string>
+    <string name="settings_mtu_auto">Automatic MTU tuning</string>
+    <string name="settings_mtu_auto_desc">Binary-searches the path MTU for the fastest stable tunnel</string>
+    <string name="settings_section_data">Data and privacy</string>
+    <string name="settings_clear_logs">Clear connection logs</string>
+    <string name="settings_logs_cleared">Logs cleared</string>
+    <string name="settings_section_about">About</string>
+    <string name="settings_version">Version %1$s</string>
+    <string name="settings_protocol">Protocol: WireGuard® (wireguard-go userspace)</string>
+    <string name="settings_native_lib">Crypto core: %1$s</string>
+    <string name="settings_backend_unavailable">Go backend not loaded – simulation mode</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_get_started">Get Started</string>
+    <string name="onboarding_title_1">Military-grade privacy</string>
+    <string name="onboarding_desc_1">WireGuard® tunneling with ChaCha20-Poly1305 encrypts every packet leaving your device. No logs, no tracking, no compromise.</string>
+    <string name="onboarding_title_2">Scan before you trust</string>
+    <string name="onboarding_desc_2">The local security auditor reviews installed apps, permissions and files to flag malware, spyware and risky behavior – fully on-device.</string>
+    <string name="onboarding_title_3">Optimized for speed</string>
+    <string name="onboarding_desc_3">Smart DNS caching and automatic MTU tuning squeeze out maximum throughput and minimum latency on any network.</string>
+
+    <!-- Permission flow -->
+    <string name="rationale_continue">Continue</string>
+    <string name="rationale_not_now">Not now</string>
+    <string name="permission_denied_hint">You can enable it later from Settings &gt; Apps &gt; SecureNet VPN</string>
+    <string name="perm_notif_title">Connection notifications</string>
+    <string name="perm_notif_desc">A persistent notification keeps the tunnel alive and shows your protection status. Android requires this to run a VPN reliably.</string>
+    <string name="perm_storage_title">File scanning access</string>
+    <string name="perm_storage_desc">The security scanner checks downloaded files for known malware signatures. Your files never leave the device.</string>
+    <string name="perm_camera_title">Camera for QR setup</string>
+    <string name="perm_camera_desc">Scan WireGuard configuration QR codes to import tunnels instantly. The camera is used only while importing.</string>
+    <string name="perm_contacts_title">Contacts privacy audit</string>
+    <string name="perm_contacts_desc">The privacy audit checks whether any installed app is silently syncing your contacts to unknown servers. Contacts are analyzed locally only.</string>
+    <string name="perm_location_title">Wi-Fi network awareness</string>
+    <string name="perm_location_desc">Android requires location permission to read the current Wi-Fi name, which powers trusted-network auto-connect rules.</string>
+
+    <!-- Notifications -->
+    <string name="notification_channel_name">VPN status</string>
+    <string name="notification_channel_desc">Persistent status for the active VPN tunnel</string>
+    <string name="notif_title_connecting">Securing your connection…</string>
+    <string name="notif_title_connected">Protected via %1$s</string>
+    <string name="notif_title_disconnected">SecureNet disconnected</string>
+    <string name="notif_action_disconnect">Disconnect</string>
+    <string name="notif_action_connect">Connect</string>
+
+    <!-- Misc -->
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="close">Close</string>
+    <string name="scan_complete">Scan complete</string>
+    <string name="battery_request_title">Disable battery optimization?</string>
+    <string name="battery_request_desc">Android may pause the VPN in the background. Excluding SecureNet from battery optimization keeps the tunnel stable.</string>
+</resources>

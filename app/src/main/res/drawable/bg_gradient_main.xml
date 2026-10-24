@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Branded gradient background: #1A2A6C (deep indigo) to #11998E (teal) -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <gradient
+        android:angle="315"
+        android:startColor="@color/gradient_start"
+        android:centerColor="#144E79"
+        android:endColor="@color/gradient_end"
+        android:type="linear" />
+</shape>
