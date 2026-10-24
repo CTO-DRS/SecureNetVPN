@@ -336,4 +336,38 @@
     <string name="stats_empty_month">لا يوجد استخدام مسجل في هذا الشهر</string>
     <string name="stats_caption_summary">المتوسط اليومي %1$s · %2$s يوم نشاط</string>
     <string name="stats_caption_day">%1$s %2$s — ↓ %3$s · ↑ %4$s</string>
+
+    <!-- v1.6: الاتصال الدائم -->
+    <string name="settings_section_persistence">الاستمرارية والنسخ الاحتياطي</string>
+    <string name="settings_always_on">الاتصال الدائم (Always-on)</string>
+    <string name="settings_always_on_desc">إعادة إنشاء النفق بعد إعادة التشغيل وفتح التطبيق وإغلاقه</string>
+    <string name="settings_always_on_hint">الاتصال الدائم مفعّل — سيتصل النفق تلقائياً بعد إعادة التشغيل وفتح التطبيق</string>
+
+    <!-- v1.6: النسخة الاحتياطية المشفرة -->
+    <string name="settings_export_backup">تصدير نسخة احتياطية مشفرة</string>
+    <string name="settings_export_backup_desc">حفظ سجل الجلسات في ملف .snback محمي بكلمة مرور</string>
+    <string name="settings_import_backup">استيراد نسخة احتياطية</string>
+    <string name="settings_import_backup_desc">استعادة ملف .snback — تُدمج الأحداث ولا يُحذف أي شيء</string>
+    <string name="backup_export_title">تصدير نسخة احتياطية مشفرة</string>
+    <string name="backup_import_title">استيراد نسخة احتياطية مشفرة</string>
+    <string name="backup_export_message">تُحمى النسخة الاحتياطية بكلمة مرور (PBKDF2 بمئة وعشرين ألف دورة + AES-256-GCM). اختر كلمة مرور قوية — لا يمكن استعادتها أو تغييرها.</string>
+    <string name="backup_import_message">أدخل كلمة المرور التي أُنشئت بها هذه النسخة. تُدمج أحداثها في السجل الحالي — لا يُحذف أي شيء.</string>
+    <string name="backup_passphrase_hint">كلمة المرور (8 أحرف على الأقل)</string>
+    <string name="backup_passphrase_confirm">تأكيد كلمة المرور</string>
+    <string name="backup_passphrase_too_short">يجب ألا تقل كلمة المرور عن 8 أحرف</string>
+    <string name="backup_passphrase_mismatch">كلمتا المرور غير متطابقتين</string>
+    <string name="backup_action_continue">متابعة</string>
+    <string name="backup_export_success">تم حفظ النسخة الاحتياطية — %1$d حدثاً مشفراً</string>
+    <string name="backup_export_failed">فشل تصدير النسخة الاحتياطية</string>
+    <string name="backup_import_success">تمت الاستعادة — %1$d حدثاً جديداً (تخطي %2$d مكرراً)</string>
+    <string name="backup_import_wrong_pass">كلمة المرور خاطئة أو الملف تالف</string>
+    <string name="backup_import_failed">فشل استيراد النسخة الاحتياطية</string>
+
+    <!-- v1.6: إحصاءات كل خادم -->
+    <string name="stats_per_server">إحصاءات كل خادم…</string>
+    <string name="server_stats_title">إحصاءات كل خادم</string>
+    <string name="server_stats_hint">زمن الاتصال والجلسات والإخفاقات لكل خادم، من السجل المشفر على هذا الجهاز.</string>
+    <string name="server_stats_empty">لا توجد جلسات خوادم مسجلة بعد</string>
+    <string name="server_stats_row_meta">%1$s جلسة · %2$s · %3$s إخفاق</string>
+    <string name="server_stats_last_used">آخر اتصال: %1$s</string>
 </resources>

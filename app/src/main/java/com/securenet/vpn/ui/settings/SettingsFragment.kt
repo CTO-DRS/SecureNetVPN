@@ -1,18 +1,29 @@
 package com.securenet.vpn.ui.settings
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.securenet.vpn.R
+import com.securenet.vpn.backup.LogBackupEngine
 import com.securenet.vpn.databinding.FragmentSettingsBinding
+import com.securenet.vpn.di.AppContainer
 import com.securenet.vpn.ui.splittunnel.SplitTunnelDialogFragment
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
-class SettingsFragment : Fragment() {
+class SettingsFragment : Fragment(), BackupDialogFragment.Host {
 
     private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding!!
@@ -117,6 +128,29 @@ class SettingsFragment : Fragment() {
             container.hotspotShareManager.openTetheringSettings()
         }
         refreshHotspotState()
+
+        // v1.6: Always-on VPN — tunnel re-arms after reboot / app launch /
+        // swipe-away without touching the pre-shutdown condition.
+        binding.switchAlwaysOn.isChecked = ui.alwaysOn
+        binding.switchAlwaysOn.setOnCheckedChangeListener { _, checked ->
+            viewModel.setAlwaysOn(checked)
+            if (checked) {
+                Toast.makeText(
+                    requireContext(), R.string.settings_always_on_hint, Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+
+        // v1.6: encrypted log backup (.snback) — passphrase first, then the
+        // system document picker handles storage without any permission.
+        binding.rowExportBackup.setOnClickListener {
+            BackupDialogFragment.newInstance(BackupDialogFragment.MODE_EXPORT)
+                .show(parentFragmentManager, "backup_export")
+        }
+        binding.rowImportBackup.setOnClickListener {
+            BackupDialogFragment.newInstance(BackupDialogFragment.MODE_IMPORT)
+                .show(parentFragmentManager, "backup_import")
+        }
 
         binding.rowSplitTunnel.setOnClickListener {
             SplitTunnelDialogFragment().show(parentFragmentManager, "split_tunnel")
@@ -226,6 +260,112 @@ class SettingsFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        pendingPassphrase.fill('\u0000')
         _binding = null
     }
+
+    // ----------------------------------------------------------------------
+    // v1.6: encrypted log backup (.snback)
+    // ----------------------------------------------------------------------
+
+    /** Held only between the passphrase dialog confirming and the picker returning. */
+    private var pendingPassphrase: CharArray = charArrayOf()
+
+    private val exportBackupLauncher = registerForActivityResult(
+        ActivityResultContracts.CreateDocument(LogBackupEngine.MIME_TYPE)
+    ) { uri: Uri? -> uri?.let { writeBackup(it) } }
+
+    private val importBackupLauncher = registerForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri: Uri? -> uri?.let { restoreBackup(it) } }
+
+    override fun onBackupPassphraseConfirmed(mode: String, passphrase: CharArray) {
+        pendingPassphrase = passphrase
+        if (mode == BackupDialogFragment.MODE_EXPORT) {
+            val stamp = SimpleDateFormat("yyyyMMdd_HHmm", Locale.US).format(Date())
+            exportBackupLauncher.launch(
+                "securenet-log-backup-$stamp${LogBackupEngine.FILE_EXTENSION}"
+            )
+        } else {
+            importBackupLauncher.launch(arrayOf("*/*"))
+        }
+    }
+
+    private fun writeBackup(uri: Uri) {
+        val container = appContainer()
+        val appCtx = requireContext().applicationContext
+        val passphrase = pendingPassphrase
+        pendingPassphrase = charArrayOf()
+        viewLifecycleOwner.lifecycleScope.launch {
+            val outcome = withContext(Dispatchers.IO) {
+                runCatching {
+                    val lines = container.connectionLogger.readAllLines()
+                    val bytes = LogBackupEngine.encode(lines, passphrase)
+                    appCtx.contentResolver.openOutputStream(uri)?.use { it.write(bytes) }
+                        ?: error("no output stream")
+                    passphrase.fill('\u0000')
+                    lines.size
+                }
+            }
+            outcome.onSuccess { count ->
+                Toast.makeText(
+                    appCtx,
+                    appCtx.getString(R.string.backup_export_success, count),
+                    Toast.LENGTH_LONG
+                ).show()
+            }.onFailure {
+                Toast.makeText(
+                    appCtx, R.string.backup_export_failed, Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+    }
+
+    private fun restoreBackup(uri: Uri) {
+        val container = appContainer()
+        val appCtx = requireContext().applicationContext
+        val passphrase = pendingPassphrase
+        pendingPassphrase = charArrayOf()
+        viewLifecycleOwner.lifecycleScope.launch {
+            val outcome = withContext(Dispatchers.IO) {
+                runCatching {
+                    val bytes = appCtx.contentResolver.openInputStream(uri)
+                        ?.use { it.readBytes() } ?: error("no input stream")
+                    val payload = LogBackupEngine.decode(bytes, passphrase)
+                    val merge = LogBackupEngine.merge(
+                        container.connectionLogger.readAllLines(),
+                        payload.eventLines
+                    )
+                    if (!container.connectionLogger.replaceAllLines(merge.mergedLines)) {
+                        error("log rewrite failed")
+                    }
+                    container.connectionLogger.appendCustom(
+                        "backup_restored",
+                        "added=${merge.added}; duplicates=${merge.duplicates}"
+                    )
+                    passphrase.fill('\u0000')
+                    merge
+                }
+            }
+            outcome.onSuccess { merge ->
+                Toast.makeText(
+                    appCtx,
+                    appCtx.getString(
+                        R.string.backup_import_success, merge.added, merge.duplicates
+                    ),
+                    Toast.LENGTH_LONG
+                ).show()
+            }.onFailure { error ->
+                val res = if (error is LogBackupEngine.BackupException) {
+                    R.string.backup_import_wrong_pass
+                } else {
+                    R.string.backup_import_failed
+                }
+                Toast.makeText(appCtx, res, Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private fun appContainer() =
+        (requireActivity().application as com.securenet.vpn.di.AppProvider).provideContainer()
 }

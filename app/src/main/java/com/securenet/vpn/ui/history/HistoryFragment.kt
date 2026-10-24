@@ -69,6 +69,12 @@ class HistoryFragment : Fragment() {
             }
         })
 
+        // v1.6: per-server usage statistics sheet.
+        binding.btnServerStats.setOnClickListener {
+            com.securenet.vpn.ui.stats.ServerStatsDialogFragment()
+                .show(parentFragmentManager, "server_stats")
+        }
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.ui.collect { ui ->

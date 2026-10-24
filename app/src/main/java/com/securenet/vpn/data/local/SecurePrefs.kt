@@ -200,6 +200,19 @@ class SecurePrefs(context: Context) {
         get() = prefs.getString(KEY_CUSTOM_SERVERS, "[]") ?: "[]"
         set(value) = prefs.edit().putString(KEY_CUSTOM_SERVERS, value).apply()
 
+    // ------------------------------------------------------------------
+    // v1.6: Always-on VPN
+    // ------------------------------------------------------------------
+
+    /**
+     * Always-on mode: the tunnel is re-established after reboot, on app
+     * launch and whenever the process is swiped away, without requiring
+     * the pre-shutdown state that [autoConnectOnBoot] checks.
+     */
+    var alwaysOnEnabled: Boolean
+        get() = prefs.getBoolean(KEY_ALWAYS_ON, false)
+        set(value) = prefs.edit().putBoolean(KEY_ALWAYS_ON, value).apply()
+
     fun clearLogsMarker(): Boolean {
         prefs.getString(KEY_LOG_FILE, null)?.let { return true }
         return false
@@ -251,6 +264,7 @@ class SecurePrefs(context: Context) {
         private const val KEY_SCHEDULE = "connection_schedule_json"
         private const val KEY_MULTI_HOP = "multihop_chain_json"
         private const val KEY_CUSTOM_SERVERS = "custom_servers_json"
+        private const val KEY_ALWAYS_ON = "always_on_enabled"
 
         const val SPLIT_OFF = 0
         const val SPLIT_ALLOW_ONLY = 1

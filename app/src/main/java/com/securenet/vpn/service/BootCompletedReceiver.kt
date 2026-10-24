@@ -21,7 +21,14 @@ class BootCompletedReceiver : BroadcastReceiver() {
         // v1.3: re-arm the connection-schedule tick after reboot.
         com.securenet.vpn.work.ScheduleWorker.syncFromPrefs(context.applicationContext)
 
-        if (!prefs.autoConnectOnBoot || !prefs.wasConnectedBeforeShutdown) return
+        // v1.6: Always-on VPN re-establishes the tunnel after a reboot even
+        // when the tunnel was down at shutdown; the legacy auto-connect path
+        // still requires the pre-shutdown state.
+        if (!prefs.alwaysOnEnabled &&
+            (!prefs.autoConnectOnBoot || !prefs.wasConnectedBeforeShutdown)
+        ) {
+            return
+        }
 
         val go = Intent(context, SecureNetVpnService::class.java)
             .setAction(VpnNotificationManager.ACTION_CONNECT)

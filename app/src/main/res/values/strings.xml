@@ -336,4 +336,38 @@
     <string name="stats_empty_month">No usage recorded in this month</string>
     <string name="stats_caption_summary">Daily average %1$s · %2$s active days</string>
     <string name="stats_caption_day">%1$s %2$s — ↓ %3$s · ↑ %4$s</string>
+
+    <!-- v1.6: Always-on VPN -->
+    <string name="settings_section_persistence">Persistence &amp; backup</string>
+    <string name="settings_always_on">Always-on VPN</string>
+    <string name="settings_always_on_desc">Re-establish the tunnel after reboot, app launch and swipe-away</string>
+    <string name="settings_always_on_hint">Always-on armed — the tunnel now re-connects automatically after reboots and app launches</string>
+
+    <!-- v1.6: encrypted log backup -->
+    <string name="settings_export_backup">Export encrypted backup</string>
+    <string name="settings_export_backup_desc">Save the session log as a passphrase-protected .snback file</string>
+    <string name="settings_import_backup">Import backup</string>
+    <string name="settings_import_backup_desc">Restore a .snback file — events are merged, nothing is deleted</string>
+    <string name="backup_export_title">Export encrypted backup</string>
+    <string name="backup_import_title">Import encrypted backup</string>
+    <string name="backup_export_message">The backup is protected with a passphrase (PBKDF2 120k + AES-256-GCM). Pick a strong passphrase — it cannot be recovered or changed.</string>
+    <string name="backup_import_message">Enter the passphrase this backup was created with. Its events are merged into the current history — nothing is deleted.</string>
+    <string name="backup_passphrase_hint">Passphrase (min 8 characters)</string>
+    <string name="backup_passphrase_confirm">Confirm passphrase</string>
+    <string name="backup_passphrase_too_short">Passphrase must be at least 8 characters</string>
+    <string name="backup_passphrase_mismatch">Passphrases do not match</string>
+    <string name="backup_action_continue">Continue</string>
+    <string name="backup_export_success">Backup saved — %1$d events encrypted</string>
+    <string name="backup_export_failed">Backup export failed</string>
+    <string name="backup_import_success">Backup restored — %1$d new events (skipped %2$d duplicates)</string>
+    <string name="backup_import_wrong_pass">Wrong passphrase or damaged backup file</string>
+    <string name="backup_import_failed">Backup import failed</string>
+
+    <!-- v1.6: per-server statistics -->
+    <string name="stats_per_server">Per-server usage…</string>
+    <string name="server_stats_title">Per-server statistics</string>
+    <string name="server_stats_hint">Connected time, sessions and failures per server, from the encrypted log on this device.</string>
+    <string name="server_stats_empty">No server sessions recorded yet</string>
+    <string name="server_stats_row_meta">%1$s sessions · %2$s · %3$s failures</string>
+    <string name="server_stats_last_used">Last: %1$s</string>
 </resources>

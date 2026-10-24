@@ -87,7 +87,12 @@ class MainActivity : AppCompatActivity(), PermissionRequestHost {
      */
     private fun maybeAutoConnectOnLaunch() {
         val container = (application as com.securenet.vpn.di.AppProvider).provideContainer()
-        if (!container.securePrefs.autoConnectOnLaunch) return
+        // v1.6: Always-on VPN implies connect-on-launch as well.
+        if (!container.securePrefs.autoConnectOnLaunch &&
+            !container.securePrefs.alwaysOnEnabled
+        ) {
+            return
+        }
         if (!hasEssentialPermissions()) return
         if (SecureNetVpnService.currentState() !=
             com.securenet.vpn.data.model.ConnectionState.DISCONNECTED

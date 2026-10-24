@@ -99,6 +99,45 @@ class ConnectionLogger(context: Context) : VpnEventLogger {
         }
     }
 
+    /**
+     * v1.6 — Rewrites the whole encrypted log (backup restore path).
+     * Writes to a temp EncryptedFile first and swaps it in only on success
+     * so a failure mid-restore never destroys the existing history.
+     *
+     * @return true when the replacement log is in place.
+     */
+    fun replaceAllLines(lines: List<String>): Boolean {
+        synchronized(lock) {
+            val tmp = File(logDir, "session_log_restore.enc")
+            return try {
+                if (tmp.exists()) tmp.delete()
+                val encrypted = EncryptedFile.Builder(
+                    appContext, tmp, masterKey,
+                    EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
+                ).build()
+                encrypted.openFileOutput().use { out ->
+                    lines.forEach { line ->
+                        out.write((line.trimEnd('\n', '\r') + "\n").toByteArray(Charsets.UTF_8))
+                    }
+                }
+                currentFile().delete()
+                if (!tmp.renameTo(currentFile())) {
+                    // Rename can fail across odd filesystems; fall back to copy.
+                    tmp.copyTo(currentFile(), overwrite = true)
+                    tmp.delete()
+                }
+                true
+            } catch (_: Exception) {
+                try {
+                    tmp.delete()
+                } catch (_: Exception) {
+                    // ignore
+                }
+                false
+            }
+        }
+    }
+
     fun logFileSizeBytes(): Long = currentFile().takeIf { it.exists() }?.length() ?: 0L
 
     private fun currentFile(): File = File(logDir, "session_log.enc")

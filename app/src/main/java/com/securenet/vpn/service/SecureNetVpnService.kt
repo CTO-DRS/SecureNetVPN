@@ -119,6 +119,22 @@ class SecureNetVpnService : VpnService() {
         }
     }
 
+    /**
+     * v1.6 — Always-on guard: when the app task is swiped away and the
+     * tunnel is down (OEMs sometimes drop the process with it), re-arm the
+     * session from the cached config instead of leaving the device bare.
+     * An established tunnel is left untouched — the foreground service
+     * survives task removal.
+     */
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        super.onTaskRemoved(rootIntent)
+        if (currentState() != ConnectionState.DISCONNECTED) return
+        val prefs = (application as AppProvider).provideContainer().securePrefs
+        if (!prefs.alwaysOnEnabled) return
+        logger.appendCustom("always_on_task_removed", "reconnect")
+        connectFromCachedConfig()
+    }
+
     // ------------------------------------------------------------------
     // Tunnel lifecycle
     // ------------------------------------------------------------------
