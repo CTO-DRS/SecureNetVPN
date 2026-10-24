@@ -3,7 +3,6 @@ package com.securenet.vpn.work
 import android.content.Context
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import java.util.concurrent.TimeUnit
@@ -25,24 +24,12 @@ object WorkScheduler {
             )
             .build()
 
-        val usageRequest = PeriodicWorkRequestBuilder<UsageStatsWorker>(24, TimeUnit.HOURS)
-            .setConstraints(
-                Constraints.Builder()
-                    .setRequiresBatteryNotLow(true)
-                    .setRequiredNetworkType(NetworkType.CONNECTED)
-                    .build()
-            )
-            .build()
-
         wm.enqueueUniquePeriodicWork(
             ConnectionLogWorker.UNIQUE_NAME,
             ExistingPeriodicWorkPolicy.KEEP,
             logRequest
         )
-        wm.enqueueUniquePeriodicWork(
-            UsageStatsWorker.UNIQUE_NAME,
-            ExistingPeriodicWorkPolicy.KEEP,
-            usageRequest
-        )
+        // v1.5: UsageStatsWorker removed — the VPN service flushes true deltas
+        // to the session log itself; a periodic worker would double-count.
     }
 }

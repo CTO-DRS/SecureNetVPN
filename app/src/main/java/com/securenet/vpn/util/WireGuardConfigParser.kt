@@ -21,6 +21,7 @@ object WireGuardConfigParser {
         val interfaceAddresses: List<String>,
         val interfaceDnsServers: List<String>,
         val peerPublicKey: String?,
+        val peerPresharedKey: String?,
         val peerEndpoint: String?,
         val peerAllowedIps: List<String>,
         val persistentKeepalive: Int?
@@ -37,6 +38,7 @@ object WireGuardConfigParser {
         var section = ""
         var privateKey: String? = null
         var peerKey: String? = null
+        var presharedKey: String? = null
         var endpoint: String? = null
         var keepalive: Int? = null
         val addresses = mutableListOf<String>()
@@ -67,13 +69,15 @@ object WireGuardConfigParser {
                     "privatekey" -> privateKey = value
                     "address" -> addresses += splitList(value)
                     "dns" -> if (!value.equals("0.0.0.0", true)) dnsServers += splitList(value)
-                    "listenport", "mtu", "table", "postup", "postdown", "preup", "predown" -> {
+                    "listenport", "mtu", "table", "postup", "postdown", "preup", "predown",
+                    "saveconfig", "fwmark" -> {
                         // Accepted but ignored: managed by the app's own logic.
                     }
                     else -> return ParseResult.Failure("Unknown Interface key at line ${index + 1}: $key")
                 }
                 SECTION_PEER -> when (key) {
                     "publickey" -> peerKey = value
+                    "presharedkey" -> presharedKey = value
                     "endpoint" -> endpoint = value
                     "allowedips" -> allowedIps += splitList(value)
                     "persistentkeepalive" -> keepalive = value.toIntOrNull()
@@ -92,12 +96,39 @@ object WireGuardConfigParser {
                 interfaceAddresses = addresses.toList(),
                 interfaceDnsServers = dnsServers.toList(),
                 peerPublicKey = peerKey,
+                peerPresharedKey = presharedKey,
                 peerEndpoint = endpoint,
                 peerAllowedIps = allowedIps.toList(),
                 persistentKeepalive = keepalive
             )
         )
     }
+
+    /**
+     * v1.5 — Serializes a parsed config back to the wg-quick dialect so it can
+     * be displayed as a QR code or saved as a .conf file. Round-trips with
+     * [parse]: parse(build(c)) reproduces the same fields.
+     */
+    fun build(config: ParsedConfig): String = buildString {
+        append("[Interface]\n")
+        config.interfacePrivateKey?.let { append("PrivateKey = ").append(it).append('\n') }
+        if (config.interfaceAddresses.isNotEmpty()) {
+            append("Address = ").append(config.interfaceAddresses.joinToString(", ")).append('\n')
+        }
+        if (config.interfaceDnsServers.isNotEmpty()) {
+            append("DNS = ").append(config.interfaceDnsServers.joinToString(", ")).append('\n')
+        }
+        append("\n[Peer]\n")
+        config.peerPublicKey?.let { append("PublicKey = ").append(it).append('\n') }
+        config.peerPresharedKey?.let { append("PresharedKey = ").append(it).append('\n') }
+        config.peerAllowedIps.takeIf { it.isNotEmpty() }?.let {
+            append("AllowedIPs = ").append(it.joinToString(", ")).append('\n')
+        }
+        config.peerEndpoint?.let { append("Endpoint = ").append(it).append('\n') }
+        config.persistentKeepalive?.let {
+            append("PersistentKeepalive = ").append(it).append('\n')
+        }
+    }.trimEnd() + "\n"
 
     private fun splitList(value: String): List<String> =
         value.split(',').map { it.trim() }.filter { it.isNotEmpty() }

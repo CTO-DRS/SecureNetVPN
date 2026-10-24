@@ -64,6 +64,21 @@
                     android:textStyle="bold"
                     android:visibility="gone"
                     tools:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/tvCustomBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/spacing_sm"
+                    android:background="@drawable/bg_status_pill"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="2dp"
+                    android:text="@string/server_custom_badge"
+                    android:textColor="@color/accent_amber"
+                    android:textSize="9sp"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
             </LinearLayout>
 
             <TextView

@@ -97,6 +97,63 @@ class ServersViewModel(
         _selectedId.value = server.id
     }
 
+    // ------------------------------------------------------------------
+    // v1.5: imported WireGuard profiles (QR / file / paste)
+    // ------------------------------------------------------------------
+
+    /** Persists a parsed import (with the user's display name) and selects it. */
+    fun saveImported(
+        entry: com.securenet.vpn.data.local.CustomServerStore.Entry,
+        displayName: String?
+    ) {
+        viewModelScope.launch {
+            val name = displayName?.takeIf { it.isNotBlank() } ?: entry.server.name
+            val named = entry.copy(
+                server = entry.server.copy(name = name, city = name)
+            )
+            val updated = com.securenet.vpn.data.local.CustomServerStore
+                .upsert(securePrefs.customServersJson, named)
+            securePrefs.customServersJson = updated
+            select(named.server)
+            refresh(forceRefresh = false)
+        }
+    }
+
+    /** Removes an imported profile; clears the selection if it pointed at it. */
+    fun deleteCustom(serverId: String) {
+        viewModelScope.launch {
+            securePrefs.customServersJson =
+                com.securenet.vpn.data.local.CustomServerStore
+                    .remove(securePrefs.customServersJson, serverId)
+            if (securePrefs.selectedServerId == serverId) {
+                securePrefs.selectedServerId = null
+                securePrefs.cachedSelectedServer = null
+            }
+            refresh(forceRefresh = false)
+        }
+    }
+
+    /**
+     * Builds the wg-quick payload behind the profile's QR code. Generates the
+     * device identity on first use so exports work before any connection.
+     */
+    fun qrPayloadFor(server: VpnServer): String? {
+        if (securePrefs.devicePrivateKey.isNullOrBlank()) {
+            val random = java.security.SecureRandom()
+            val bytes = ByteArray(com.securenet.vpn.util.KeyUtils.KEY_SIZE)
+                .also { random.nextBytes(it) }
+            securePrefs.devicePrivateKey = com.securenet.vpn.util.KeyUtils
+                .toBase64Key(com.securenet.vpn.util.KeyUtils.clampPrivateKey(bytes))
+        }
+        val privateKey = com.securenet.vpn.util.TunnelKeyResolver
+            .privateKeyFor(securePrefs, server.id) ?: return null
+        val psk = com.securenet.vpn.util.TunnelKeyResolver
+            .presharedKeyFor(securePrefs, server.id)
+        return runCatching {
+            com.securenet.vpn.util.WgConfigBuilder.buildConf(server, privateKey, psk)
+        }.getOrNull()
+    }
+
     class Factory(private val container: AppContainer) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = ServersViewModel(

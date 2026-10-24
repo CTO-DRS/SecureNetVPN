@@ -66,6 +66,16 @@ class SecureNetVpnService : VpnService() {
     private val lastRx = MutableStateFlow(0L)
     private val lastTx = MutableStateFlow(0L)
 
+    /**
+     * v1.5 — per-session usage accounting. The stats sampler already computes
+     * device-wide TrafficStats deltas each tick; those deltas are accumulated
+     * here and flushed to the encrypted log every [USAGE_FLUSH_MS] so the
+     * monthly dashboard sums true deltas (never cumulative snapshots).
+     */
+    private var usageAccumRx = 0L
+    private var usageAccumTx = 0L
+    private var usageLastFlushAt = 0L
+
     override fun onCreate() {
         super.onCreate()
         val provider = application as AppProvider
@@ -273,6 +283,9 @@ class SecureNetVpnService : VpnService() {
             val startTx = totalTx()
             lastRx.value = startRx
             lastTx.value = startTx
+            usageAccumRx = 0L
+            usageAccumTx = 0L
+            usageLastFlushAt = System.currentTimeMillis()
             publishStats(
                 ConnectionStats(
                     rxBytes = startRx,
@@ -289,6 +302,11 @@ class SecureNetVpnService : VpnService() {
                 val txSpeed = ((tx - lastTx.value)).coerceAtLeast(0)
                 lastRx.value = rx
                 lastTx.value = tx
+
+                // v1.5: bank the true deltas for the monthly dashboard.
+                usageAccumRx += rxSpeed
+                usageAccumTx += txSpeed
+                maybeFlushUsage()
 
                 val current = statsFlow.value
                 publishStats(
@@ -391,6 +409,9 @@ class SecureNetVpnService : VpnService() {
     }
 
     private fun tearDownTunnelOnly() {
+        // v1.5: land the accumulated usage before the sampler dies so short
+        // sessions and reconnect cycles still reach the dashboard.
+        flushUsage()
         statsJob?.cancel()
         statsJob = null
         recoveryJob?.cancel()
@@ -462,6 +483,7 @@ class SecureNetVpnService : VpnService() {
         }
 
         // Rebuild settings from the cached server; private key stays encrypted.
+        // v1.5: imported profiles connect with their own PrivateKey/PSK.
         val settings = if (hopPlan != null) {
             val privateKey = container.securePrefs.devicePrivateKey ?: run {
                 publishState(ConnectionState.FAILED, "no_cached_key")
@@ -499,7 +521,8 @@ class SecureNetVpnService : VpnService() {
 
     private fun buildCachedSettings(server: VpnServer): String? {
         val container = (application as AppProvider).provideContainer()
-        val privateKey = container.securePrefs.devicePrivateKey ?: return null
+        val privateKey = com.securenet.vpn.util.TunnelKeyResolver
+            .privateKeyFor(container.securePrefs, server.id) ?: return null
         return KeyUtils.buildWgUserspaceSettings(
             privateKeyBase64 = privateKey,
             peerPublicKeyBase64 = server.publicKey,
@@ -509,7 +532,9 @@ class SecureNetVpnService : VpnService() {
                 listOf(KeyUtils.ROUTE_ALL_V4, KeyUtils.ROUTE_ALL_V6)
             } else {
                 listOf(KeyUtils.ROUTE_ALL_V4)
-            }
+            },
+            presharedKeyBase64 = com.securenet.vpn.util.TunnelKeyResolver
+                .presharedKeyFor(container.securePrefs, server.id)
         )
     }
 
@@ -540,6 +565,37 @@ class SecureNetVpnService : VpnService() {
 
     private fun totalRx(): Long = android.net.TrafficStats.getTotalRxBytes()
     private fun totalTx(): Long = android.net.TrafficStats.getTotalTxBytes()
+
+    /**
+     * v1.5: periodic usage flush — only meaningful while a session is live
+     * (usageLastFlushAt is armed by startStatsSampler). Appends the TRUE
+     * deltas accumulated since the last flush; HistoryParser re-aggregates
+     * per day by summing, so deltas are the only correct unit here.
+     */
+    private fun maybeFlushUsage() {
+        val now = System.currentTimeMillis()
+        if (now - usageLastFlushAt < USAGE_FLUSH_MS) return
+        flushUsage()
+    }
+
+    private fun flushUsage() {
+        if (usageLastFlushAt == 0L) return
+        val now = System.currentTimeMillis()
+        val seconds = ((now - usageLastFlushAt) / 1000L).coerceAtLeast(0)
+        if (usageAccumRx <= 0L && usageAccumTx <= 0L && seconds <= 0L) {
+            usageLastFlushAt = now
+            return
+        }
+        logger.appendUsage(
+            dayEpoch = now / DAY_MS,
+            rxBytes = usageAccumRx,
+            txBytes = usageAccumTx,
+            connectedSeconds = seconds
+        )
+        usageAccumRx = 0L
+        usageAccumTx = 0L
+        usageLastFlushAt = now
+    }
 
     /** Small routing constants kept separate for test readability. */
     private object KeyUtilsRoute {
@@ -582,6 +638,10 @@ class SecureNetVpnService : VpnService() {
     companion object {
         private const val EXTRA_TUNNEL_CONFIG = "tunnel_config"
         private const val DEFAULT_MTU = 1420
+        private const val DAY_MS = 24L * 60 * 60 * 1000
+
+        /** v1.5: dashboard usage flush cadence. */
+        private const val USAGE_FLUSH_MS = 60_000L
 
         /** v1.2: widget stop action — kept separate from the notification one. */
         const val ACTION_DISCONNECT_WIDGET = "com.securenet.vpn.action.WIDGET_DISCONNECT"

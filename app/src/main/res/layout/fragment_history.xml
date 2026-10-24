@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -23,6 +24,236 @@
         android:textColor="@color/on_glass_secondary"
         android:textSize="12sp" />
 
+    <!-- v1.5: monthly stats dashboard -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/statsCard"
+        style="@style/Widget.SecureNet.GlassCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_md"
+        app:rippleColor="@color/glass_fill_strong">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_md">
+
+            <!-- Month switcher -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/btnMonthPrev"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="@drawable/bg_icon_circle"
+                    android:contentDescription="@string/stats_prev_month"
+                    android:rotation="180"
+                    android:src="@drawable/ic_arrow_right"
+                    app:tint="@color/white" />
+
+                <TextView
+                    android:id="@+id/tvMonthTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textColor="@color/on_glass_primary"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    tools:text="October 2026" />
+
+                <ImageButton
+                    android:id="@+id/btnMonthNext"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="@drawable/bg_icon_circle"
+                    android:contentDescription="@string/stats_next_month"
+                    android:src="@drawable/ic_arrow_right"
+                    app:tint="@color/white" />
+            </LinearLayout>
+
+            <!-- Summary grid 2x2 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_sm"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvStatTotal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/on_glass_primary"
+                        android:textSize="@dimen/stat_value_text"
+                        android:textStyle="bold"
+                        tools:text="12.4 GB" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/stats_total"
+                        android:textColor="@color/on_glass_secondary"
+                        android:textSize="@dimen/stat_label_text" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvStatDownload"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/chart_rx"
+                        android:textSize="@dimen/stat_value_text"
+                        android:textStyle="bold"
+                        tools:text="10.1 GB" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/stats_download"
+                        android:textColor="@color/on_glass_secondary"
+                        android:textSize="@dimen/stat_label_text" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xs"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvStatUpload"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/chart_tx"
+                        android:textSize="@dimen/stat_value_text"
+                        android:textStyle="bold"
+                        tools:text="2.3 GB" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/stats_upload"
+                        android:textColor="@color/on_glass_secondary"
+                        android:textSize="@dimen/stat_label_text" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvStatSessions"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/on_glass_primary"
+                        android:textSize="@dimen/stat_value_text"
+                        android:textStyle="bold"
+                        tools:text="18 · 26h 40m" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/stats_sessions"
+                        android:textColor="@color/on_glass_secondary"
+                        android:textSize="@dimen/stat_label_text" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Daily stacked bar chart -->
+            <com.securenet.vpn.ui.stats.StatsBarChartView
+                android:id="@+id/chartDaily"
+                android:layout_width="match_parent"
+                android:layout_height="170dp"
+                android:layout_marginTop="@dimen/spacing_sm" />
+
+            <TextView
+                android:id="@+id/tvStatsEmpty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_sm"
+                android:gravity="center"
+                android:text="@string/stats_empty_month"
+                android:textColor="@color/on_glass_secondary"
+                android:textSize="13sp"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <!-- Caption: selected day / peak day / averages -->
+            <TextView
+                android:id="@+id/tvChartCaption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xs"
+                android:gravity="center"
+                android:textColor="@color/on_glass_secondary"
+                android:textSize="12sp"
+                tools:text="Peak: Oct 12 — 1.4 GB" />
+
+            <!-- Legend -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/spacing_xs"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_gravity="center_vertical"
+                    android:background="@color/chart_rx" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:text="@string/stats_download"
+                    android:textColor="@color/on_glass_secondary"
+                    android:textSize="10sp" />
+
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="@dimen/spacing_md"
+                    android:background="@color/chart_tx" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:text="@string/stats_upload"
+                    android:textColor="@color/on_glass_secondary"
+                    android:textSize="10sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerHistory"
         android:layout_width="match_parent"
@@ -45,6 +276,5 @@
         android:textColor="@color/on_glass_secondary"
         android:textSize="14sp"
         app:drawableStartCompat="@drawable/ic_history"
-        app:drawableTint="@color/on_glass_secondary"
-        xmlns:app="http://schemas.android.com/apk/res-auto" />
+        app:drawableTint="@color/on_glass_secondary" />
 </LinearLayout>
