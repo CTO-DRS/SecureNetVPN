@@ -62,7 +62,7 @@ class VpnRepositoryImpl(
         }
 
         val settings = KeyUtils.buildWgUserspaceSettings(
-            privateKeyBase64 = obtainDevicePrivateKey(),
+            privateKeyBase64 = resolvePrivateKey(effectiveServer, hopPlan != null),
             peerPublicKeyBase64 = effectiveServer.publicKey,
             endpointHost = hopPlan?.relayHost ?: effectiveServer.endpointHost,
             endpointPort = hopPlan?.relayPort ?: effectiveServer.endpointPort,
@@ -70,6 +70,12 @@ class VpnRepositoryImpl(
                 listOf(KeyUtils.ROUTE_ALL_V4, KeyUtils.ROUTE_ALL_V6)
             } else {
                 listOf(KeyUtils.ROUTE_ALL_V4)
+            },
+            presharedKeyBase64 = if (hopPlan != null) {
+                null
+            } else {
+                com.securenet.vpn.util.TunnelKeyResolver
+                    .presharedKeyFor(securePrefs, effectiveServer.id)
             }
         )
 
@@ -121,7 +127,19 @@ class VpnRepositoryImpl(
      * On first activation a fresh key is generated (32 secure-random bytes,
      * RFC 7748 clamped) and stored in EncryptedSharedPreferences; the
      * matching public key is derived inside the wireguard-go backend.
+     *
+     * v1.5: imported profiles use the PrivateKey from their wg-quick file —
+     * unless multi-hop is active, where the chain re-encrypts with the
+     * device identity and only the exit's peer key matters.
      */
+    private fun resolvePrivateKey(server: VpnServer, multiHopActive: Boolean): String {
+        if (!multiHopActive) {
+            com.securenet.vpn.util.TunnelKeyResolver
+                .privateKeyFor(securePrefs, server.id)?.let { return it }
+        }
+        return obtainDevicePrivateKey()
+    }
+
     private fun obtainDevicePrivateKey(): String {
         securePrefs.devicePrivateKey?.let { return it }
         val random = java.security.SecureRandom()

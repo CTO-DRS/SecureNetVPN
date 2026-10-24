@@ -13,3 +13,7 @@ go/libwg/libwgcore
 *.so
 !gradle/wrapper/gradle-wrapper.jar
 .kotlin/
+
+# Native libs are rebuilt by CI (go/build-wireguard-go.sh)
+app/src/main/jniLibs/
+go/libwg/go.sum

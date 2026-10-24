@@ -57,15 +57,22 @@ object KeyUtils {
         endpointHost: String,
         endpointPort: Int,
         allowedIps: List<String>,
-        persistentKeepaliveSeconds: Int = 25
+        persistentKeepaliveSeconds: Int = 25,
+        presharedKeyBase64: String? = null
     ): String {
         require(isValidBase64Key(privateKeyBase64)) { "Invalid private key" }
         require(isValidBase64Key(peerPublicKeyBase64)) { "Invalid peer public key" }
         require(allowedIps.isNotEmpty()) { "At least one allowed_ip is required" }
+        if (presharedKeyBase64 != null) {
+            require(isValidBase64Key(presharedKeyBase64)) { "Invalid preshared key" }
+        }
 
         return buildString {
             append("private_key=").append(base64ToHex(privateKeyBase64)).append('\n')
             append("public_key=").append(base64ToHex(peerPublicKeyBase64)).append('\n')
+            if (presharedKeyBase64 != null) {
+                append("preshared_key=").append(base64ToHex(presharedKeyBase64)).append('\n')
+            }
             append("endpoint=").append(endpointHost).append(':').append(endpointPort).append('\n')
             allowedIps.forEach { append("allowed_ip=").append(it).append('\n') }
             append("persistent_keepalive_interval=").append(persistentKeepaliveSeconds).append('\n')

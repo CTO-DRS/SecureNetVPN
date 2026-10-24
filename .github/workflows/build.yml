@@ -90,10 +90,14 @@ jobs:
 
             ### Features
             - WireGuard VPN (wireguard-go via JNI, foreground service, `vpn_channel` notifications)
+            - **NEW v1.5: WireGuard profile import — scan a QR code, open a `.conf` file, or paste the config; export any profile as a scannable QR / PNG**
+            - **NEW v1.5: Monthly stats dashboard — stacked daily traffic bar chart, totals, active days, sessions & connected time, month navigation (all on-device, encrypted log)**
             - On-device intelligence: ML threat classifier, Smart Connect server recommender,
               network anomaly detector, composite protection score
             - Local device security scanner (anti-malware, permission risk scoring)
             - Network optimizer (DNS cache + MTU tuning) + built-in speed test
+            - Multi-hop chain (Double VPN) + VPN hotspot sharing with leak guard (v1.4)
+            - Tor-over-VPN (Orbot) + connection scheduling (v1.3)
             - Split tunneling (allow-only / exclude), Kill switch, auto-connect,
               Quick Settings tile, notification actions
             - Full Arabic + English localization (RTL-aware)

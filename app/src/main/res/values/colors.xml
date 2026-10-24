@@ -45,6 +45,14 @@
     <color name="background_light">#F5F7FC</color>
     <color name="background_dark">#0B0F1A</color>
 
+    <!-- v1.5: monthly stats bar chart -->
+    <color name="chart_rx">#8AB8FF</color>
+    <color name="chart_tx">#11998E</color>
+    <color name="chart_grid">#26FFFFFF</color>
+    <color name="chart_baseline">#59FFFFFF</color>
+    <color name="chart_today">#FFB300</color>
+    <color name="chart_selected">#99FFFFFF</color>
+
     <!-- Launcher background -->
     <color name="ic_launcher_background">#1A2A6C</color>
 </resources>

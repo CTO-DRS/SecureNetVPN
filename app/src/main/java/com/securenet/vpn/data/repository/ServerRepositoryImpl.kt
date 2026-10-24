@@ -1,5 +1,6 @@
 package com.securenet.vpn.data.repository
 
+import com.securenet.vpn.data.local.CustomServerStore
 import com.securenet.vpn.data.local.SecurePrefs
 import com.securenet.vpn.data.model.VpnServer
 import com.securenet.vpn.domain.repository.RemoteConfigRepository
@@ -9,6 +10,10 @@ import com.securenet.vpn.domain.repository.ServerRepository
  * Serves the server list from the encrypted remote-config cache and refreshes
  * it in the background. Latency measurements (if any) re-rank the list so the
  * recommended server floats to the top.
+ *
+ * v1.5: user-imported WireGuard profiles (QR / file / paste) are merged into
+ * the same list — imported profiles first, then the managed fleet, each group
+ * latency-ranked internally.
  */
 class ServerRepositoryImpl(
     private val remoteConfigRepository: RemoteConfigRepository,
@@ -18,18 +23,24 @@ class ServerRepositoryImpl(
     override suspend fun getServers(forceRefresh: Boolean): List<VpnServer> {
         remoteConfigRepository.fetch(forceRefresh)
         val servers = remoteConfigRepository.cachedServers()
-        return servers.sortedWith(
+        val managed = servers.sortedWith(
             compareBy<VpnServer> { if (it.latencyMs < 0) Int.MAX_VALUE else it.latencyMs }
                 .thenBy { it.loadPercent }
         )
+        val custom = CustomServerStore.load(securePrefs.customServersJson)
+            .map { it.server }
+        return custom + managed
     }
 
     override suspend fun getBestServer(): VpnServer? =
         getServers(forceRefresh = false).firstOrNull()
 
     override suspend fun getSelectedServer(): VpnServer? {
-        val servers = remoteConfigRepository.cachedServers()
-        val byId = securePrefs.selectedServerId?.let { id -> servers.firstOrNull { it.id == id } }
+        val custom = CustomServerStore.load(securePrefs.customServersJson)
+        val byId = securePrefs.selectedServerId?.let { id ->
+            custom.firstOrNull { it.server.id == id }?.server
+                ?: remoteConfigRepository.cachedServers().firstOrNull { it.id == id }
+        }
         if (byId != null) return byId
 
         // Offline fallback: the encrypted snapshot of the last selection.

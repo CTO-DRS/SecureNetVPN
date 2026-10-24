@@ -191,6 +191,15 @@ class SecurePrefs(context: Context) {
         get() = prefs.getString(KEY_MULTI_HOP, "") ?: ""
         set(value) = prefs.edit().putString(KEY_MULTI_HOP, value).apply()
 
+    // ------------------------------------------------------------------
+    // v1.5: imported WireGuard profiles (QR / file / paste)
+    // ------------------------------------------------------------------
+
+    /** JSON array of CustomServerStore.Entry (server + its own secrets). */
+    var customServersJson: String
+        get() = prefs.getString(KEY_CUSTOM_SERVERS, "[]") ?: "[]"
+        set(value) = prefs.edit().putString(KEY_CUSTOM_SERVERS, value).apply()
+
     fun clearLogsMarker(): Boolean {
         prefs.getString(KEY_LOG_FILE, null)?.let { return true }
         return false
@@ -241,6 +250,7 @@ class SecurePrefs(context: Context) {
         private const val KEY_TOR_ENABLED = "tor_over_vpn_enabled"
         private const val KEY_SCHEDULE = "connection_schedule_json"
         private const val KEY_MULTI_HOP = "multihop_chain_json"
+        private const val KEY_CUSTOM_SERVERS = "custom_servers_json"
 
         const val SPLIT_OFF = 0
         const val SPLIT_ALLOW_ONLY = 1

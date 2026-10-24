@@ -11,8 +11,8 @@ android {
         applicationId = "com.securenet.vpn"
         minSdk = 30
         targetSdk = 35
-        versionCode = 5
-        versionName = "1.4.0"
+        versionCode = 6
+        versionName = "1.5.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         ndk {
@@ -113,6 +113,10 @@ dependencies {
 
     // UI animations
     implementation("com.airbnb.android:lottie:6.4.0")
+
+    // v1.5: WireGuard profile QR exchange (core = pure encoder, embedded = scanner UI)
+    implementation("com.google.zxing:core:3.5.3")
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 
     // Networking with certificate pinning
     implementation("com.squareup.okhttp3:okhttp:4.12.0")

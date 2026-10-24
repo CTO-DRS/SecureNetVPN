@@ -283,4 +283,57 @@
     <string name="hotspot_protected">الأجهزة المتصلة تمر عبر الـ VPN</string>
     <string name="hotspot_unprotected">تحذير: فعّل مفتاح القتل</string>
     <string name="hotspot_unsupported">التوصيل غير مدعوم على هذا الجهاز</string>
+    <!-- v1.5: استيراد تكوين WireGuard (QR / ملف / لصق) -->
+    <string name="server_import_config">استيراد تكوين WireGuard</string>
+    <string name="server_custom_badge">مخصص</string>
+    <string name="server_option_show_qr">عرض رمز QR</string>
+    <string name="server_option_delete">حذف الملف</string>
+    <string name="delete_profile_title">حذف الملف المستورد؟</string>
+    <string name="delete_profile_message">سيُحذف &quot;%1$s&quot; ومفاتيحه المحفوظة من هذا الجهاز.</string>
+    <string name="import_explainer">أضف أي خادم WireGuard: امسح رمز QR أو افتح ملف .conf أو الصق نص التكوين.</string>
+    <string name="import_scan_qr">مسح QR</string>
+    <string name="import_pick_file">اختيار ملف</string>
+    <string name="import_paste_label">أو الصق نص التكوين (صيغة wg-quick)</string>
+    <string name="import_paste_hint">[Interface] PrivateKey = …</string>
+    <string name="import_scan_prompt">وجّه الكاميرا نحو رمز WireGuard QR</string>
+    <string name="import_preview_title">تم تحليل الملف بنجاح</string>
+    <string name="import_name_hint">اسم الملف الشخصي</string>
+    <string name="import_save">حفظ</string>
+    <string name="import_discard">تجاهل</string>
+    <string name="import_saved">تم حفظ الملف واختياره</string>
+    <string name="import_error_generic">تعذر استيراد هذا التكوين:</string>
+    <string name="import_error_empty">نص التكوين فارغ.</string>
+    <string name="import_error_read_file">تعذرت قراءة ذلك الملف.</string>
+    <string name="import_reason_parse">هذا ليس تكوين wg-quick صالحاً.</string>
+    <string name="import_reason_private_key">PrivateKey مفقود أو ليس مفتاح WireGuard صالحاً.</string>
+    <string name="import_reason_peer_key">PublicKey (الندّ) مفقود أو غير صالح.</string>
+    <string name="import_reason_psk">PresharedKey ليس مفتاح WireGuard صالحاً.</string>
+    <string name="import_reason_no_endpoint">Endpoint مفقود — لا يوجد عنوان خادم في الملف.</string>
+    <string name="import_reason_bad_endpoint">يجب أن يكون Endpoint بالشكل host:port.</string>
+    <string name="import_label_name">الاسم</string>
+    <string name="import_label_endpoint">الخادم</string>
+    <string name="import_label_address">العنوان</string>
+    <string name="import_label_dns">DNS</string>
+    <string name="import_label_psk">مفتاح مشترك</string>
+
+    <!-- v1.5: رمز QR للتصدير -->
+    <string name="qr_dialog_title">رمز QR لملف WireGuard</string>
+    <string name="qr_warning_private_key">هذا الرمز يحتوي المفتاح الخاص للملف — لا تعرضه إلا لأجهزتك أنت.</string>
+    <string name="qr_save_gallery">حفظ كصورة</string>
+    <string name="qr_saved_gallery">حُفظت في Pictures/SecureNetVPN</string>
+    <string name="qr_save_failed">تعذر حفظ الصورة</string>
+    <string name="qr_error_too_large">هذا الملف طويل جداً على رمز QR</string>
+    <string name="qr_error_no_key">لا يوجد مفتاح خاص متاح بعد</string>
+
+    <!-- v1.5: لوحة الإحصاءات الشهرية -->
+    <string name="stats_prev_month">الشهر السابق</string>
+    <string name="stats_next_month">الشهر التالي</string>
+    <string name="stats_total">الاستخدام الكلي</string>
+    <string name="stats_download">تنزيل</string>
+    <string name="stats_upload">رفع</string>
+    <string name="stats_sessions">الجلسات · زمن الاتصال</string>
+    <string name="stats_sessions_value">%1$s جلسة · %2$s</string>
+    <string name="stats_empty_month">لا يوجد استخدام مسجل في هذا الشهر</string>
+    <string name="stats_caption_summary">المتوسط اليومي %1$s · %2$s يوم نشاط</string>
+    <string name="stats_caption_day">%1$s %2$s — ↓ %3$s · ↑ %4$s</string>
 </resources>

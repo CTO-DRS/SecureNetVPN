@@ -283,4 +283,57 @@
     <string name="hotspot_protected">clients ride the VPN</string>
     <string name="hotspot_unprotected">WARNING: enable kill switch</string>
     <string name="hotspot_unsupported">Tethering not supported on this device</string>
+    <!-- v1.5: WireGuard config import (QR / file / paste) -->
+    <string name="server_import_config">Import WireGuard config</string>
+    <string name="server_custom_badge">Custom</string>
+    <string name="server_option_show_qr">Show QR code</string>
+    <string name="server_option_delete">Delete profile</string>
+    <string name="delete_profile_title">Delete imported profile?</string>
+    <string name="delete_profile_message">&quot;%1$s&quot; and its saved keys will be removed from this device.</string>
+    <string name="import_explainer">Add any WireGuard server: scan a QR code, open a .conf file, or paste the config text.</string>
+    <string name="import_scan_qr">Scan QR</string>
+    <string name="import_pick_file">Pick file</string>
+    <string name="import_paste_label">Or paste the config text (wg-quick format)</string>
+    <string name="import_paste_hint">[Interface] PrivateKey = …</string>
+    <string name="import_scan_prompt">Point the camera at the WireGuard QR code</string>
+    <string name="import_preview_title">Profile parsed successfully</string>
+    <string name="import_name_hint">Profile name</string>
+    <string name="import_save">Save profile</string>
+    <string name="import_discard">Discard</string>
+    <string name="import_saved">Profile saved and selected</string>
+    <string name="import_error_generic">Could not import this profile:</string>
+    <string name="import_error_empty">The config text is empty.</string>
+    <string name="import_error_read_file">Could not read that file.</string>
+    <string name="import_reason_parse">This is not a valid wg-quick config.</string>
+    <string name="import_reason_private_key">PrivateKey is missing or not a valid WireGuard key.</string>
+    <string name="import_reason_peer_key">PublicKey (peer) is missing or invalid.</string>
+    <string name="import_reason_psk">PresharedKey is not a valid WireGuard key.</string>
+    <string name="import_reason_no_endpoint">Endpoint is missing — the profile has no server address.</string>
+    <string name="import_reason_bad_endpoint">Endpoint must be shaped host:port.</string>
+    <string name="import_label_name">Name</string>
+    <string name="import_label_endpoint">Endpoint</string>
+    <string name="import_label_address">Address</string>
+    <string name="import_label_dns">DNS</string>
+    <string name="import_label_psk">PresharedKey</string>
+
+    <!-- v1.5: QR export -->
+    <string name="qr_dialog_title">WireGuard profile QR</string>
+    <string name="qr_warning_private_key">This code contains the profile private key — show it only to your own devices.</string>
+    <string name="qr_save_gallery">Save as image</string>
+    <string name="qr_saved_gallery">Saved to Pictures/SecureNetVPN</string>
+    <string name="qr_save_failed">Could not save the image</string>
+    <string name="qr_error_too_large">This profile is too long for a QR code</string>
+    <string name="qr_error_no_key">No private key available yet</string>
+
+    <!-- v1.5: monthly stats dashboard -->
+    <string name="stats_prev_month">Previous month</string>
+    <string name="stats_next_month">Next month</string>
+    <string name="stats_total">Total usage</string>
+    <string name="stats_download">Download</string>
+    <string name="stats_upload">Upload</string>
+    <string name="stats_sessions">Sessions · connected</string>
+    <string name="stats_sessions_value">%1$s sessions · %2$s</string>
+    <string name="stats_empty_month">No usage recorded in this month</string>
+    <string name="stats_caption_summary">Daily average %1$s · %2$s active days</string>
+    <string name="stats_caption_day">%1$s %2$s — ↓ %3$s · ↑ %4$s</string>
 </resources>

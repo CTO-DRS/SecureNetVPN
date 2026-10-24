@@ -46,6 +46,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- v1.5: WireGuard profile import (QR / .conf file / paste) -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnImportConfig"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_lg"
+        android:layout_marginEnd="@dimen/spacing_md"
+        android:layout_marginTop="@dimen/spacing_sm"
+        android:text="@string/server_import_config"
+        app:icon="@drawable/ic_qr_code"
+        app:iconGravity="textStart"
+        app:layout_constraintTop_toBottomOf="@id/btnSmartConnect"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/serversList"
         android:layout_width="0dp"
@@ -54,7 +70,7 @@
         android:clipToPadding="false"
         android:paddingHorizontal="@dimen/spacing_lg"
         android:paddingBottom="@dimen/spacing_lg"
-        app:layout_constraintTop_toBottomOf="@id/btnSmartConnect"
+        app:layout_constraintTop_toBottomOf="@id/btnImportConfig"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -69,7 +85,7 @@
         android:text="@string/server_empty"
         android:textColor="@color/on_glass_secondary"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/btnSmartConnect"
+        app:layout_constraintTop_toBottomOf="@id/btnImportConfig"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
