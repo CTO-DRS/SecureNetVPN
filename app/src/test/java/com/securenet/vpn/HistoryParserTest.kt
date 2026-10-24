@@ -107,7 +107,7 @@ class HistoryParserTest {
         assertEquals(1000L, day100.rxBytes)
         assertEquals(500L, day100.txBytes)
         assertEquals(180L, day100.connectedSeconds)
-        assertEquals(100L, timeline.usage.first().dayEpoch) // newest first
+        assertEquals(101L, timeline.usage.first().dayEpoch) // newest day first (descending)
     }
 
     @Test
