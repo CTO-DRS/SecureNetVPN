@@ -102,7 +102,9 @@ class ScannerRepositoryImpl(
     private fun installedAppProfiles(): List<AppProfile> {
         val pm: PackageManager = context.packageManager
         val flags = PackageManager.GET_PERMISSIONS
-        return pm.getInstalledApplications(flags)
+        // v1.6.2: some OEMs/restricted profiles throw on the enumeration call.
+        val installed = runCatching { pm.getInstalledApplications(flags) }.getOrDefault(emptyList())
+        return installed
             .filter { it.packageName != context.packageName }
             .filter { !it.isSystemAppOrUpdatedSystem(pm) }
             .map { info ->

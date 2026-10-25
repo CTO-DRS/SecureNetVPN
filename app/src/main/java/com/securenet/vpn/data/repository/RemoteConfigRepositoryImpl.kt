@@ -4,6 +4,8 @@ import com.securenet.vpn.data.local.SecurePrefs
 import com.securenet.vpn.data.model.VpnServer
 import com.securenet.vpn.data.remote.RemoteConfigApi
 import com.securenet.vpn.domain.repository.RemoteConfigRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -11,6 +13,11 @@ import org.json.JSONObject
  * Remote-config plumbing: fetch once per 12h (or forced), parse, encrypt-cache,
  * and feed fresh certificate pins into the OkHttp layer. All failures degrade
  * gracefully to the cached snapshot so the app is fully usable offline.
+ *
+ * v1.6.2 — the blocking OkHttp call now runs on Dispatchers.IO. Previously it
+ * executed on the caller's dispatcher; callers launch from viewModelScope
+ * (Dispatchers.Main), so a cold cache triggered NetworkOnMainThreadException
+ * and a deterministic crash right after onboarding on every device.
  */
 class RemoteConfigRepositoryImpl(
     private val api: RemoteConfigApi,
@@ -27,13 +34,15 @@ class RemoteConfigRepositoryImpl(
         hydrateFromCache()
     }
 
-    override suspend fun fetch(forceRefresh: Boolean): Boolean {
-        val age = System.currentTimeMillis() - securePrefs.remoteConfigFetchedAt
-        if (!forceRefresh && age < REFRESH_INTERVAL_MS) return true
+    override suspend fun fetch(forceRefresh: Boolean): Boolean =
+        withContext(Dispatchers.IO) {
+            val age = System.currentTimeMillis() - securePrefs.remoteConfigFetchedAt
+            if (!forceRefresh && age < REFRESH_INTERVAL_MS) return@withContext true
 
-        val raw = api.fetchBootstrapJson() ?: return securePrefs.cachedRemoteConfig != null
-        return runCatching { parseAndStore(raw) }.getOrDefault(false)
-    }
+            val raw = runCatching { api.fetchBootstrapJson() }.getOrNull()
+                ?: return@withContext (securePrefs.cachedRemoteConfig != null)
+            runCatching { parseAndStore(raw) }.getOrDefault(false)
+        }
 
     override fun cachedServers(): List<VpnServer> {
         if (parsedServers.isEmpty()) hydrateFromCache()

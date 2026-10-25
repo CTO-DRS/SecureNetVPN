@@ -69,6 +69,15 @@
             android:name=".onboarding.OnboardingActivity"
             android:exported="false" />
 
+        <!-- v1.6.2: crash report viewer — separate process + framework theme
+             so it can render even when the main process/theme is the problem. -->
+        <activity
+            android:name=".util.CrashReportActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:process=":crash_report"
+            android:theme="@android:style/Theme.Material.NoActionBar" />
+
         <activity
             android:name=".MainActivity"
             android:exported="false"

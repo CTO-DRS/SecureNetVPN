@@ -2,6 +2,12 @@
 <resources>
     <!-- App -->
     <string name="app_name">SecureNet VPN</string>
+    <string name="crash_dialog_title">Previous crash detected</string>
+    <string name="crash_dialog_message">The app crashed unexpectedly last time. You can copy or share the technical report so the developer can identify the cause.</string>
+    <string name="crash_dialog_copy">Copy report</string>
+    <string name="crash_dialog_copied">Report copied</string>
+    <string name="crash_dialog_share">Share</string>
+    <string name="crash_dialog_dismiss">Skip</string>
 
     <!-- Bottom navigation -->
     <string name="tab_dashboard">Dashboard</string>
