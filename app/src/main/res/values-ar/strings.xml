@@ -2,6 +2,12 @@
 <resources>
     <!-- App -->
     <string name="app_name">SecureNet VPN</string>
+    <string name="crash_dialog_title">تم رصد عطل سابق</string>
+    <string name="crash_dialog_message">تعرّض التطبيق لانهيار غير متوقع في آخر مرة. يمكنك نسخ التقرير الفني أو مشاركته ليتمكن المطوّر من تحديد السبب.</string>
+    <string name="crash_dialog_copy">نسخ التقرير</string>
+    <string name="crash_dialog_copied">تم نسخ التقرير</string>
+    <string name="crash_dialog_share">مشاركة</string>
+    <string name="crash_dialog_dismiss">تخطّي</string>
 
     <!-- Bottom navigation -->
     <string name="tab_dashboard">الرئيسية</string>

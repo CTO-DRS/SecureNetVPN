@@ -1,6 +1,7 @@
 package com.securenet.vpn.util
 
 import android.content.Context
+import android.content.Intent
 import java.io.File
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -9,27 +10,43 @@ import java.util.Date
 import java.util.Locale
 
 /**
- * v1.6.1 — Global crash capture. Installed as the default uncaught-exception
- * handler before anything else runs, so any field failure (unknown OEM
- * quirks, keystore issues, resource problems) leaves a stack trace in
- * filesDir/crash_reports/last_crash.txt for diagnosis instead of dying
- * silently. The previous system handler is always delegated to afterwards,
- * so system crash dialogs behave exactly as before.
+ * v1.6.1 — Global crash capture: writes the stack trace of any uncaught
+ * exception to filesDir/crash_reports/last_crash.txt before delegating to
+ * the system handler, so field failures leave a diagnosis trail instead of
+ * dying silently.
  *
- * Writes are fully defensive: crash reporting must never itself crash or
- * alter the failure path.
+ * v1.6.2 — On crash, additionally launches [CrashReportActivity] which runs
+ * in a SEPARATE PROCESS (:crash_report). The start request is committed to
+ * system_server before the previous (system) handler kills the crashing
+ * process, so the on-screen report survives the process death and the user
+ * can copy/share the actual stack trace. Everything is defensive: crash
+ * reporting must never itself crash or alter the failure path.
  */
 object CrashReporter {
 
     private const val DIR_NAME = "crash_reports"
     private const val FILE_NAME = "last_crash.txt"
+    private const val SEEN_SUFFIX = ".seen"
     private const val MAX_BYTES = 256 * 1024
 
     fun install(context: Context) {
         val appContext = context.applicationContext
         val previous = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
-            runCatching { write(appContext, thread, throwable) }
+            val written = runCatching { write(appContext, thread, throwable) }.isSuccess
+            // Launch the separate-process report screen BEFORE delegating to
+            // the system handler (which kills the process).
+            if (written) {
+                runCatching {
+                    appContext.startActivity(
+                        Intent(appContext, CrashReportActivity::class.java).addFlags(
+                            Intent.FLAG_ACTIVITY_NEW_TASK or
+                                Intent.FLAG_ACTIVITY_CLEAR_TASK or
+                                Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
+                        )
+                    )
+                }
+            }
             previous?.uncaughtException(thread, throwable)
         }
     }
@@ -38,13 +55,24 @@ object CrashReporter {
     fun reportFile(context: Context): File =
         File(File(context.applicationContext.filesDir, DIR_NAME), FILE_NAME)
 
-    /** Latest captured crash report, or null when the app has not crashed. */
+    /** Latest captured crash report, or null when there is none pending. */
     fun lastReport(context: Context): String? =
         try {
             reportFile(context).takeIf { it.exists() }?.readText()
         } catch (_: Exception) {
             null
         }
+
+    /**
+     * Marks the pending report as shown (renames instead of deleting so the
+     * evidence survives) — called after the in-app dialog displayed it.
+     */
+    fun markReportHandled(context: Context) {
+        runCatching {
+            val file = reportFile(context)
+            if (file.exists()) file.renameTo(File(file.parentFile, FILE_NAME + SEEN_SUFFIX))
+        }
+    }
 
     private fun write(context: Context, thread: Thread, throwable: Throwable) {
         val dir = File(context.filesDir, DIR_NAME)
@@ -68,9 +96,9 @@ object CrashReporter {
         }
 
         // Bound the file: keep the tail (the deepest frames matter most).
-        val payload = if (body.toByteArray().size > MAX_BYTES) {
-            body.toByteArray().copyOfRange(body.toByteArray().size - MAX_BYTES, body.toByteArray().size)
-                .toString(Charsets.UTF_8)
+        val bytes = body.toByteArray(Charsets.UTF_8)
+        val payload = if (bytes.size > MAX_BYTES) {
+            bytes.copyOfRange(bytes.size - MAX_BYTES, bytes.size).toString(Charsets.UTF_8)
         } else {
             body
         }

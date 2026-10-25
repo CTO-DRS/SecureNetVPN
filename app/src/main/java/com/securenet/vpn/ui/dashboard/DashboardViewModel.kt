@@ -94,8 +94,10 @@ class DashboardViewModel(
 
     init {
         viewModelScope.launch {
-            _selectedServer.value = serverRepository.getSelectedServer()
-                ?: serverRepository.getBestServer()
+            // v1.6.2: never let the initial server load crash the dashboard.
+            _selectedServer.value = runCatching {
+                serverRepository.getSelectedServer() ?: serverRepository.getBestServer()
+            }.getOrNull()
         }
         refreshDnsStats()
         refreshSecurityScore()
