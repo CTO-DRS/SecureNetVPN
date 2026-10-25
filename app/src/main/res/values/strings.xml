@@ -376,4 +376,47 @@
     <string name="server_stats_empty">No server sessions recorded yet</string>
     <string name="server_stats_row_meta">%1$s sessions · %2$s · %3$s failures</string>
     <string name="server_stats_last_used">Last: %1$s</string>
+
+    <!-- v1.7: "Where to get WireGuard configs" guide -->
+    <string name="guide_title">Where to get WireGuard configs</string>
+    <string name="guide_intro">Every source below hands you a standard .conf profile that imports straight into SecureNet (Servers → Import). Free and paid, websites and apps.</string>
+    <string name="guide_open">Open</string>
+    <string name="guide_copy">Copy link</string>
+    <string name="guide_no_browser">No browser found on this device</string>
+    <string name="guide_link_copied">Link copied</string>
+    <string name="guide_step1">1 · Create an account with any source below (or install a self-hosted server).</string>
+    <string name="guide_step2">2 · Generate a WireGuard configuration for your device — most providers offer a config generator in their dashboard.</string>
+    <string name="guide_step3">3 · Download the .conf file (or scan the provider\'s QR code).</string>
+    <string name="guide_step4">4 · In SecureNet: Servers → Import WireGuard config → scan, open the file or paste it — then connect.</string>
+    <string name="guide_section_free">Free</string>
+    <string name="guide_section_paid">Paid providers</string>
+    <string name="guide_section_selfhosted">Self-hosted servers</string>
+    <string name="guide_section_apps">Apps &amp; tools</string>
+    <string name="guide_note_paid_only">WireGuard configs require a paid plan</string>
+    <string name="guide_entry_button">Don\'t have a config? Where to get one — free &amp; paid…</string>
+
+    <string name="guide_desc_warp_wgcf">Cloudflare\'s free WARP network as a real WireGuard config: run the open-source wgcf tool once on a PC to register and export an unlimited free profile.</string>
+    <string name="guide_desc_proton_free">Create a free account, then dashboard → Downloads → WireGuard configuration. The free plan generates configs for the free servers; paid plans unlock all locations.</string>
+    <string name="guide_desc_mullvad">Privacy-first provider (flat €5/month). After login, the WireGuard config generator picks country, city and port and downloads the .conf directly.</string>
+    <string name="guide_desc_windscribe">Config generator at getconfig/wireguard: choose location and port (443 is a safe default), generate a keypair and download the file.</string>
+    <string name="guide_desc_ivpn">WireGuard config generator lives in the Client Area: generate a key, pick servers and download the archive of .conf files.</string>
+    <string name="guide_desc_azirevpn">Swedish privacy provider (diskless servers). After login, generate WireGuard keys and server configs from the account area.</string>
+    <string name="guide_desc_ovpn">Login → generate WireGuard keys, choose the server and download the .conf. Their guides page covers every platform.</string>
+    <string name="guide_desc_airvpn">Client Area → Config Generator → select WireGuard as protocol and a server, then generate the .conf.</string>
+    <string name="guide_desc_astrill">Direct generator link: log in and the member-zone WireGuard tool builds a config for any server and port.</string>
+    <string name="guide_desc_hideme">The WireGuard configurator sits in the members area — pick a server, download the profile.</string>
+    <string name="guide_desc_ipvanish">Account portal → WireGuard under Service Management → choose a location and press Generate to download the config.</string>
+    <string name="guide_desc_surfshark">User page → VPN → Manual setup → Router → WireGuard. Create the key and copy the generated config into a .conf file.</string>
+    <string name="guide_desc_privatevpn">Control panel → pick a location → the WireGuard credentials appear below — press download.</string>
+    <string name="guide_desc_privadovpn">Control panel → Manual Configuration → WireGuard → select a server and download the configuration.</string>
+    <string name="guide_desc_strongvpn">WireGuard configuration generator after sign-in: choose a location from the dropdown and press GENERATE.</string>
+
+    <string name="guide_desc_wg_easy">The easiest self-hosted server: a single Docker container with a web UI that creates clients and QR codes for your own VPS.</string>
+    <string name="guide_desc_pivpn">One-command installer that turns a Raspberry Pi (or any Debian/Ubuntu box) into a WireGuard server with per-device profiles.</string>
+    <string name="guide_desc_algo">Trail of Bits\' Ansible playbook: deploys a hardened personal WireGuard server to any cloud VPS in minutes.</string>
+    <string name="guide_desc_headscale">Self-hosted Tailscale control server — WireGuard-based mesh network for your own devices, no third party involved.</string>
+
+    <string name="guide_desc_wg_android">The official WireGuard app — useful to verify a profile, or to scan a provider QR and re-export the .conf for SecureNet.</string>
+    <string name="guide_desc_wg_fdroid">The same official client from F-Droid, without Google services.</string>
+    <string name="guide_desc_wg_desktop">Official clients for Windows, macOS, Linux and more — the .conf files work identically in SecureNet.</string>
 </resources>
