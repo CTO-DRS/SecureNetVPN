@@ -35,7 +35,15 @@ class DashboardViewModel(
     private val serverRepository: com.securenet.vpn.domain.repository.ServerRepository,
     private val securePrefs: SecurePrefs,
     private val dnsCacheManager: DnsCacheManager,
-    container: AppContainer
+    // v1.6.3 CRITICAL: must be a CONSTRUCTOR property. The init block below
+    // starts coroutines on viewModelScope (Dispatchers.Main.immediate) — when
+    // the ViewModel is constructed on the main thread they execute their body
+    // synchronously during construction. A body-declared property assigned
+    // further down in the class was still JVM-null at that point, producing
+    // the v1.6.2 "getSmartInsightsEngine() on a null object reference" crash
+    // the moment the dashboard appeared. Constructor properties are assigned
+    // before any init block / property initializer runs — immune by design.
+    private val containerRef: AppContainer
 ) : ViewModel() {
 
     val connectionState: StateFlow<ConnectionState> = observeState.state
@@ -93,21 +101,26 @@ class DashboardViewModel(
         _insights.asStateFlow()
 
     init {
+        // v1.6.3: every initial refresh is failure-isolated — a broken prefs
+        // file, an engine error or any OEM quirk can degrade that single card
+        // to its default state but can never abort ViewModel construction
+        // (which would kill the whole dashboard fragment again).
         viewModelScope.launch {
             // v1.6.2: never let the initial server load crash the dashboard.
             _selectedServer.value = runCatching {
                 serverRepository.getSelectedServer() ?: serverRepository.getBestServer()
             }.getOrNull()
         }
-        refreshDnsStats()
-        refreshSecurityScore()
-        refreshSmartSuggestion()
-        refreshInsights()
-        refreshTrust()
+        runCatching { refreshDnsStats() }
+        runCatching { refreshSecurityScore() }
+        runCatching { refreshSmartSuggestion() }
+        runCatching { refreshInsights() }
+        runCatching { refreshTrust() }
     }
 
     /** Recompute the composite score from the last scan + live state. */
     fun refreshSecurityScore(scanOverride: ScanResult? = null) {
+        // v1.6.3: failure-isolated — score card degrades to "unknown" (null).
         viewModelScope.launch {
             val scan = scanOverride ?: withContext(Dispatchers.IO) {
                 securePrefs.lastScanJson?.let { raw ->
@@ -138,14 +151,16 @@ class DashboardViewModel(
                     }.getOrNull()
                 }
             }
-            _securityScore.value = containerRef.securityScoreEngine.compute(
-                lastScan = scan,
-                connectionState = connectionState.value,
-                dnsCacheEnabled = securePrefs.dnsCacheEnabled,
-                autoMtuEnabled = securePrefs.autoMtu,
-                autoReconnectEnabled = securePrefs.autoReconnect,
-                batterySaverEnabled = securePrefs.batterySaverMode
-            )
+            _securityScore.value = runCatching {
+                containerRef.securityScoreEngine.compute(
+                    lastScan = scan,
+                    connectionState = connectionState.value,
+                    dnsCacheEnabled = securePrefs.dnsCacheEnabled,
+                    autoMtuEnabled = securePrefs.autoMtu,
+                    autoReconnectEnabled = securePrefs.autoReconnect,
+                    batterySaverEnabled = securePrefs.batterySaverMode
+                )
+            }.getOrNull()
         }
     }
 
@@ -194,7 +209,9 @@ class DashboardViewModel(
                     }.toMap()
                 }
             }.getOrDefault(emptyMap())
-            val best = containerRef.serverRecommender.recommend(servers, lastUsed, latencies)
+            val best = runCatching {
+                containerRef.serverRecommender.recommend(servers, lastUsed, latencies)
+            }.getOrNull()
             _smartSuggestion.value = best?.server?.takeIf { it.id != current?.id }
         }
 
@@ -235,15 +252,10 @@ class DashboardViewModel(
         )
     }
 
-    // Container handle for the intelligence engines (kept private).
-    private val containerRef: AppContainer = container
-
     fun refreshDnsStats() {
-        if (securePrefs.dnsCacheEnabled) {
-            _dnsStats.value = dnsCacheManager.statsSnapshot()
-        } else {
-            _dnsStats.value = "off"
-        }
+        _dnsStats.value = runCatching {
+            if (securePrefs.dnsCacheEnabled) dnsCacheManager.statsSnapshot() else "off"
+        }.getOrDefault("off")
     }
 
     // ------------------------------------------------------------------
@@ -270,19 +282,21 @@ class DashboardViewModel(
             val snapshot = withContext(Dispatchers.IO) {
                 runCatching { containerRef.networkMonitor.currentSnapshot() }.getOrNull()
             } ?: return@launch
-            val trusted = containerRef.networkTrustEngine.trustListFromJson(
-                securePrefs.trustedNetworks
-            ).contains(
-                NetworkTrustEngine.Fingerprint(
-                    snapshot.transportDescription, snapshot.isMetered
+            _trust.value = runCatching {
+                val trusted = containerRef.networkTrustEngine.trustListFromJson(
+                    securePrefs.trustedNetworks
+                ).contains(
+                    NetworkTrustEngine.Fingerprint(
+                        snapshot.transportDescription, snapshot.isMetered
+                    )
                 )
-            )
-            _trust.value = TrustUi(
-                transport = snapshot.transportDescription,
-                metered = snapshot.isMetered,
-                trusted = trusted,
-                smartRulesEnabled = securePrefs.smartRulesEnabled
-            )
+                TrustUi(
+                    transport = snapshot.transportDescription,
+                    metered = snapshot.isMetered,
+                    trusted = trusted,
+                    smartRulesEnabled = securePrefs.smartRulesEnabled
+                )
+            }.getOrNull()
         }
     }
 
@@ -312,19 +326,24 @@ class DashboardViewModel(
             val scanAge = securePrefs.lastScanAt.takeIf { it > 0 }?.let {
                 System.currentTimeMillis() - it
             }
-            _insights.value = containerRef.smartInsightsEngine.generate(
-                SmartInsightsEngine.Inputs(
-                    killSwitchEnabled = securePrefs.killSwitchEnabled,
-                    dnsShieldEnabled = securePrefs.dnsShieldEnabled,
-                    smartRulesEnabled = securePrefs.smartRulesEnabled,
-                    autoConnectOnLaunch = securePrefs.autoConnectOnLaunch,
-                    hasScanResults = securePrefs.lastScanAt > 0,
-                    scanAgeMillis = scanAge,
-                    openThreats = threats,
-                    connected = connectionState.value == ConnectionState.CONNECTED,
-                    batterySaver = securePrefs.batterySaverMode
+            // v1.6.3: the exact line from the field crash report — reading the
+            // container handle is now safe (constructor property) and the
+            // computation itself is failure-isolated (degrades to no insights).
+            _insights.value = runCatching {
+                containerRef.smartInsightsEngine.generate(
+                    SmartInsightsEngine.Inputs(
+                        killSwitchEnabled = securePrefs.killSwitchEnabled,
+                        dnsShieldEnabled = securePrefs.dnsShieldEnabled,
+                        smartRulesEnabled = securePrefs.smartRulesEnabled,
+                        autoConnectOnLaunch = securePrefs.autoConnectOnLaunch,
+                        hasScanResults = securePrefs.lastScanAt > 0,
+                        scanAgeMillis = scanAge,
+                        openThreats = threats,
+                        connected = connectionState.value == ConnectionState.CONNECTED,
+                        batterySaver = securePrefs.batterySaverMode
+                    )
                 )
-            )
+            }.getOrDefault(emptyList())
         }
     }
 
