@@ -154,11 +154,15 @@ class SettingsFragment : Fragment(), BackupDialogFragment.Host {
         // system document picker handles storage without any permission.
         binding.rowExportBackup.setOnClickListener {
             BackupDialogFragment.newInstance(BackupDialogFragment.MODE_EXPORT)
-                .show(parentFragmentManager, "backup_export")
+                .show(childFragmentManager, "backup_export")
         }
         binding.rowImportBackup.setOnClickListener {
             BackupDialogFragment.newInstance(BackupDialogFragment.MODE_IMPORT)
-                .show(parentFragmentManager, "backup_import")
+                .show(childFragmentManager, "backup_import")
+        }
+        // v1.8.3: multiple encrypted backups kept inside the app's storage
+        binding.rowVault.setOnClickListener {
+            BackupVaultDialogFragment().show(parentFragmentManager, "backup_vault")
         }
 
         binding.rowSplitTunnel.setOnClickListener {

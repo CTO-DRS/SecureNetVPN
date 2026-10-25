@@ -370,6 +370,26 @@
     <string name="backup_import_signals"> · %1$d guide signal entries merged</string>
     <string name="backup_import_wrong_pass">Wrong passphrase or damaged backup file</string>
     <string name="backup_import_failed">Backup import failed</string>
+    <!-- v1.8.3: in-app backup vault — multiple encrypted restore points -->
+    <string name="settings_vault_title">In-app backup vault</string>
+    <string name="settings_vault_desc">Keep up to 10 encrypted restore points inside SecureNet — create, restore or delete anytime</string>
+    <string name="backup_vault_create_title">New in-app backup</string>
+    <string name="backup_vault_create_message">The backup is encrypted with your passphrase (PBKDF2 120k + AES-256-GCM) and stored inside the app — up to 10 slots, the oldest is dropped beyond that. Your guide ratings, favorites and notes are included.</string>
+    <string name="backup_vault_restore_title">Restore in-app backup</string>
+    <string name="backup_vault_restore_message">Enter the passphrase of “%1$s”. Its events are merged into the current history and its guide signals are merged in — nothing is deleted.</string>
+    <string name="backup_vault_default_slot">the selected backup</string>
+    <string name="vault_new_backup">New encrypted backup</string>
+    <string name="vault_empty">No in-app backups yet. Create one to keep an encrypted restore point on this device.</string>
+    <string name="vault_slot_meta">%1$s · %2$d events · %3$d signals · %4$s</string>
+    <string name="vault_restore">Restore</string>
+    <string name="vault_delete">Delete</string>
+    <string name="vault_delete_title">Delete this backup?</string>
+    <string name="vault_delete_message">“%1$s” will be permanently removed from the vault. This cannot be undone.</string>
+    <string name="vault_deleted">Backup deleted</string>
+    <string name="vault_created">In-app backup created — %1$d events encrypted</string>
+    <string name="vault_create_failed">Could not create the in-app backup</string>
+    <string name="vault_restored">Restored “%1$s” — %2$d new events (skipped %3$d duplicates)</string>
+    <string name="vault_restore_failed">Restore failed</string>
 
     <!-- v1.6: per-server statistics -->
     <string name="stats_per_server">Per-server usage…</string>
@@ -424,6 +444,16 @@
     <string name="guide_top_rated_chip">Top rated</string>
     <string name="guide_editors_choice">Editor\'s choice</string>
     <string name="guide_editors_choice_cd">Editor\'s choice — one of the most reliable sources</string>
+    <!-- v1.8.3 — guide statistics: most rated sources + bulk delete -->
+    <string name="guide_stats_title">Guide statistics</string>
+    <string name="guide_stats_summary">%1$d of %2$d sources rated · average %3$s ★ · %4$d favorites · %5$d notes</string>
+    <string name="guide_stats_distribution">★5 ×%1$d · ★4 ×%2$d · ★3 ×%3$d · ★2 ×%4$d · ★1 ×%5$d</string>
+    <string name="guide_stats_top">Most rated sources</string>
+    <string name="guide_stats_clear">Clear all signals</string>
+    <string name="guide_stats_clear_title">Delete all guide signals?</string>
+    <string name="guide_stats_clear_message">This permanently removes %1$d ratings, %2$d favorites and %3$d personal notes. This cannot be undone.</string>
+    <string name="guide_stats_clear_action">Delete</string>
+    <string name="guide_stats_cleared">All guide signals cleared</string>
     <string name="settings_section_guide">WireGuard guide</string>
     <string name="settings_row_guide_title">Where to get WireGuard configs</string>
     <string name="settings_row_guide_sub">36 free &amp; paid sources with links, tutorials and tips</string>

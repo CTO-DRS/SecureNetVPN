@@ -370,6 +370,26 @@
     <string name="backup_import_signals"> · دمج %1$d من إشارات الدليل</string>
     <string name="backup_import_wrong_pass">كلمة المرور خاطئة أو الملف تالف</string>
     <string name="backup_import_failed">فشل استيراد النسخة الاحتياطية</string>
+    <!-- v1.8.3: خزنة النسخ الاحتياطي داخل التطبيق — نقاط استعادة مشفرة متعددة -->
+    <string name="settings_vault_title">خزنة النسخ الاحتياطي داخل التطبيق</string>
+    <string name="settings_vault_desc">احتفظ حتى بعشر نقاط استعادة مشفرة داخل SecureNet — أنشئ أو استعد أو احذف في أي وقت</string>
+    <string name="backup_vault_create_title">نسخة احتياطية جديدة داخل التطبيق</string>
+    <string name="backup_vault_create_message">تُشفَّر النسخة بعبارة مرورك (PBKDF2 بمئة وعشرين ألف دورة + AES-256-GCM) وتُخزَّن داخل التطبيق — حتى 10 نسخ وتُحذف الأقدم عند التجاوز. تقييمات الدليل ومفضلاتك وملاحظاتك مشمولة.</string>
+    <string name="backup_vault_restore_title">استعادة نسخة داخل التطبيق</string>
+    <string name="backup_vault_restore_message">أدخل عبارة المرور الخاصة بـ«%1$s». تُدمج أحداثه في السجل الحالي وتُدمج إشارات الدليل أيضاً — لا يُحذف أي شيء.</string>
+    <string name="backup_vault_default_slot">النسخة المحددة</string>
+    <string name="vault_new_backup">نسخة احتياطية مشفرة جديدة</string>
+    <string name="vault_empty">لا توجد نسخ احتياطية داخل التطبيق بعد. أنشئ نسخة للاحتفاظ بنقطة استعادة مشفرة على هذا الجهاز.</string>
+    <string name="vault_slot_meta">%1$s · %2$d حدثاً · %3$d إشارة · %4$s</string>
+    <string name="vault_restore">استعادة</string>
+    <string name="vault_delete">حذف</string>
+    <string name="vault_delete_title">حذف هذه النسخة الاحتياطية؟</string>
+    <string name="vault_delete_message">سيُحذف «%1$s» نهائياً من الخزنة. لا يمكن التراجع عن هذا الإجراء.</string>
+    <string name="vault_deleted">تم حذف النسخة الاحتياطية</string>
+    <string name="vault_created">أُنشئت نسخة احتياطية داخل التطبيق — %1$d حدثاً مشفراً</string>
+    <string name="vault_create_failed">تعذر إنشاء النسخة الاحتياطية داخل التطبيق</string>
+    <string name="vault_restored">تمت استعادة «%1$s» — %2$d حدثاً جديداً (تخطي %3$d مكرراً)</string>
+    <string name="vault_restore_failed">فشلت الاستعادة</string>
 
     <!-- v1.6: إحصاءات كل خادم -->
     <string name="stats_per_server">إحصاءات كل خادم…</string>
@@ -424,6 +444,16 @@
     <string name="guide_top_rated_chip">الأعلى تقييماً</string>
     <string name="guide_editors_choice">اختيار المحرر</string>
     <string name="guide_editors_choice_cd">اختيار المحرر — من أكثر المصادر موثوقية</string>
+    <!-- v1.8.3 — إحصاءات الدليل: أكثر المصادر تقييماً + الحذف الجماعي -->
+    <string name="guide_stats_title">إحصاءات الدليل</string>
+    <string name="guide_stats_summary">قيمت %1$d من أصل %2$d مصدراً · متوسط %3$s ★ · %4$d مفضلة · %5$d ملاحظة</string>
+    <string name="guide_stats_distribution">★5 ×%1$d · ★4 ×%2$d · ★3 ×%3$d · ★2 ×%4$d · ★1 ×%5$d</string>
+    <string name="guide_stats_top">أكثر المصادر تقييماً</string>
+    <string name="guide_stats_clear">حذف جميع الإشارات</string>
+    <string name="guide_stats_clear_title">حذف جميع إشارات الدليل؟</string>
+    <string name="guide_stats_clear_message">سيؤدي هذا إلى حذف %1$d تقييماً و%2$d مفضلة و%3$d ملاحظة شخصية نهائياً. لا يمكن التراجع عن هذا الإجراء.</string>
+    <string name="guide_stats_clear_action">حذف</string>
+    <string name="guide_stats_cleared">تم حذف جميع إشارات الدليل</string>
     <string name="settings_section_guide">دليل WireGuard</string>
     <string name="settings_row_guide_title">من أين أحصل على تكوينات WireGuard؟</string>
     <string name="settings_row_guide_sub">36 مصدراً مجانياً ومدفوعاً مع الروابط والدروس والنصائح</string>

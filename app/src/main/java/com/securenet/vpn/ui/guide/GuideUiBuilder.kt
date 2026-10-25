@@ -15,6 +15,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.securenet.vpn.R
 import com.securenet.vpn.guide.GuideCategory
 import com.securenet.vpn.guide.GuideEntry
+import com.securenet.vpn.guide.GuideSignalsData
+import com.securenet.vpn.guide.GuideStats
 import com.securenet.vpn.guide.GuideStore
 import com.securenet.vpn.guide.WireGuideCatalog
 import com.securenet.vpn.guide.WireGuideFilter
@@ -38,6 +40,12 @@ import com.securenet.vpn.guide.WireGuideFilter
  * v1.8.2 — cards of the sources in [WireGuideCatalog.editorsChoice] carry
  * an amber "Editor's choice" reliability badge on the title row; the same
  * shared renderer serves both hosts, so the badge appears everywhere.
+ *
+ * v1.8.3 — the full-screen host can request a statistics card
+ * ([renderSections]' [showStats]) headed by the "most rated sources"
+ * ranking ([GuideStats]) plus a bulk-delete action that wipes every signal
+ * after a count-spelling confirmation dialog; the host is notified through
+ * [onSignalsCleared] so it can re-render and toast.
  */
 class GuideUiBuilder(
     private val context: Context,
@@ -45,7 +53,8 @@ class GuideUiBuilder(
     private val onOpenUrl: (String) -> Unit,
     private val onCopyUrl: (String) -> Unit,
     private val onOpenFullGuide: (() -> Unit)? = null,
-    private val onSignalsChanged: (() -> Unit)? = null
+    private val onSignalsChanged: (() -> Unit)? = null,
+    private val onSignalsCleared: (() -> Unit)? = null
 ) {
 
     /** Category icon (also used as the leading illustration on every card). */
@@ -57,10 +66,15 @@ class GuideUiBuilder(
         GuideCategory.APPS -> R.drawable.ic_qr_code
     }
 
-    /** Unfiltered browse view: optional "full guide" link, sections, tips. */
-    fun renderSections(host: LinearLayout) {
+    /** Unfiltered browse view: optional "full guide" link, sections, tips.
+     *  [showStats] (v1.8.3, full screen only) prepends the guide statistics
+     *  card when the user has produced any signals at all. */
+    fun renderSections(host: LinearLayout, showStats: Boolean = false) {
         host.removeAllViews()
         onOpenFullGuide?.let { host.addView(openFullGuideLink(it)) }
+        if (showStats) {
+            statsCard()?.let { host.addView(it) }
+        }
         WireGuideCatalog.sections().forEach { (category, entries) ->
             val body = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL }
             body.addView(stepsCard(category))
@@ -496,9 +510,171 @@ class GuideUiBuilder(
         }
     }
 
+    // ------------------------------------------------------------------
+    // v1.8.3 — statistics card: most rated sources + bulk delete
+    // ------------------------------------------------------------------
+
+    /**
+     * The guide statistics card — headline summary (rated / favorites /
+     * notes), the star distribution and the "most rated sources" ranking.
+     * Null while the user has no signals: an empty stats panel would only
+     * be noise, and the first rating immediately brings the card to life.
+     */
+    private fun statsCard(): MaterialCardView? {
+        val signals = GuideSignalsData.snapshot(store)
+        if (signals.isEmpty()) return null
+        val stats = GuideStats.compute(signals, WireGuideCatalog.entries.size)
+
+        val body = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(12), dp(10), dp(12), dp(10))
+            addView(TextView(context).apply {
+                text = getString(R.string.guide_stats_title)
+                setTextColor(resolveColor(com.google.android.material.R.attr.colorPrimary))
+                textSize = 14f
+                setTypeface(typeface, Typeface.BOLD)
+            })
+            addView(TextView(context).apply {
+                text = getString(
+                    R.string.guide_stats_summary,
+                    stats.ratedCount, stats.totalSources,
+                    String.format(java.util.Locale.US, "%.1f", stats.averageStars),
+                    stats.favoritesCount, stats.notesCount
+                )
+                setTextColor(resolveColor(android.R.attr.textColorSecondary))
+                textSize = 12f
+                setLineSpacing(dp(2).toFloat(), 1f)
+                layoutParams = LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply { topMargin = dp(4) }
+            })
+            if (stats.ratedCount > 0) {
+                addView(TextView(context).apply {
+                    text = getString(
+                        R.string.guide_stats_distribution,
+                        stats.distribution[5] ?: 0, stats.distribution[4] ?: 0,
+                        stats.distribution[3] ?: 0, stats.distribution[2] ?: 0,
+                        stats.distribution[1] ?: 0
+                    )
+                    setTextColor(resolveColor(android.R.attr.textColorSecondary))
+                    textSize = 11f
+                    layoutParams = LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                    ).apply { topMargin = dp(3) }
+                })
+            }
+            if (stats.mostRated.isNotEmpty()) {
+                addView(TextView(context).apply {
+                    text = getString(R.string.guide_stats_top)
+                    setTextColor(resolveColor(com.google.android.material.R.attr.colorOnSurface))
+                    textSize = 12.5f
+                    setTypeface(typeface, Typeface.BOLD)
+                    layoutParams = LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                    ).apply { topMargin = dp(8) }
+                })
+                stats.mostRated.forEachIndexed { index, ranked ->
+                    addView(mostRatedRow(index + 1, ranked))
+                }
+            }
+            addView(button(R.string.guide_stats_clear, filled = false) { confirmClearAll() }.apply {
+                layoutParams = LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    dp(36)
+                ).apply {
+                    topMargin = dp(8)
+                    marginEnd = dp(4)
+                }
+            })
+        }
+        return MaterialCardView(context).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply { bottomMargin = dp(8) }
+            radius = dp(12).toFloat()
+            setContentPadding(0, 0, 0, 0)
+            addView(body)
+        }
+    }
+
+    /** One ranked row: `N.` + name (+ ♥) + stars, stars forced LTR. */
+    private fun mostRatedRow(rank: Int, ranked: GuideStats.Ranked): LinearLayout {
+        val row = LinearLayout(context).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = android.view.Gravity.CENTER_VERTICAL
+            layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply { topMargin = dp(3) }
+        }
+        row.addView(TextView(context).apply {
+            text = "$rank."
+            setTextColor(resolveColor(com.google.android.material.R.attr.colorPrimary))
+            textSize = 12f
+            setTypeface(typeface, Typeface.BOLD)
+            layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply { marginEnd = dp(6) }
+        })
+        row.addView(TextView(context).apply {
+            text = if (ranked.favorite) "\u2665 " + ranked.name else ranked.name
+            setTextColor(resolveColor(com.google.android.material.R.attr.colorOnSurface))
+            textSize = 12.5f
+            maxLines = 1
+            ellipsize = android.text.TextUtils.TruncateAt.END
+            layoutParams = LinearLayout.LayoutParams(
+                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f
+            )
+        })
+        row.addView(TextView(context).apply {
+            text = "\u2605".repeat(ranked.stars)
+            setTextColor(STAR_ON)
+            textSize = 12f
+            layoutDirection = View.LAYOUT_DIRECTION_LTR
+            layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply { marginStart = dp(6) }
+        })
+        return row
+    }
+
+    /**
+     * Bulk delete with confirmation: the dialog spells out the exact counts
+     * (ratings / favorites / notes) and the action is irreversible. On
+     * confirm the store is wiped and [onSignalsCleared] lets the host
+     * re-render (the stats card disappears) and toast.
+     */
+    private fun confirmClearAll() {
+        val signals = GuideSignalsData.snapshot(store)
+        if (signals.isEmpty()) return
+        MaterialAlertDialogBuilder(context)
+            .setTitle(R.string.guide_stats_clear_title)
+            .setMessage(
+                getString(
+                    R.string.guide_stats_clear_message,
+                    signals.ratings.size, signals.favorites.size, signals.notes.size
+                )
+            )
+            .setPositiveButton(R.string.guide_stats_clear_action) { _, _ ->
+                store.clearAll()
+                onSignalsCleared?.invoke()
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
     // ------------------------------------------------------------------ //
 
     private fun getString(res: Int): String = context.getString(res)
+
+    private fun getString(res: Int, vararg args: Any): String =
+        context.getString(res, *args)
 
     private fun resolveColor(attr: Int): Int {
         val value = android.util.TypedValue()
