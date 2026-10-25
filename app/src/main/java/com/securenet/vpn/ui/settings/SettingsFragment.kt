@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.securenet.vpn.R
+import com.securenet.vpn.MainActivity
 import com.securenet.vpn.backup.LogBackupEngine
 import com.securenet.vpn.databinding.FragmentSettingsBinding
 import com.securenet.vpn.di.AppContainer
@@ -115,6 +116,11 @@ class SettingsFragment : Fragment(), BackupDialogFragment.Host {
             ScheduleDialogFragment().show(parentFragmentManager, "schedule_dialog")
         }
         binding.tvScheduleSummary.text = ui.scheduleSummary
+
+        // v1.8: full-screen WireGuard config-sources guide
+        binding.rowGuide.setOnClickListener {
+            (activity as? MainActivity)?.openConfigGuide()
+        }
 
         // v1.4: multi-hop + hotspot sharing
         binding.rowMultiHop.setOnClickListener {

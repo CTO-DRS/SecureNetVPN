@@ -394,6 +394,20 @@
     <string name="guide_section_apps">تطبيقات وأدوات</string>
     <string name="guide_section_routers">راوترات وجدران نارية</string>
     <string name="guide_tips_title">نصائح وحلول المشاكل</string>
+    <string name="guide_screen_title">مصادر تكوينات WireGuard</string>
+    <string name="guide_back_cd">رجوع</string>
+    <string name="guide_search_hint">ابحث: اسم أو موقع أو كلمة مفتاحية…</string>
+    <string name="guide_filter_all">الكل</string>
+    <string name="guide_results_count">%d مصدراً مطابقاً</string>
+    <string name="guide_no_results">لا نتائج — جرّب كلمة أخرى</string>
+    <string name="guide_open_full">افتح شاشة الدليل الكاملة — بحث ومرشحات ورسوم توضيحية</string>
+    <string name="guide_flow_1">اختر مصدراً</string>
+    <string name="guide_flow_2">أنشئ ملف ‎.conf</string>
+    <string name="guide_flow_3">استورد إلى SecureNet</string>
+    <string name="guide_flow_4">اتصل</string>
+    <string name="settings_section_guide">دليل WireGuard</string>
+    <string name="settings_row_guide_title">من أين أحصل على تكوينات WireGuard؟</string>
+    <string name="settings_row_guide_sub">36 مصدراً مجانياً ومدفوعاً مع الروابط والدروس والنصائح</string>
     <string name="guide_note_paid_only">تكوينات WireGuard تتطلب اشتراكاً مدفوعاً</string>
     <string name="guide_entry_button">ليس لديك تكوين؟ من أين تحصل على واحد — مجاني ومدفوع…</string>
 

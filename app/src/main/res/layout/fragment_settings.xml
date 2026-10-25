@@ -441,6 +441,42 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- v1.8: standalone WireGuard config-sources guide -->
+        <TextView style="@style/SectionTitle" android:text="@string/settings_section_guide" />
+
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.SecureNet.GlassCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                style="@style/SettingRow"
+                android:id="@+id/rowGuide"
+                android:background="?attr/selectableItemBackground">
+
+                <ImageView
+                    android:layout_width="34dp"
+                    android:layout_height="34dp"
+                    android:background="@drawable/bg_icon_circle"
+                    android:importantForAccessibility="no"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_globe"
+                    app:tint="@color/on_glass_primary" />
+
+                <LinearLayout style="@style/SettingTextColumn">
+                    <TextView style="@style/SettingTitle" android:text="@string/settings_row_guide_title" />
+                    <TextView style="@style/SettingDesc" android:text="@string/settings_row_guide_sub" />
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_arrow_right"
+                    app:tint="@color/on_glass_secondary" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
         <TextView style="@style/SectionTitle" android:text="@string/settings_section_data" />
 
         <com.google.android.material.card.MaterialCardView
