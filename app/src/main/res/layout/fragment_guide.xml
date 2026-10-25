@@ -104,6 +104,14 @@
                 android:checked="true"
                 android:text="@string/guide_filter_all" />
 
+            <!-- v1.8.2: default "top rated" sort as an extra chip -->
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipTopRated"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/guide_top_rated_chip" />
+
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipFav"
                 style="@style/Widget.Material3.Chip.Filter"

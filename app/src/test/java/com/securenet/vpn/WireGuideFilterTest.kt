@@ -179,18 +179,59 @@ class WireGuideFilterTest {
         assertEquals("windscribe", sorted.first())            // favorite beats rating
         assertEquals("azirevpn", sorted[1])                   // 5 stars
         assertEquals("ivpn", sorted[2])                       // 4 stars
-        // everyone else keeps the curated catalog order
+        // v1.8.2 — below the rated block, "Editor's choice" entries lead
+        // (catalog order inside the block), then everyone else.
+        val editorsButIvpn = WireGuideCatalog.editorsChoice - "ivpn"
+        val editorsBlock = order.filter { it in editorsButIvpn }
+        val rest = order.filter {
+            it !in setOf("windscribe", "ivpn", "azirevpn") && it !in editorsButIvpn
+        }
+        assertEquals(editorsBlock + rest, sorted.drop(3))
+    }
+
+    @Test
+    fun `sorting with no signals floats editors choice then catalog order`() {
+        val order = entries.map { it.id }
+        val editors = WireGuideCatalog.editorsChoice
+        val sorted = WireGuideFilter.sortWithSignals(entries, InMemoryGuideStore()).map { it.id }
         assertEquals(
-            order.filter { it !in setOf("windscribe", "ivpn", "azirevpn") },
-            sorted.drop(3)
+            "editor's choice block first (catalog order), then the rest",
+            order.filter { it in editors } + order.filter { it !in editors },
+            sorted
         )
     }
 
     @Test
-    fun `sorting with no signals preserves catalog order exactly`() {
+    fun `top rated ordering puts stars above editors choice above unrated`() {
+        val store = InMemoryGuideStore()
+        store.setRating("cloudflare-warp-wgcf", 3)
+        var sorted = WireGuideFilter.sortWithSignals(entries, store).map { it.id }
+        // a 3-star non-editor entry beats all 0-star editors-choice holders
+        assertEquals("cloudflare-warp-wgcf", sorted.first())
+        // …and a favorite still leads everything
+        store.setFavorite("wg-macos", true)
+        sorted = WireGuideFilter.sortWithSignals(entries, store).map { it.id }
+        assertEquals("wg-macos", sorted.first())
+    }
+
+    @Test
+    fun `editors choice badge terms are searchable in english and arabic`() {
         assertEquals(
-            entries,
-            WireGuideFilter.sortWithSignals(entries, InMemoryGuideStore())
+            WireGuideCatalog.editorsChoice,
+            WireGuideFilter.filter(entries, "editor").map { it.id }.toSet()
+        )
+        assertEquals(
+            WireGuideCatalog.editorsChoice,
+            WireGuideFilter.filter(entries, "موثوق").map { it.id }.toSet()
+        )
+        assertEquals(
+            WireGuideCatalog.editorsChoice,
+            WireGuideFilter.filter(entries, "اختيار المحرر").map { it.id }.toSet()
+        )
+        // non-editor entries stay unreachable through the badge terms
+        assertFalse(
+            WireGuideFilter.filter(entries, "editor")
+                .any { !WireGuideCatalog.isEditorsChoice(it.id) }
         )
     }
 }

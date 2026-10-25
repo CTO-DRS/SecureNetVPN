@@ -12,6 +12,11 @@ package com.securenet.vpn.guide
  * ([favorites]); [sortWithSignals] floats favorites and top-rated sources
  * to the top while keeping the catalog order inside ties (stable sort).
  *
+ * v1.8.2 — "Editor's choice" entries ([WireGuideCatalog.editorsChoice])
+ * are searchable through badge terms ("editor", "موثوق", …) and act as a
+ * sort tie-break after the star rating, so the most reliable sources rise
+ * to the top of the default ordering and of the new Top-rated chip.
+ *
  * Pure Kotlin (no Android imports) so the whole behaviour is unit-testable.
  */
 object WireGuideFilter {
@@ -40,6 +45,11 @@ object WireGuideFilter {
         append(WireGuideCatalog.keywordsOf(entry.id).joinToString(" ") { it.lowercase() })
         append(' ')
         append(categoryTerms(entry.category).joinToString(" ") { it.lowercase() })
+        // v1.8.2 — "Editor's choice" badge terms are searchable too.
+        if (WireGuideCatalog.isEditorsChoice(entry.id)) {
+            append(" editor's choice editors ")
+            append("اختيار المحرر موثوق موثوقة")
+        }
         if (!note.isNullOrBlank()) {
             append(' ')
             append(note.lowercase())
@@ -81,12 +91,15 @@ object WireGuideFilter {
 
     /**
      * v1.8.1 — user-signal ordering: bookmarked sources first, then by
-     * star rating (high → low). Kotlin sorts are stable, so within equal
-     * signals the catalog's curated order is preserved.
+     * star rating (high → low). v1.8.2 — "Editor's choice" entries break
+     * remaining ties, so the most reliable unrated sources lead the list.
+     * Kotlin sorts are stable, so within equal signals the catalog's
+     * curated order is preserved.
      */
     fun sortWithSignals(entries: List<GuideEntry>, store: GuideStore): List<GuideEntry> =
         entries.sortedWith(
             compareByDescending<GuideEntry> { store.isFavorite(it.id) }
                 .thenByDescending { store.rating(it.id) }
+                .thenByDescending { WireGuideCatalog.isEditorsChoice(it.id) }
         )
 }

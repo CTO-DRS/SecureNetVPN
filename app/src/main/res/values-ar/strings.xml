@@ -356,8 +356,8 @@
     <string name="settings_import_backup_desc">استعادة ملف .snback — تُدمج الأحداث ولا يُحذف أي شيء</string>
     <string name="backup_export_title">تصدير نسخة احتياطية مشفرة</string>
     <string name="backup_import_title">استيراد نسخة احتياطية مشفرة</string>
-    <string name="backup_export_message">تُحمى النسخة الاحتياطية بكلمة مرور (PBKDF2 بمئة وعشرين ألف دورة + AES-256-GCM). اختر كلمة مرور قوية — لا يمكن استعادتها أو تغييرها.</string>
-    <string name="backup_import_message">أدخل كلمة المرور التي أُنشئت بها هذه النسخة. تُدمج أحداثها في السجل الحالي — لا يُحذف أي شيء.</string>
+    <string name="backup_export_message">تُحمى النسخة الاحتياطية بكلمة مرور (PBKDF2 بمئة وعشرين ألف دورة + AES-256-GCM). اختر كلمة مرور قوية — لا يمكن استعادتها أو تغييرها. وتنتقل تقييمات الدليل ومفضلاتك وملاحظاتك الخاصة داخل الملف نفسه.</string>
+    <string name="backup_import_message">أدخل كلمة المرور التي أُنشئت بها هذه النسخة. تُدمج أحداثها في السجل الحالي — لا يُحذف أي شيء. وتُدمج تقييمات الدليل ومفضلاته وملاحظاته الموجودة في الملف أيضاً، ويبقى ما لديك بالفعل محفوظاً.</string>
     <string name="backup_passphrase_hint">كلمة المرور (8 أحرف على الأقل)</string>
     <string name="backup_passphrase_confirm">تأكيد كلمة المرور</string>
     <string name="backup_passphrase_too_short">يجب ألا تقل كلمة المرور عن 8 أحرف</string>
@@ -366,6 +366,8 @@
     <string name="backup_export_success">تم حفظ النسخة الاحتياطية — %1$d حدثاً مشفراً</string>
     <string name="backup_export_failed">فشل تصدير النسخة الاحتياطية</string>
     <string name="backup_import_success">تمت الاستعادة — %1$d حدثاً جديداً (تخطي %2$d مكرراً)</string>
+    <string name="backup_export_signals"> · تضمين %1$d من إشارات الدليل</string>
+    <string name="backup_import_signals"> · دمج %1$d من إشارات الدليل</string>
     <string name="backup_import_wrong_pass">كلمة المرور خاطئة أو الملف تالف</string>
     <string name="backup_import_failed">فشل استيراد النسخة الاحتياطية</string>
 
@@ -418,6 +420,10 @@
     <string name="guide_note_remove">إزالة</string>
     <string name="guide_user_note_prefix">ملاحظة خاصة:</string>
     <string name="guide_favorites_empty">لا مفضلات بعد — انقر القلب على أي مصدر لتثبيته هنا</string>
+    <!-- v1.8.2 — شريحة الترتيب بالأعلى تقييماً وشارة اختيار المحرر -->
+    <string name="guide_top_rated_chip">الأعلى تقييماً</string>
+    <string name="guide_editors_choice">اختيار المحرر</string>
+    <string name="guide_editors_choice_cd">اختيار المحرر — من أكثر المصادر موثوقية</string>
     <string name="settings_section_guide">دليل WireGuard</string>
     <string name="settings_row_guide_title">من أين أحصل على تكوينات WireGuard؟</string>
     <string name="settings_row_guide_sub">36 مصدراً مجانياً ومدفوعاً مع الروابط والدروس والنصائح</string>

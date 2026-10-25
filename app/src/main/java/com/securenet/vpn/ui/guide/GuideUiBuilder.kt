@@ -34,6 +34,10 @@ import com.securenet.vpn.guide.WireGuideFilter
  * an editable personal note (dialog) that is also searchable. Star and
  * favorite taps repaint in place; note changes may trigger
  * [onSignalsChanged] so hosts can re-render (e.g. favorites-only view).
+ *
+ * v1.8.2 — cards of the sources in [WireGuideCatalog.editorsChoice] carry
+ * an amber "Editor's choice" reliability badge on the title row; the same
+ * shared renderer serves both hosts, so the badge appears everywhere.
  */
 class GuideUiBuilder(
     private val context: Context,
@@ -231,6 +235,23 @@ class GuideUiBuilder(
                     0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f
                 )
             })
+            // v1.8.2 — reliability badge on the curated shortlist.
+            if (WireGuideCatalog.isEditorsChoice(entry.id)) {
+                addView(TextView(context).apply {
+                    text = "★ " + getString(R.string.guide_editors_choice)
+                    setTextColor(STAR_ON)
+                    textSize = 9f
+                    maxLines = 1
+                    setBackgroundResource(R.drawable.bg_editors_badge)
+                    setPadding(dp(7), dp(3), dp(7), dp(3))
+                    contentDescription =
+                        getString(R.string.guide_editors_choice_cd)
+                    layoutParams = LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                    ).apply { marginEnd = dp(2) }
+                })
+            }
             addView(favoriteToggle(entry))
         }
 

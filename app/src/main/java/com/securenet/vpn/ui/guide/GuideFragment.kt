@@ -36,6 +36,11 @@ import com.securenet.vpn.guide.WireGuideFilter
  * [GuideStoreProvider]; favorites float to the top of every list and the
  * Favorites chip shows bookmarked sources only.
  *
+ * v1.8.2 — a "Top rated" chip renders the whole catalog as one flat list
+ * ordered by the user's signals (favorites → stars) with the "Editor's
+ * choice" reliability badge holders breaking ties — the default sort the
+ * sections view already applies, available at one tap.
+ *
  * Hosting contract: [MainActivity.openConfigGuide] hides the bottom nav and
  * pushes this fragment on the back stack; this fragment restores the nav in
  * onDestroyView so any pop path (button or system back) re-shows it.
@@ -92,6 +97,10 @@ class GuideFragment : Fragment() {
     private fun isFavoritesOnly(): Boolean =
         _binding?.chipGroup?.checkedChipId == R.id.chipFav
 
+    /** v1.8.2 — the flat "Top rated" sort chip. */
+    private fun isTopRatedOnly(): Boolean =
+        _binding?.chipGroup?.checkedChipId == R.id.chipTopRated
+
     /**
      * Re-render only when signal membership can change: inside the
      * favorites-only flat list. Elsewhere cards repaint in place, so the
@@ -124,6 +133,7 @@ class GuideFragment : Fragment() {
     private fun render(builder: GuideUiBuilder) {
         val query = binding.etGuideSearch.text?.toString().orEmpty()
         val favOnly = isFavoritesOnly()
+        val topRated = isTopRatedOnly()
         // Personal notes are searchable too (v1.8.1): snapshot id → note.
         val notes = store.noteIds().mapNotNull { id ->
             store.note(id)?.let { id to it }
@@ -132,7 +142,8 @@ class GuideFragment : Fragment() {
             WireGuideCatalog.entries, query, selectedCategory,
             notes, if (favOnly) store.favoriteIds() else null
         )
-        val filtering = query.isNotBlank() || selectedCategory != null || favOnly
+        val filtering = query.isNotBlank() || selectedCategory != null ||
+            favOnly || topRated
         if (filtering) {
             binding.tvGuideCount.text =
                 getString(R.string.guide_results_count, entries.size)
