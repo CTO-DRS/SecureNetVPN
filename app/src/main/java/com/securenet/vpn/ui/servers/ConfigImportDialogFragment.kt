@@ -68,6 +68,12 @@ class ConfigImportDialogFragment : BottomSheetDialogFragment() {
             pendingEntry = null
             binding.previewGroup.visibility = View.GONE
         }
+        // v1.7: "where do I even get a config?" — open the built-in guide.
+        binding.btnOpenGuide.setOnClickListener {
+            ConfigGuideDialogFragment().show(
+                parentFragmentManager, ConfigGuideDialogFragment::class.java.simpleName
+            )
+        }
     }
 
     private fun launchScanner() {

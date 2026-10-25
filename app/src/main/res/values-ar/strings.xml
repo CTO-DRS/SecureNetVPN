@@ -376,4 +376,47 @@
     <string name="server_stats_empty">لا توجد جلسات خوادم مسجلة بعد</string>
     <string name="server_stats_row_meta">%1$s جلسة · %2$s · %3$s إخفاق</string>
     <string name="server_stats_last_used">آخر اتصال: %1$s</string>
+
+    <!-- v1.7: دليل "من أين أحصل على تكوينات WireGuard" -->
+    <string name="guide_title">من أين أحصل على تكوينات WireGuard؟</string>
+    <string name="guide_intro">كل مصدر أدناه يمنحك ملف ‎.conf قياسياً يُستورد مباشرة إلى SecureNet (الخوادم → استيراد). مجاني ومدفوع، مواقع وتطبيقات.</string>
+    <string name="guide_open">فتح</string>
+    <string name="guide_copy">نسخ الرابط</string>
+    <string name="guide_no_browser">لا يوجد متصفح على هذا الجهاز</string>
+    <string name="guide_link_copied">تم نسخ الرابط</string>
+    <string name="guide_step1">1 · أنشئ حساباً لدى أي مصدر أدناه (أو ثبّت خادماً ذاتي الاستضافة).</string>
+    <string name="guide_step2">2 · أنشئ تكوين WireGuard لجهازك — أغلب المزودين يوفرون منشئ تكوينات في لوحة الحساب.</string>
+    <string name="guide_step3">3 · نزّل ملف ‎.conf (أو امسح رمز QR الذي يوفره المزود).</string>
+    <string name="guide_step4">4 · في SecureNet: الخوادم → استيراد تكوين WireGuard → امسح أو افتح الملف أو الصقه — ثم اتصل.</string>
+    <string name="guide_section_free">مجاني</string>
+    <string name="guide_section_paid">مزودون مدفوعون</string>
+    <string name="guide_section_selfhosted">خوادم ذاتية الاستضافة</string>
+    <string name="guide_section_apps">تطبيقات وأدوات</string>
+    <string name="guide_note_paid_only">تكوينات WireGuard تتطلب اشتراكاً مدفوعاً</string>
+    <string name="guide_entry_button">ليس لديك تكوين؟ من أين تحصل على واحد — مجاني ومدفوع…</string>
+
+    <string name="guide_desc_warp_wgcf">شبكة WARP المجانية من Cloudflare كتكوين WireGuard حقيقي: شغّل أداة wgcf مفتوحة المصدر مرة واحدة على حاسوب لتسجيل الحساب وتصدير ملف مجاني غير محدود.</string>
+    <string name="guide_desc_proton_free">أنشئ حساباً مجانياً ثم لوحة الحساب → Downloads → WireGuard configuration. الخطة المجانية تنشئ تكوينات للخوادم المجانية، والمدفوعة تفتح كل المواقع.</string>
+    <string name="guide_desc_mullvad">مزود يضع الخصوصية أولاً (5 يورو شهرياً ثابت). بعد الدخول، منشئ التكوينات يتيح اختيار الدولة والمدينة والمنفذ وينزّل ملف ‎.conf مباشرة.</string>
+    <string name="guide_desc_windscribe">منشئ التكوينات في getconfig/wireguard: اختر الموقع والمنفذ (443 خيار آمن)، أنشئ زوج مفاتيح ثم نزّل الملف.</string>
+    <string name="guide_desc_ivpn">منشئ تكوينات WireGuard داخل منطقة العملاء: أنشئ مفتاحاً واختر الخوادم ونزّل ملفات ‎.conf مضغوطة.</string>
+    <string name="guide_desc_azirevpn">مزود سويدي يراعي الخصوصية (خوادم بلا أقراص). بعد الدخول، أنشئ مفاتيح WireGuard وتكوينات الخوادم من منطقة الحساب.</string>
+    <string name="guide_desc_ovpn">بعد الدخول → أنشئ مفاتيح WireGuard واختر الخادم ونزّل ملف ‎.conf. صفحة أدلتهم تغطي كل الأنظمة.</string>
+    <string name="guide_desc_airvpn">منطقة العملاء → Config Generator → اختر WireGuard كبروتوكول وخادماً مناسباً ثم أنشئ ملف ‎.conf.</string>
+    <string name="guide_desc_astrill">رابط المنشئ مباشرة: سجّل دخولك وأداة WireGuard في منطقة العضو تبني تكويناً لأي خادم ومنفذ.</string>
+    <string name="guide_desc_hideme">أداة تكوين WireGuard داخل منطقة الأعضاء — اختر خادماً ونزّل الملف.</string>
+    <string name="guide_desc_ipvanish">بوابة الحساب → WireGuard ضمن إدارة الخدمة → اختر الموقع واضغط Generate لتنزيل التكوين.</string>
+    <string name="guide_desc_surfshark">صفحة المستخدم → VPN → Manual setup → Router → WireGuard. أنشئ المفتاح وانسخ التكوين الناتج إلى ملف ‎.conf.</string>
+    <string name="guide_desc_privatevpn">لوحة التحكم → اختر الموقع → تظهر بيانات WireGuard أسفله — اضغط التنزيل.</string>
+    <string name="guide_desc_privadovpn">لوحة التحكم → Manual Configuration → WireGuard → اختر خادماً ونزّل التكوين.</string>
+    <string name="guide_desc_strongvpn">منشئ تكوينات WireGuard بعد تسجيل الدخول: اختر الموقع من القائمة واضغط GENERATE.</string>
+
+    <string name="guide_desc_wg_easy">أسهل خادم ذاتي الاستضافة: حاوية Docker واحدة بواجهة ويب تنشئ العملاء ورموز QR على خادمك الخاص.</string>
+    <string name="guide_desc_pivpn">مثبّت بأمر واحد يحوّل Raspberry Pi (أو أي جهاز Debian/Ubuntu) إلى خادم WireGuard مع ملف لكل جهاز.</string>
+    <string name="guide_desc_algo">كتاب Ansible من Trail of Bits: ينشر خادم WireGuard شخصياً مُحصَّناً على أي VPS سحابي خلال دقائق.</string>
+    <string name="guide_desc_headscale">خادم تحكم Tailscale ذاتي الاستضافة — شبكة WireGuard متشابكة لأجهزتك دون أي طرف ثالث.</string>
+
+    <string name="guide_desc_wg_android">تطبيق WireGuard الرسمي — مفيد للتحقق من ملف، أو مسح رمز QR من مزود وإعادة تصديره ‎.conf إلى SecureNet.</string>
+    <string name="guide_desc_wg_fdroid">العميل الرسمي نفسه من F-Droid، دون خدمات Google.</string>
+    <string name="guide_desc_wg_desktop">عملاء رسميون لـ Windows وmacOS وLinux وغيرها — ملفات ‎.conf نفسها تعمل في SecureNet بشكل مطابق.</string>
 </resources>

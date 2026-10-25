@@ -90,6 +90,7 @@ jobs:
 
             ### Features
             - WireGuard VPN (wireguard-go via JNI, foreground service, `vpn_channel` notifications)
+            - **NEW v1.7: Built-in "Where to get WireGuard configs" guide — free sources (Cloudflare WARP via wgcf, Proton free), 13 paid providers with their config-generator links (Mullvad, Windscribe, IVPN, AzireVPN, OVPN, AirVPN, Astrill, hide.me, IPVanish, Surfshark, PrivateVPN, PrivadoVPN, StrongVPN), self-hosted server tools (wg-easy, PiVPN, Algo, Headscale) and official clients — every entry with Open-in-browser + Copy-link actions, full EN/AR, reachable from the import screen**
             - **FIX v1.6.3: Dashboard crash eliminated — the exact stack trace captured by the v1.6.2 crash reporter pinpointed a Kotlin initialisation-order bug (container handle read by an init-time coroutine before its property initializer ran). The handle is now a constructor property and every startup refresh is failure-isolated: no more closing after the first three screens**
             - **NEW v1.6.2: On-screen crash reporter — when the app crashes anywhere, a dedicated report screen (separate process) shows the full stack trace with copy/share buttons, and the next launch offers the same report — no more guessing at field failures**
             - **FIX v1.6.1: Startup crash loop fixed — self-healing encrypted storage (purge + retry + plain fallback) for devices with corrupt AndroidKeyStore or restored/cloned app data, plus a global crash reporter that captures any future failure to a local file**

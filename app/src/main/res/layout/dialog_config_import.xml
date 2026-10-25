@@ -156,5 +156,15 @@
             android:textColor="@color/status_failed"
             android:textSize="13sp"
             android:visibility="gone" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnOpenGuide"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:text="@string/guide_entry_button"
+            app:icon="@drawable/ic_globe"
+            app:iconGravity="textStart" />
     </LinearLayout>
 </ScrollView>
