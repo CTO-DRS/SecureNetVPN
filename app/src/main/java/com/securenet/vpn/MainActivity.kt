@@ -13,6 +13,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.securenet.vpn.databinding.ActivityMainBinding
 import com.securenet.vpn.service.SecureNetVpnService
 import com.securenet.vpn.ui.dashboard.DashboardFragment
+import com.securenet.vpn.ui.guide.GuideFragment
 import com.securenet.vpn.ui.history.HistoryFragment
 import com.securenet.vpn.ui.permissions.PermissionManager
 import com.securenet.vpn.ui.scanner.ScannerFragment
@@ -128,6 +129,24 @@ class MainActivity : AppCompatActivity(), PermissionRequestHost {
     fun bottomNav(): BottomNavigationView = binding.bottomNav
 
     fun root(): View = binding.root
+
+    /** v1.8: show/hide the bottom bar (hidden while the full guide is open). */
+    fun setBottomNavVisible(visible: Boolean) {
+        binding.bottomNav.visibility = if (visible) View.VISIBLE else View.GONE
+    }
+
+    /**
+     * v1.8: full-screen WireGuard config-sources guide from Settings (or the
+     * quick bottom sheet). Pushed on the back stack; [GuideFragment] restores
+     * the bottom bar when it is popped by any path.
+     */
+    fun openConfigGuide() {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainer, GuideFragment())
+            .addToBackStack(null)
+            .commitAllowingStateLoss()
+        setBottomNavVisible(false)
+    }
 
     companion object {
         /** Permissions explained + requested one at a time, in this order. */

@@ -394,6 +394,20 @@
     <string name="guide_section_apps">Apps &amp; tools</string>
     <string name="guide_section_routers">Routers &amp; firewalls</string>
     <string name="guide_tips_title">Tips &amp; troubleshooting</string>
+    <string name="guide_screen_title">WireGuard config sources</string>
+    <string name="guide_back_cd">Back</string>
+    <string name="guide_search_hint">Search: name, site or keyword…</string>
+    <string name="guide_filter_all">All</string>
+    <string name="guide_results_count">%d matching sources</string>
+    <string name="guide_no_results">No sources match — try another word</string>
+    <string name="guide_open_full">Open the full guide screen — search, filters and illustrations</string>
+    <string name="guide_flow_1">Choose a source</string>
+    <string name="guide_flow_2">Generate the .conf</string>
+    <string name="guide_flow_3">Import into SecureNet</string>
+    <string name="guide_flow_4">Connect</string>
+    <string name="settings_section_guide">WireGuard guide</string>
+    <string name="settings_row_guide_title">Where to get WireGuard configs</string>
+    <string name="settings_row_guide_sub">36 free &amp; paid sources with links, tutorials and tips</string>
     <string name="guide_note_paid_only">WireGuard configs require a paid plan</string>
     <string name="guide_entry_button">Don\'t have a config? Where to get one — free &amp; paid…</string>
 

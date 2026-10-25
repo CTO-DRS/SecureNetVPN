@@ -313,6 +313,54 @@ object WireGuideCatalog {
         )
     )
 
+    /**
+     * v1.8 — search keywords per entry id (EN brand aliases + Arabic
+     * transliterations), consumed by [WireGuideFilter]. Kept here so the
+     * search vocabulary lives next to the catalog data it describes.
+     */
+    private val keywordsById: Map<String, List<String>> = mapOf(
+        "cloudflare-warp-wgcf" to listOf("cloudflare", "warp", "wgcf", "1.1.1.1",
+            "كلاودفلير", "وارب", "ورب"),
+        "proton-free" to listOf("proton", "switzerland", "بروتون"),
+        "mullvad" to listOf("mullvad", "sweden", "مولفاد", "السويد"),
+        "windscribe" to listOf("windscribe", "ويندسكرايب"),
+        "ivpn" to listOf("ivpn", "آيفن"),
+        "azirevpn" to listOf("azire", "sweden", "أزير"),
+        "ovpn" to listOf("ovpn", "sweden", "أوفبن"),
+        "airvpn" to listOf("air", "italy", "اير", "إيطاليا"),
+        "astrill" to listOf("astrill", "استريل"),
+        "hideme" to listOf("hideme", "hide.me", "هايدمي"),
+        "ipvanish" to listOf("ipvanish", "ايفانيش"),
+        "surfshark" to listOf("surfshark", "سيرفشارك"),
+        "privatevpn" to listOf("privatevpn", "private", "برايفت"),
+        "privadovpn" to listOf("privado", "بريفادو"),
+        "strongvpn" to listOf("strong", "سترونج"),
+        "torguard" to listOf("torguard", "تورجارد"),
+        "pia" to listOf("pia", "private internet access", "برايفات انترنيت"),
+        "nordvpn" to listOf("nord", "norway", "نورد"),
+        "wg-easy" to listOf("docker", "web ui", "دوكر", "ويب"),
+        "pivpn" to listOf("raspberry", "pi", "debian", "رازبيري", "راسبيري"),
+        "algo" to listOf("ansible", "trail of bits", "أنسيبل"),
+        "headscale" to listOf("tailscale", "self", "هيدسكيل"),
+        "tailscale" to listOf("mesh", "personal", "تيلسكيل", "ميش"),
+        "netbird" to listOf("netbird", "mesh", "نت بيرد"),
+        "netmaker" to listOf("netmaker", "mesh", "نت ميكر"),
+        "firezone" to listOf("firezone", "zero trust", "فايرزون"),
+        "wireguard-install" to listOf("script", "bash", "ubuntu", "سكربت", "سكريبت"),
+        "glinet" to listOf("gl-inet", "travel", "سفر", "راوتر سفر"),
+        "openwrt" to listOf("openwrt", "luci", "اوبنوورت"),
+        "opnsense" to listOf("pfsense", "opnsense", "firewall", "جدار ناري"),
+        "mikrotik" to listOf("routeros", "ميكروتك"),
+        "wg-android" to listOf("android", "official", "اندرويد"),
+        "wg-fdroid" to listOf("fdroid", "open source", "فدرويد"),
+        "wg-desktop" to listOf("windows", "linux", "mac", "ويندوز", "لينكس"),
+        "wg-ios" to listOf("ios", "iphone", "ipad", "ايفون", "آيباد", "ابل"),
+        "wg-macos" to listOf("macos", "mac", "ماك", "ماك بوك", "ابل")
+    )
+
+    /** Curated search keywords for one entry id (never empty for real ids). */
+    fun keywordsOf(id: String): List<String> = keywordsById[id] ?: emptyList()
+
     /** Entries of one category, in catalog order. */
     fun byCategory(category: GuideCategory): List<GuideEntry> =
         entries.filter { it.category == category }
