@@ -45,6 +45,9 @@ interface GuideStore {
     /** Ids that currently carry a non-blank personal note. */
     fun noteIds(): Set<String>
 
+    /** Ids that currently carry a 1–5 star rating (v1.8.2, backup export). */
+    fun ratedIds(): Set<String>
+
     companion object {
         /** Shared clamping/normalisation rule for ratings. */
         fun normalizeRating(stars: Int): Int = when {
@@ -88,6 +91,8 @@ class InMemoryGuideStore : GuideStore {
     }
 
     override fun noteIds(): Set<String> = notes.keys.toSet()
+
+    override fun ratedIds(): Set<String> = ratings.keys.toSet()
 }
 
 /**
@@ -131,6 +136,8 @@ class SharedPrefsGuideStore(context: Context) : GuideStore {
     }
 
     override fun noteIds(): Set<String> = idsForPrefix(PREFIX_NOTE)
+
+    override fun ratedIds(): Set<String> = idsForPrefix(PREFIX_RATING)
 
     private fun idsForPrefix(prefix: String): Set<String> =
         prefs.all.keys.mapNotNull { k ->

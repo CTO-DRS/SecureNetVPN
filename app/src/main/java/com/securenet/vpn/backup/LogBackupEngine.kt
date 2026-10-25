@@ -1,5 +1,7 @@
 package com.securenet.vpn.backup
 
+import com.securenet.vpn.guide.GuideSignalsCodec
+import com.securenet.vpn.guide.GuideSignalsData
 import java.security.SecureRandom
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -25,6 +27,14 @@ import javax.crypto.spec.SecretKeySpec
  * followed by the raw JSONL event lines exactly as ConnectionLogger
  * stores them, so a restore round-trips the log byte-for-byte.
  *
+ * v1.8.2 — the header may additionally carry a `"signals":{…}` member: a
+ * serialised snapshot of the guide's user signals (star ratings, favorite
+ * bookmarks, personal notes — [GuideSignalsData]). Older app versions
+ * ignore unknown header members, so signal-bearing backups still restore
+ * their events there; backups created before v1.8.2 simply decode with a
+ * null [Payload.signals]. The signals JSON escapes control characters, so
+ * even a multi-line personal note keeps the header on one line.
+ *
  * Crypto: PBKDF2WithHmacSHA256 (120 000 iterations, 256-bit key) from the
  * user passphrase + AES-256-GCM (128-bit tag). Both primitives ship with
  * the platform — no third-party dependency, fully JVM-unit-testable.
@@ -46,7 +56,12 @@ object LogBackupEngine {
     /** Wrong passphrase / truncated file / unknown magic all land here. */
     class BackupException(message: String, cause: Throwable? = null) : Exception(message, cause)
 
-    data class Payload(val createdAtMillis: Long, val eventLines: List<String>)
+    data class Payload(
+        val createdAtMillis: Long,
+        val eventLines: List<String>,
+        /** Guide signals snapshot when the backup carries one (v1.8.2+). */
+        val signals: GuideSignalsData? = null
+    )
 
     // ------------------------------------------------------------------
     // Encode
@@ -55,13 +70,23 @@ object LogBackupEngine {
     fun encode(
         lines: List<String>,
         passphrase: CharArray,
-        nowMillis: Long = System.currentTimeMillis()
+        nowMillis: Long = System.currentTimeMillis(),
+        signals: GuideSignalsData? = null
     ): ByteArray {
         val clean = lines.map { it.trimEnd('\n', '\r') }.filter { it.isNotBlank() }
         val salt = ByteArray(SALT_LEN).also { random.nextBytes(it) }
         val nonce = ByteArray(NONCE_LEN).also { random.nextBytes(it) }
-        val header = "$HEADER_PREFIX,\"version\":$FORMAT_VERSION," +
-            "\"created_at\":$nowMillis,\"count\":${clean.size}}"
+        val header = buildString {
+            append(HEADER_PREFIX)
+            append(",\"version\":").append(FORMAT_VERSION)
+            append(",\"created_at\":").append(nowMillis)
+            append(",\"count\":").append(clean.size)
+            // v1.8.2 — guide ratings/favorites/notes ride the same container.
+            if (signals != null && !signals.isEmpty()) {
+                append(",\"signals\":").append(GuideSignalsCodec.encode(signals))
+            }
+            append('}')
+        }
         val plaintext = (listOf(header) + clean)
             .joinToString(separator = "\n", postfix = "\n")
             .toByteArray(Charsets.UTF_8)
@@ -115,8 +140,45 @@ object LogBackupEngine {
         if (!header.startsWith(HEADER_PREFIX)) throw BackupException("payload header mismatch")
         return Payload(
             createdAtMillis = extractLong(header, "created_at"),
-            eventLines = lines.drop(1)
+            eventLines = lines.drop(1),
+            signals = extractSignalsObject(header)?.let { GuideSignalsCodec.decode(it) }
         )
+    }
+
+    /**
+     * Extracts the balanced `"signals":{…}` object text from the header
+     * line. The scanner is string-aware (a note may contain braces), so the
+     * object boundary is found even inside escaped string content.
+     */
+    private fun extractSignalsObject(header: String): String? {
+        val key = "\"signals\":"
+        val start = header.indexOf(key)
+        if (start < 0) return null
+        var i = start + key.length
+        while (i < header.length && header[i].isWhitespace()) i++
+        if (i >= header.length || header[i] != '{') return null
+        var depth = 0
+        var inString = false
+        var escaped = false
+        val sb = StringBuilder()
+        while (i < header.length) {
+            val c = header[i++]
+            sb.append(c)
+            if (inString) {
+                when {
+                    escaped -> escaped = false
+                    c == '\\' -> escaped = true
+                    c == '"' -> inString = false
+                }
+            } else {
+                when (c) {
+                    '"' -> inString = true
+                    '{' -> depth++
+                    '}' -> { depth--; if (depth == 0) return sb.toString() }
+                }
+            }
+        }
+        return null // unbalanced
     }
 
     // ------------------------------------------------------------------

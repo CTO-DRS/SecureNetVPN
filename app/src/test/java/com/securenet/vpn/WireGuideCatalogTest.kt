@@ -166,4 +166,23 @@ class WireGuideCatalogTest {
         assertEquals(GuideCategory.entries, sections.map { it.first })
         assertEquals(WireGuideCatalog.entries.size, sections.sumOf { it.second.size })
     }
+
+    @Test
+    fun `editors choice ids exist and stay a bounded shortlist`() {
+        val ids = WireGuideCatalog.entries.map { it.id }.toSet()
+        val editors = WireGuideCatalog.editorsChoice
+        assertTrue(
+            "Badge set should be a curated shortlist (6..12), found ${editors.size}",
+            editors.size in 6..12
+        )
+        assertEquals("Badge set must not duplicate ids", editors.size, editors.toSet().size)
+        editors.forEach { id ->
+            assertTrue("Unknown editors-choice id: $id", id in ids)
+        }
+        // v1.8.2 — isEditorsChoice mirrors the set for the UI + filter
+        assertEquals(
+            editors,
+            WireGuideCatalog.entries.map { it.id }.filter { WireGuideCatalog.isEditorsChoice(it) }.toSet()
+        )
+    }
 }

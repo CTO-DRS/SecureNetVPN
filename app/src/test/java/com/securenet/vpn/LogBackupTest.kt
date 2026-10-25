@@ -1,7 +1,9 @@
 package com.securenet.vpn
 
 import com.securenet.vpn.backup.LogBackupEngine
+import com.securenet.vpn.guide.GuideSignalsData
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -156,5 +158,68 @@ class LogBackupTest {
         val result = LogBackupEngine.merge(listOf(broken), listOf(good))
 
         assertEquals(listOf(good, broken), result.mergedLines)
+    }
+
+    // ------------------------------------------------------------------
+    // v1.8.2 — guide signals ride the encrypted container header
+    // ------------------------------------------------------------------
+
+    @Test
+    fun `signals ride the container and round trip intact`() {
+        val events = listOf(line("2026-10-01T08:00:00.000+0000", "connected", "de-1"))
+        val signals = GuideSignalsData(
+            ratings = mapOf("mullvad" to 5, "ivpn" to 3),
+            favorites = setOf("mullvad", "wg-android"),
+            notes = mapOf("ivpn" to "fast at night \"quiet\"")
+        )
+        val blob = LogBackupEngine.encode(events, pass, signals = signals)
+        val payload = LogBackupEngine.decode(blob, pass)
+
+        assertEquals(events, payload.eventLines)
+        assertEquals(signals, payload.signals)
+    }
+
+    @Test
+    fun `backup without signals decodes with null signals`() {
+        val blob = LogBackupEngine.encode(
+            listOf(line("2026-10-01T08:00:00.000+0000", "connected")), pass
+        )
+        val payload = LogBackupEngine.decode(blob, pass)
+        assertNull(payload.signals)
+    }
+
+    @Test
+    fun `empty signal payload is omitted from the header`() {
+        val blob = LogBackupEngine.encode(emptyList(), pass, signals = GuideSignalsData())
+        val payload = LogBackupEngine.decode(blob, pass)
+        assertNull(payload.signals)
+    }
+
+    @Test
+    fun `multiline note cannot break the single line header`() {
+        val events = listOf(
+            line("2026-10-01T08:00:00.000+0000", "connected", "de-1"),
+            line("2026-10-01T09:00:00.000+0000", "disconnected")
+        )
+        val signals = GuideSignalsData(
+            notes = mapOf("mullvad" to "line one\nline two\n\tindented {brace}\" end")
+        )
+        val payload = LogBackupEngine.decode(
+            LogBackupEngine.encode(events, pass, signals = signals), pass
+        )
+
+        // Every event still lands as its own line, nothing leaks into them.
+        assertEquals(events, payload.eventLines)
+        assertEquals(signals, payload.signals)
+    }
+
+    @Test(expected = LogBackupEngine.BackupException::class)
+    fun `signal bearing backup still rejects wrong passphrase`() {
+        val blob = LogBackupEngine.encode(
+            listOf(line("2026-10-01T08:00:00.000+0000", "connected")),
+            pass,
+            signals = GuideSignalsData(favorites = setOf("mullvad"))
+        )
+        LogBackupEngine.decode(blob, wrong)
     }
 }

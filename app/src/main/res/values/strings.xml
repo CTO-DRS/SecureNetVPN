@@ -356,8 +356,8 @@
     <string name="settings_import_backup_desc">Restore a .snback file — events are merged, nothing is deleted</string>
     <string name="backup_export_title">Export encrypted backup</string>
     <string name="backup_import_title">Import encrypted backup</string>
-    <string name="backup_export_message">The backup is protected with a passphrase (PBKDF2 120k + AES-256-GCM). Pick a strong passphrase — it cannot be recovered or changed.</string>
-    <string name="backup_import_message">Enter the passphrase this backup was created with. Its events are merged into the current history — nothing is deleted.</string>
+    <string name="backup_export_message">The backup is protected with a passphrase (PBKDF2 120k + AES-256-GCM). Pick a strong passphrase — it cannot be recovered or changed. Your guide ratings, favorites and personal notes travel inside the same file.</string>
+    <string name="backup_import_message">Enter the passphrase this backup was created with. Its events are merged into the current history — nothing is deleted. Guide ratings, favorites and notes found in the file are merged in as well; values you already have are kept.</string>
     <string name="backup_passphrase_hint">Passphrase (min 8 characters)</string>
     <string name="backup_passphrase_confirm">Confirm passphrase</string>
     <string name="backup_passphrase_too_short">Passphrase must be at least 8 characters</string>
@@ -366,6 +366,8 @@
     <string name="backup_export_success">Backup saved — %1$d events encrypted</string>
     <string name="backup_export_failed">Backup export failed</string>
     <string name="backup_import_success">Backup restored — %1$d new events (skipped %2$d duplicates)</string>
+    <string name="backup_export_signals"> · %1$d guide signal entries included</string>
+    <string name="backup_import_signals"> · %1$d guide signal entries merged</string>
     <string name="backup_import_wrong_pass">Wrong passphrase or damaged backup file</string>
     <string name="backup_import_failed">Backup import failed</string>
 
@@ -418,6 +420,10 @@
     <string name="guide_note_remove">Remove</string>
     <string name="guide_user_note_prefix">Private note:</string>
     <string name="guide_favorites_empty">No favorites yet — tap the heart on any source to pin it here</string>
+    <!-- v1.8.2 — top-rated sort chip and editor's choice reliability badge -->
+    <string name="guide_top_rated_chip">Top rated</string>
+    <string name="guide_editors_choice">Editor\'s choice</string>
+    <string name="guide_editors_choice_cd">Editor\'s choice — one of the most reliable sources</string>
     <string name="settings_section_guide">WireGuard guide</string>
     <string name="settings_row_guide_title">Where to get WireGuard configs</string>
     <string name="settings_row_guide_sub">36 free &amp; paid sources with links, tutorials and tips</string>

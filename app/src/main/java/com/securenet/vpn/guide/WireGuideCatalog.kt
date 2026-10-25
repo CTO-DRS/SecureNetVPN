@@ -361,6 +361,29 @@ object WireGuideCatalog {
     /** Curated search keywords for one entry id (never empty for real ids). */
     fun keywordsOf(id: String): List<String> = keywordsById[id] ?: emptyList()
 
+    /**
+     * v1.8.2 — "Editor's choice": the curated shortlist of the most reliable
+     * sources in the catalog, badged on every card and used as a sort
+     * tie-break. Criteria — official WireGuard project artifacts, open-source
+     * and independently audited providers, or tools with a long track record
+     * and a large maintained community:
+     *  - mullvad / ivpn / proton-free: open-source clients, published no-logs
+     *    audits, direct .conf generation;
+     *  - wg-easy / pivpn / tailscale: the most widely maintained self-host
+     *    paths (top-starred GitHub projects and mainstream adoption);
+     *  - openwrt: the reference open-source router platform;
+     *  - wg-android / wg-fdroid / wg-desktop: the official WireGuard clients.
+     */
+    val editorsChoice: Set<String> = setOf(
+        "mullvad", "ivpn", "proton-free",
+        "wg-easy", "pivpn", "tailscale",
+        "openwrt",
+        "wg-android", "wg-fdroid", "wg-desktop"
+    )
+
+    /** True when [id] carries the "Editor's choice" reliability badge. */
+    fun isEditorsChoice(id: String): Boolean = id in editorsChoice
+
     /** Entries of one category, in catalog order. */
     fun byCategory(category: GuideCategory): List<GuideEntry> =
         entries.filter { it.category == category }

@@ -16,6 +16,9 @@ import com.securenet.vpn.MainActivity
 import com.securenet.vpn.backup.LogBackupEngine
 import com.securenet.vpn.databinding.FragmentSettingsBinding
 import com.securenet.vpn.di.AppContainer
+import com.securenet.vpn.guide.GuideSignalsData
+import com.securenet.vpn.guide.GuideSignalsMerge
+import com.securenet.vpn.guide.GuideStoreProvider
 import com.securenet.vpn.ui.splittunnel.SplitTunnelDialogFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -306,19 +309,23 @@ class SettingsFragment : Fragment(), BackupDialogFragment.Host {
             val outcome = withContext(Dispatchers.IO) {
                 runCatching {
                     val lines = container.connectionLogger.readAllLines()
-                    val bytes = LogBackupEngine.encode(lines, passphrase)
+                    // v1.8.2 — guide ratings/favorites/notes ride the same
+                    // encrypted container as a header signals snapshot.
+                    val signals = GuideSignalsData.snapshot(
+                        GuideStoreProvider.get(appCtx)
+                    )
+                    val bytes = LogBackupEngine.encode(lines, passphrase, signals = signals)
                     appCtx.contentResolver.openOutputStream(uri)?.use { it.write(bytes) }
                         ?: error("no output stream")
                     passphrase.fill('\u0000')
-                    lines.size
+                    lines.size to signals
                 }
             }
-            outcome.onSuccess { count ->
-                Toast.makeText(
-                    appCtx,
-                    appCtx.getString(R.string.backup_export_success, count),
-                    Toast.LENGTH_LONG
-                ).show()
+            outcome.onSuccess { (count, signals) ->
+                val message = appCtx.getString(R.string.backup_export_success, count) +
+                    if (signals.isEmpty()) ""
+                    else appCtx.getString(R.string.backup_export_signals, signals.signalCount())
+                Toast.makeText(appCtx, message, Toast.LENGTH_LONG).show()
             }.onFailure {
                 Toast.makeText(
                     appCtx, R.string.backup_export_failed, Toast.LENGTH_LONG
@@ -349,18 +356,28 @@ class SettingsFragment : Fragment(), BackupDialogFragment.Host {
                         "backup_restored",
                         "added=${merge.added}; duplicates=${merge.duplicates}"
                     )
+                    // v1.8.2 — non-destructive merge of the guide signals:
+                    // the backup fills the gaps, existing local values win.
+                    val signalsTouched = payload.signals?.let { imported ->
+                        val store = GuideStoreProvider.get(appCtx)
+                        val merged = GuideSignalsMerge.merge(
+                            GuideSignalsData.snapshot(store), imported
+                        )
+                        GuideSignalsMerge.applyTo(store, merged.applied)
+                        merged.touchedIds.size
+                    }
                     passphrase.fill('\u0000')
-                    merge
+                    merge to signalsTouched
                 }
             }
-            outcome.onSuccess { merge ->
-                Toast.makeText(
-                    appCtx,
-                    appCtx.getString(
-                        R.string.backup_import_success, merge.added, merge.duplicates
-                    ),
-                    Toast.LENGTH_LONG
-                ).show()
+            outcome.onSuccess { (merge, signalsTouched) ->
+                val message = appCtx.getString(
+                    R.string.backup_import_success, merge.added, merge.duplicates
+                ) +
+                    signalsTouched?.takeIf { it > 0 }?.let {
+                        appCtx.getString(R.string.backup_import_signals, it)
+                    }.orEmpty()
+                Toast.makeText(appCtx, message, Toast.LENGTH_LONG).show()
             }.onFailure { error ->
                 val res = if (error is LogBackupEngine.BackupException) {
                     R.string.backup_import_wrong_pass
