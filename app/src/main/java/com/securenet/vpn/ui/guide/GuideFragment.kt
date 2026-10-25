@@ -17,6 +17,8 @@ import com.securenet.vpn.MainActivity
 import com.securenet.vpn.R
 import com.securenet.vpn.databinding.FragmentGuideBinding
 import com.securenet.vpn.guide.GuideCategory
+import com.securenet.vpn.guide.GuideStore
+import com.securenet.vpn.guide.GuideStoreProvider
 import com.securenet.vpn.guide.WireGuideCatalog
 import com.securenet.vpn.guide.WireGuideFilter
 
@@ -25,8 +27,14 @@ import com.securenet.vpn.guide.WireGuideFilter
  * Settings (and from the quick bottom sheet shown by the import dialog).
  * Adds on top of the shared [GuideUiBuilder] rendering:
  *  - an illustrated 4-step flow strip (choose → generate → import → connect);
- *  - live search across names, URLs and EN/AR keywords ([WireGuideFilter]);
- *  - category filter chips (All / Free / Paid / Self-hosted / Routers / Apps).
+ *  - live search across names, URLs, EN/AR keywords ([WireGuideFilter]) and
+ *    the user's personal notes (v1.8.1);
+ *  - category filter chips (All / Favorites / Free / Paid / Self-hosted /
+ *    Routers / Apps).
+ *
+ * v1.8.1 — star ratings, favorites and personal notes persist through
+ * [GuideStoreProvider]; favorites float to the top of every list and the
+ * Favorites chip shows bookmarked sources only.
  *
  * Hosting contract: [MainActivity.openConfigGuide] hides the bottom nav and
  * pushes this fragment on the back stack; this fragment restores the nav in
@@ -38,6 +46,8 @@ class GuideFragment : Fragment() {
     private val binding get() = _binding!!
 
     private var selectedCategory: GuideCategory? = null
+    private lateinit var store: GuideStore
+    private var _builder: GuideUiBuilder? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,7 +63,12 @@ class GuideFragment : Fragment() {
 
         binding.btnBack.setOnClickListener { parentFragmentManager.popBackStack() }
 
-        val builder = GuideUiBuilder(requireContext(), ::openUrl, ::copyUrl)
+        store = GuideStoreProvider.get(requireContext())
+        val builder = GuideUiBuilder(
+            requireContext(), store, ::openUrl, ::copyUrl,
+            onSignalsChanged = { onFavoritesMembershipChanged() }
+        )
+        _builder = builder
         binding.flowHost.addView(buildFlowStrip(builder))
 
         render(builder)
@@ -68,10 +83,23 @@ class GuideFragment : Fragment() {
                 R.id.chipSelfHosted -> GuideCategory.SELF_HOSTED
                 R.id.chipRouters -> GuideCategory.ROUTERS
                 R.id.chipApps -> GuideCategory.APPS
-                else -> null
+                else -> null   // All chip — and the Favorites chip (handled below)
             }
             render(builder)
         }
+    }
+
+    private fun isFavoritesOnly(): Boolean =
+        _binding?.chipGroup?.checkedChipId == R.id.chipFav
+
+    /**
+     * Re-render only when signal membership can change: inside the
+     * favorites-only flat list. Elsewhere cards repaint in place, so the
+     * expand/collapse state of sections is never disturbed.
+     */
+    private fun onFavoritesMembershipChanged() {
+        val builder = _builder ?: return
+        if (_binding != null && isFavoritesOnly()) render(builder)
     }
 
     /** choose a source → generate the .conf → import into SecureNet → connect */
@@ -95,14 +123,26 @@ class GuideFragment : Fragment() {
 
     private fun render(builder: GuideUiBuilder) {
         val query = binding.etGuideSearch.text?.toString().orEmpty()
+        val favOnly = isFavoritesOnly()
+        // Personal notes are searchable too (v1.8.1): snapshot id → note.
+        val notes = store.noteIds().mapNotNull { id ->
+            store.note(id)?.let { id to it }
+        }.toMap()
         val entries = WireGuideFilter.filter(
-            WireGuideCatalog.entries, query, selectedCategory
+            WireGuideCatalog.entries, query, selectedCategory,
+            notes, if (favOnly) store.favoriteIds() else null
         )
-        val filtering = query.isNotBlank() || selectedCategory != null
+        val filtering = query.isNotBlank() || selectedCategory != null || favOnly
         if (filtering) {
             binding.tvGuideCount.text =
                 getString(R.string.guide_results_count, entries.size)
             binding.tvGuideCount.visibility = View.VISIBLE
+            binding.tvGuideEmpty.setText(
+                if (favOnly && query.isBlank() && store.favoriteIds().isEmpty())
+                    R.string.guide_favorites_empty
+                else
+                    R.string.guide_no_results
+            )
             binding.tvGuideEmpty.visibility =
                 if (entries.isEmpty()) View.VISIBLE else View.GONE
             builder.renderFiltered(binding.guideSections, entries)
@@ -139,6 +179,7 @@ class GuideFragment : Fragment() {
     override fun onDestroyView() {
         (activity as? MainActivity)?.setBottomNavVisible(true)
         _binding = null
+        _builder = null
         super.onDestroyView()
     }
 }

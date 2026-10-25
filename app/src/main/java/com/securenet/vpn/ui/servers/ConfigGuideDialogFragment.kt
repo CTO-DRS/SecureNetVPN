@@ -14,6 +14,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
 import com.securenet.vpn.MainActivity
 import com.securenet.vpn.R
+import com.securenet.vpn.guide.GuideStoreProvider
 import com.securenet.vpn.ui.guide.GuideUiBuilder
 
 /**
@@ -21,7 +22,8 @@ import com.securenet.vpn.ui.guide.GuideUiBuilder
  * shown from the import dialog. v1.8: all rendering is delegated to the
  * shared [GuideUiBuilder] (steps cards, iconed entries, collapsible
  * sections, tips) and a link opens the full-screen [com.securenet.vpn.ui.guide.GuideFragment]
- * with search and filters.
+ * with search and filters. v1.8.1: star ratings, favorites and personal
+ * notes work here too, persisted through the same [GuideStoreProvider].
  */
 class ConfigGuideDialogFragment : BottomSheetDialogFragment() {
 
@@ -36,6 +38,7 @@ class ConfigGuideDialogFragment : BottomSheetDialogFragment() {
         val sectionsHost = view.findViewById<LinearLayout>(R.id.guideSections)
         GuideUiBuilder(
             requireContext(),
+            GuideStoreProvider.get(requireContext()),
             onOpenUrl = ::openUrl,
             onCopyUrl = ::copyUrl,
             onOpenFullGuide = ::openFullGuide

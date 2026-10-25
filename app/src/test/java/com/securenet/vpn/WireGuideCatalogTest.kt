@@ -31,6 +31,19 @@ class WireGuideCatalogTest {
     }
 
     @Test
+    fun `entry ids are whitespace-free store-key safe`() {
+        // v1.8.1 — ids become SharedPreferences key suffixes (rating_<id>,
+        // fav_<id>, note_<id>); whitespace inside would make debugging and
+        // export ambiguous.
+        WireGuideCatalog.entries.forEach { entry ->
+            assertTrue(
+                "Id with whitespace: '${entry.id}'",
+                entry.id.isNotBlank() && entry.id.none { it.isWhitespace() }
+            )
+        }
+    }
+
+    @Test
     fun `entry names are non-blank`() {
         WireGuideCatalog.entries.forEach { entry ->
             assertTrue("Blank name in ${entry.id}", entry.name.isNotBlank())

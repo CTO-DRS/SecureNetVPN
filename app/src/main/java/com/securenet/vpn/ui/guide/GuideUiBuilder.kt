@@ -1,17 +1,23 @@
 package com.securenet.vpn.ui.guide
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.Typeface
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.securenet.vpn.R
 import com.securenet.vpn.guide.GuideCategory
 import com.securenet.vpn.guide.GuideEntry
+import com.securenet.vpn.guide.GuideStore
 import com.securenet.vpn.guide.WireGuideCatalog
+import com.securenet.vpn.guide.WireGuideFilter
 
 /**
  * v1.8 — shared renderer for the WireGuard config-sources guide. Both the
@@ -22,12 +28,20 @@ import com.securenet.vpn.guide.WireGuideCatalog
  * Cards: an illustrated flow strip (full screen only, via [flowRow]), a
  * step-by-step tutorial per section, source cards with a category icon, and
  * a closing tips card. Section headers collapse/expand on tap.
+ *
+ * v1.8.1 — every source card gains user signals backed by [GuideStore]:
+ * a tappable 5-star rating row, a favorite (♥) toggle on the title row and
+ * an editable personal note (dialog) that is also searchable. Star and
+ * favorite taps repaint in place; note changes may trigger
+ * [onSignalsChanged] so hosts can re-render (e.g. favorites-only view).
  */
 class GuideUiBuilder(
     private val context: Context,
+    private val store: GuideStore,
     private val onOpenUrl: (String) -> Unit,
     private val onCopyUrl: (String) -> Unit,
-    private val onOpenFullGuide: (() -> Unit)? = null
+    private val onOpenFullGuide: (() -> Unit)? = null,
+    private val onSignalsChanged: (() -> Unit)? = null
 ) {
 
     /** Category icon (also used as the leading illustration on every card). */
@@ -46,7 +60,7 @@ class GuideUiBuilder(
         WireGuideCatalog.sections().forEach { (category, entries) ->
             val body = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL }
             body.addView(stepsCard(category))
-            entries.forEach { body.addView(entryCard(it)) }
+            WireGuideFilter.sortWithSignals(entries, store).forEach { body.addView(entryCard(it)) }
             host.addView(sectionHeader(category, entries.size, body))
             host.addView(body)
         }
@@ -56,7 +70,7 @@ class GuideUiBuilder(
     /** Filtered view: flat list of matching entry cards only. */
     fun renderFiltered(host: LinearLayout, entries: List<GuideEntry>) {
         host.removeAllViews()
-        entries.forEach { host.addView(entryCard(it)) }
+        WireGuideFilter.sortWithSignals(entries, store).forEach { host.addView(entryCard(it)) }
     }
 
     /** One illustrated how-to step: icon in a circle + caption below. */
@@ -188,16 +202,41 @@ class GuideUiBuilder(
         }
     }
 
-    /** Source card: leading category icon + name/link/description/note + actions. */
+    /**
+     * Source card: leading category icon + name (+ ♥ favorite toggle),
+     * link, description, editorial note, star rating row, personal note
+     * row and actions (open / copy / note).
+     */
     private fun entryCard(entry: GuideEntry): MaterialCardView {
-        val textColumn = LinearLayout(context).apply {
-            orientation = LinearLayout.VERTICAL
+        // v1.8.1 — personal note row (hidden until the user saves one)
+        val noteRow = TextView(context).apply {
+            setTextColor(resolveColor(com.google.android.material.R.attr.colorPrimary))
+            textSize = 11.5f
+            setTypeface(typeface, Typeface.ITALIC)
+            setLineSpacing(dp(2).toFloat(), 1f)
+            visibility = View.GONE
+            setOnClickListener { showNoteDialog(entry, this) }
+        }
+        refreshNoteRow(noteRow, entry)
+
+        val nameRow = LinearLayout(context).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = android.view.Gravity.CENTER_VERTICAL
             addView(TextView(context).apply {
                 text = entry.name
                 setTextColor(resolveColor(com.google.android.material.R.attr.colorOnSurface))
                 textSize = 14f
                 setTypeface(typeface, Typeface.BOLD)
+                layoutParams = LinearLayout.LayoutParams(
+                    0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f
+                )
             })
+            addView(favoriteToggle(entry))
+        }
+
+        val textColumn = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            addView(nameRow)
             addView(TextView(context).apply {
                 text = entry.url
                 setTextColor(resolveColor(com.google.android.material.R.attr.colorPrimary))
@@ -219,6 +258,8 @@ class GuideUiBuilder(
                     setTypeface(typeface, Typeface.ITALIC)
                 })
             }
+            addView(starRow(entry))
+            addView(noteRow)
             addView(LinearLayout(context).apply {
                 orientation = LinearLayout.HORIZONTAL
                 layoutParams = LinearLayout.LayoutParams(
@@ -228,6 +269,9 @@ class GuideUiBuilder(
 
                 addView(button(R.string.guide_open, filled = true) { onOpenUrl(entry.url) })
                 addView(button(R.string.guide_copy, filled = false) { onCopyUrl(entry.url) })
+                addView(button(noteButtonLabel(entry), filled = false) {
+                    showNoteDialog(entry, noteRow)
+                })
             })
         }
 
@@ -273,6 +317,124 @@ class GuideUiBuilder(
             }
             setOnClickListener { onClick() }
         }
+
+    // ------------------------------------------------------------------
+    // v1.8.1 — user signals: favorite toggle, star rating, personal note
+    // ------------------------------------------------------------------
+
+    private fun noteButtonLabel(entry: GuideEntry): Int =
+        if (store.note(entry.id) != null) R.string.guide_note_edit
+        else R.string.guide_note_add
+
+    /** Heart bookmark on the card's title row; toggles in place. */
+    private fun favoriteToggle(entry: GuideEntry): TextView = TextView(context).apply {
+        textSize = 18f
+        setPadding(dp(8), dp(2), dp(2), dp(2))
+        layoutParams = LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+        fun paint() {
+            val fav = store.isFavorite(entry.id)
+            text = if (fav) "♥" else "♡"
+            setTextColor(if (fav) FAV_ON else STAR_OFF)
+            contentDescription = getString(
+                if (fav) R.string.guide_fav_cd_on else R.string.guide_fav_cd_off
+            )
+        }
+        paint()
+        setOnClickListener {
+            store.setFavorite(entry.id, !store.isFavorite(entry.id))
+            paint()
+            onSignalsChanged?.invoke()
+        }
+    }
+
+    /**
+     * Tappable 1–5 star rating row. Forced LTR so stars always read 1→5,
+     * matching the numeric rating in every locale. Tapping the currently
+     * top-rated star clears the rating.
+     */
+    private fun starRow(entry: GuideEntry): LinearLayout {
+        val stars = mutableListOf<TextView>()
+        val row = LinearLayout(context).apply {
+            orientation = LinearLayout.HORIZONTAL
+            layoutDirection = View.LAYOUT_DIRECTION_LTR
+            layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply { topMargin = dp(6) }
+        }
+        for (value in 1..5) {
+            val star = TextView(context).apply {
+                text = "★"
+                textSize = 16f
+                setPadding(0, 0, dp(4), 0)
+                contentDescription = context.getString(R.string.guide_star_cd, value)
+                setOnClickListener {
+                    val current = store.rating(entry.id)
+                    store.setRating(entry.id, if (current == value) 0 else value)
+                    paintStars(stars, store.rating(entry.id))
+                }
+            }
+            stars.add(star)
+            row.addView(star)
+        }
+        paintStars(stars, store.rating(entry.id))
+        return row
+    }
+
+    private fun paintStars(stars: List<TextView>, rating: Int) {
+        stars.forEachIndexed { index, star ->
+            star.setTextColor(if (index < rating) STAR_ON else STAR_OFF)
+            star.alpha = if (index < rating) 1f else 0.55f
+        }
+    }
+
+    private fun refreshNoteRow(row: TextView, entry: GuideEntry) {
+        val note = store.note(entry.id)
+        if (note == null) {
+            row.visibility = View.GONE
+        } else {
+            row.text = getString(R.string.guide_user_note_prefix) + " " + note
+            row.visibility = View.VISIBLE
+        }
+    }
+
+    /** Add/edit/remove the personal note for [entry] via a material dialog. */
+    private fun showNoteDialog(entry: GuideEntry, row: TextView) {
+        val input = EditText(context).apply {
+            setText(store.note(entry.id))
+            hint = getString(R.string.guide_note_hint)
+            setSingleLine(false)
+            minLines = 2
+            maxLines = 4
+        }
+        val container = FrameLayout(context).apply {
+            setPadding(dp(20), dp(8), dp(20), 0)
+            addView(input, FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ))
+        }
+        val dialog = MaterialAlertDialogBuilder(context)
+            .setTitle(R.string.guide_note_dialog_title)
+            .setView(container)
+            .setPositiveButton(R.string.guide_note_save) { _, _ ->
+                store.setNote(entry.id, input.text?.toString())
+                refreshNoteRow(row, entry)
+                onSignalsChanged?.invoke()
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+        if (store.note(entry.id) != null) {
+            dialog.setNeutralButton(R.string.guide_note_remove) { _, _ ->
+                store.setNote(entry.id, null)
+                refreshNoteRow(row, entry)
+                onSignalsChanged?.invoke()
+            }
+        }
+        dialog.show()
+    }
 
     /** Closing card: practical safety/troubleshooting tips. */
     private fun tipsCard(): MaterialCardView {
@@ -325,4 +487,11 @@ class GuideUiBuilder(
 
     private fun dp(value: Int): Int =
         (value * context.resources.displayMetrics.density).toInt()
+
+    private companion object {
+        /** Filled-star / favorite tints and the dim empty-star tint. */
+        val STAR_ON: Int = Color.parseColor("#FFB300")
+        val FAV_ON: Int = Color.parseColor("#FF5C72")
+        val STAR_OFF: Int = Color.parseColor("#9AA0A6")
+    }
 }
