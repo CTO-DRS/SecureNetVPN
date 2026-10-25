@@ -405,6 +405,19 @@
     <string name="guide_flow_2">Generate the .conf</string>
     <string name="guide_flow_3">Import into SecureNet</string>
     <string name="guide_flow_4">Connect</string>
+    <!-- v1.8.1 — star ratings, favorites and personal notes per source -->
+    <string name="guide_favorites_chip">Favorites</string>
+    <string name="guide_star_cd">Rate %1$d of 5 stars</string>
+    <string name="guide_fav_cd_off">Add to favorites</string>
+    <string name="guide_fav_cd_on">Remove from favorites</string>
+    <string name="guide_note_add">Note</string>
+    <string name="guide_note_edit">Edit note</string>
+    <string name="guide_note_dialog_title">Personal note</string>
+    <string name="guide_note_hint">e.g. my server — faster at night…</string>
+    <string name="guide_note_save">Save</string>
+    <string name="guide_note_remove">Remove</string>
+    <string name="guide_user_note_prefix">Private note:</string>
+    <string name="guide_favorites_empty">No favorites yet — tap the heart on any source to pin it here</string>
     <string name="settings_section_guide">WireGuard guide</string>
     <string name="settings_row_guide_title">Where to get WireGuard configs</string>
     <string name="settings_row_guide_sub">36 free &amp; paid sources with links, tutorials and tips</string>

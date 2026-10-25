@@ -1,6 +1,7 @@
 package com.securenet.vpn
 
 import com.securenet.vpn.guide.GuideCategory
+import com.securenet.vpn.guide.InMemoryGuideStore
 import com.securenet.vpn.guide.WireGuideCatalog
 import com.securenet.vpn.guide.WireGuideFilter
 import org.junit.Assert.assertEquals
@@ -109,6 +110,87 @@ class WireGuideFilterTest {
         assertTrue(WireGuideFilter.matches(mullvad, "MULLVAD"))
         assertFalse(
             WireGuideFilter.filter(entries, "zzznothing").isNotEmpty()
+        )
+    }
+
+    // ------------------------------------------------------------------
+    // v1.8.1 — user signals: notes search, favorites restriction, sorting
+    // ------------------------------------------------------------------
+
+    @Test
+    fun `personal note text is searchable`() {
+        val notes = mapOf("mullvad" to "my night server inBerlin")
+        val hits = WireGuideFilter.filter(entries, "night server", notes = notes)
+        assertEquals(listOf("mullvad"), hits.map { it.id })
+        // same query without the note must not match by catalog data alone
+        assertTrue(
+            WireGuideFilter.filter(entries, "night server").isEmpty()
+        )
+    }
+
+    @Test
+    fun `note search combines with catalog haystack and AND semantics`() {
+        val notes = mapOf("mullvad" to "backup")
+        // token in catalog (name) + token in note → match
+        assertEquals(
+            listOf("mullvad"),
+            WireGuideFilter.filter(entries, "mullvad backup", notes = notes).map { it.id }
+        )
+        // both tokens only in note → also fine (tokens AND over whole haystack)
+        assertEquals(
+            listOf("mullvad"),
+            WireGuideFilter.filter(entries, "backup", notes = notes).map { it.id }
+        )
+        // note token that fails on a different entry must not leak it in
+        assertTrue(
+            WireGuideFilter.filter(entries, "ivpn backup", notes = notes).isEmpty()
+        )
+    }
+
+    @Test
+    fun `favorites restriction keeps only bookmarked ids`() {
+        val favorites = setOf("mullvad", "wg-android")
+        val hits = WireGuideFilter.filter(entries, "", favorites = favorites)
+        assertEquals(favorites, hits.map { it.id }.toSet())
+        // composes with query and category
+        assertEquals(
+            listOf("mullvad"),
+            WireGuideFilter.filter(entries, "mull", favorites = favorites).map { it.id }
+        )
+        assertTrue(
+            WireGuideFilter.filter(entries, "", GuideCategory.PAID, null, setOf("wg-android")).isEmpty()
+        )
+    }
+
+    @Test
+    fun `empty favorites set yields empty results`() {
+        assertTrue(WireGuideFilter.filter(entries, "", favorites = emptySet()).isEmpty())
+    }
+
+    @Test
+    fun `sorting floats favorites first then rating desc`() {
+        val store = InMemoryGuideStore()
+        val order = entries.map { it.id }
+        // mid-catalog entries get signals
+        store.setFavorite("windscribe", true)                 // favorite → first
+        store.setRating("ivpn", 4)                            // top rating → next
+        store.setRating("azirevpn", 5)                        // higher rating → before ivpn
+        val sorted = WireGuideFilter.sortWithSignals(entries, store).map { it.id }
+        assertEquals("windscribe", sorted.first())            // favorite beats rating
+        assertEquals("azirevpn", sorted[1])                   // 5 stars
+        assertEquals("ivpn", sorted[2])                       // 4 stars
+        // everyone else keeps the curated catalog order
+        assertEquals(
+            order.filter { it !in setOf("windscribe", "ivpn", "azirevpn") },
+            sorted.drop(3)
+        )
+    }
+
+    @Test
+    fun `sorting with no signals preserves catalog order exactly`() {
+        assertEquals(
+            entries,
+            WireGuideFilter.sortWithSignals(entries, InMemoryGuideStore())
         )
     }
 }
