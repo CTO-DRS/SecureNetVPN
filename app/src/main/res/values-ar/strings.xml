@@ -392,6 +392,8 @@
     <string name="guide_section_paid">مزودون مدفوعون</string>
     <string name="guide_section_selfhosted">خوادم ذاتية الاستضافة</string>
     <string name="guide_section_apps">تطبيقات وأدوات</string>
+    <string name="guide_section_routers">راوترات وجدران نارية</string>
+    <string name="guide_tips_title">نصائح وحلول المشاكل</string>
     <string name="guide_note_paid_only">تكوينات WireGuard تتطلب اشتراكاً مدفوعاً</string>
     <string name="guide_entry_button">ليس لديك تكوين؟ من أين تحصل على واحد — مجاني ومدفوع…</string>
 
@@ -410,13 +412,68 @@
     <string name="guide_desc_privatevpn">لوحة التحكم → اختر الموقع → تظهر بيانات WireGuard أسفله — اضغط التنزيل.</string>
     <string name="guide_desc_privadovpn">لوحة التحكم → Manual Configuration → WireGuard → اختر خادماً ونزّل التكوين.</string>
     <string name="guide_desc_strongvpn">منشئ تكوينات WireGuard بعد تسجيل الدخول: اختر الموقع من القائمة واضغط GENERATE.</string>
+    <string name="guide_desc_torguard">مُتحقَّق منه: منطقة أعضاء TorGuard تتضمن منشئ تكوينات WireGuard — اختر خادمك وعنوان IP مخصصاً اختيارياً ومنفذاً ثم نزّل ملف ‎.conf.</string>
+    <string name="guide_desc_pia">تطبيقات PIA تعمل بـ WireGuard داخلياً، أما ملف ‎.conf فيأتي من أداة pia-wg-config مفتوحة المصدر باستخدام بيانات حسابك في PIA.</string>
+    <string name="guide_note_pia">لا يوجد منشئ تكوينات رسمي في لوحة الحساب — الأداة المفتوحة المرتبطة تسدّ الفجوة</string>
+    <string name="guide_desc_nordvpn">‏NordLynx (WireGuard) مدمج في التطبيقات الرسمية، بينما لوحة الحساب تصدّر تكوينات OpenVPN فقط.</string>
+    <string name="guide_note_nordvpn">لا تصدير رسمي لملف ‎.conf — الأدوات المجتمعية تستخدم رمز حسابك؛ والمزودون المدعومون بمنشئ تكوينات أعلاه هم الطريق الأسهل</string>
 
     <string name="guide_desc_wg_easy">أسهل خادم ذاتي الاستضافة: حاوية Docker واحدة بواجهة ويب تنشئ العملاء ورموز QR على خادمك الخاص.</string>
     <string name="guide_desc_pivpn">مثبّت بأمر واحد يحوّل Raspberry Pi (أو أي جهاز Debian/Ubuntu) إلى خادم WireGuard مع ملف لكل جهاز.</string>
     <string name="guide_desc_algo">كتاب Ansible من Trail of Bits: ينشر خادم WireGuard شخصياً مُحصَّناً على أي VPS سحابي خلال دقائق.</string>
     <string name="guide_desc_headscale">خادم تحكم Tailscale ذاتي الاستضافة — شبكة WireGuard متشابكة لأجهزتك دون أي طرف ثالث.</string>
+    <string name="guide_desc_tailscale">شبكة متشابكة مبنية على WireGuard لأجهزتك، مجانية للاستخدام الشخصي — تطبيقاتها تدير المفاتيح عنك، وأقرنها مع Headscale أعلاه للتحكم الكامل بالملفات.</string>
+    <string name="guide_desc_netbird">منصة مفتوحة المصدر لإدارة WireGuard (خطة سحابية مجانية أو استضافة ذاتية كاملة) — مجموعات وصلاحيات وDNS على شبكتك المتشابكة.</string>
+    <string name="guide_desc_netmaker">مدير شبكات WireGuard ذاتي الاستضافة: لوحة مركزية تنشئ الأقران وتمنحك ملفات تكوين قياسية لأي جهاز.</string>
+    <string name="guide_desc_firezone">‏VPN مفتوح المصدر مبني على WireGuard مع بوابة ثقة صفرية — استضفه على VPS صغير ونزّل ملفاً لكل مستخدم.</string>
+    <string name="guide_desc_angristan">المثبّت الشهير بأمر واحد: شغّله على أي VPS جديد (Ubuntu/Debian/Alpine) فيمنحك ملفات ‎.conf جاهزة للاستيراد ورموز QR.</string>
+    <string name="guide_desc_glinet">راوترات سفر بـ WireGuard مدمج: صفحة VPN في لوحة التحكم تنشئ تكوينات الخادم وملفات العملاء (مع QR) بنقرتين — مُتحقَّق منه.</string>
+    <string name="guide_desc_openwrt">حوّل أي راوتر مدعوم إلى خادم أو عميل WireGuard: ثبّت حزمة luci-proto-wireguard وأضف الواجهة من LuCI.</string>
+    <string name="guide_desc_opnsense">جدارا pfSense وOPNsense يتضمنان WireGuard — أنشئ خادماً وأقراناً من واجهة الويب ثم صدّر تكوينات الأقران لأجهزتك.</string>
+    <string name="guide_desc_mikrotik">‏RouterOS 7 يتضمن WireGuard أصلياً — أنشئ الواجهة وأضف الأقران واطبع تكوين العميل من الطرفية.</string>
 
     <string name="guide_desc_wg_android">تطبيق WireGuard الرسمي — مفيد للتحقق من ملف، أو مسح رمز QR من مزود وإعادة تصديره ‎.conf إلى SecureNet.</string>
     <string name="guide_desc_wg_fdroid">العميل الرسمي نفسه من F-Droid، دون خدمات Google.</string>
     <string name="guide_desc_wg_desktop">عملاء رسميون لـ Windows وmacOS وLinux وغيرها — ملفات ‎.conf نفسها تعمل في SecureNet بشكل مطابق.</string>
+    <string name="guide_desc_wg_ios">عميل iOS الرسمي — افتح أي ملف ‎.conf من Files أو امسح رمز QR للمزود أو تحقق من الملف قبل استيراده إلى SecureNet.</string>
+    <string name="guide_desc_wg_macos">عميل Mac الرسمي من App Store — ملفات ‎.conf نفسها تعمل في SecureNet على أندرويد بشكل مطابق.</string>
+
+    <string-array name="guide_steps_free">
+        <item>اختر مصدراً مجانياً: Proton (تسجيل → Downloads → WireGuard) أو Cloudflare WARP عبر أداة wgcf.</item>
+        <item>أنشئ ملف ‎.conf ونزّله — دون أي دفع.</item>
+        <item>تفضّل خادماً خاصاً؟ فئة VPS مجانية دائمة (Oracle Cloud Always Free) + wg-easy من قسم الاستضافة الذاتية لا تكلفك شيئاً.</item>
+        <item>استورد إلى SecureNet: الخوادم → استيراد → ملف أو QR أو لصق.</item>
+    </string-array>
+    <string-array name="guide_steps_paid">
+        <item>اختر مزوداً يوفر منشئ تكوينات — كل المزودين المذكورين أعلاه.</item>
+        <item>اشترك؛ أغلبهم يوفر ضمان استرداد 30 يوماً فالاختبار بلا مخاطرة.</item>
+        <item>من لوحة الحساب افتح منشئ تكوينات WireGuard، اختر الخادم والمنفذ ونزّل ملف ‎.conf.</item>
+        <item>استورد إلى SecureNet واتصل — واحتفظ بملف المزود كنسخة احتياطية.</item>
+    </string-array>
+    <string-array name="guide_steps_selfhosted">
+        <item>احصل على أي VPS صغير (Oracle Cloud لديه فئة مجانية دائمة؛ Hetzner أو DigitalOcean بنحو 4 دولارات شهرياً).</item>
+        <item>شغّل مثبّتاً واحداً: wg-easy (Docker) أو PiVPN أو Algo أو سكربت wireguard-install.</item>
+        <item>افتح المنفذ UDP 51820 في جدار المزود ونزّل ملف ‎.conf لكل جهاز.</item>
+        <item>استورد كل ملف إلى SecureNet — خادمك الخاص بلا رسوم شهرية.</item>
+    </string-array>
+    <string-array name="guide_steps_routers">
+        <item>افتح لوحة تحكم الراوتر (GL.iNet: VPN → WireGuard؛ OpenWrt: ثبّت luci-proto-wireguard).</item>
+        <item>أنشئ واجهة خادم أو عميل WireGuard.</item>
+        <item>أضف قرناً للعميل وصدّر ملف ‎.conf (أو امسح رمز QR الظاهر).</item>
+        <item>استورد الملف إلى SecureNet ليحمل هاتفك النفق نفسه أينما كنت.</item>
+    </string-array>
+    <string-array name="guide_steps_apps">
+        <item>ثبّت عميل WireGuard الرسمي لمنصتك.</item>
+        <item>استورد ملف ‎.conf أو امسح رمز QR داخل التطبيق.</item>
+        <item>تأكد أن الاتصال (Handshake) يعمل خارج SecureNet.</item>
+        <item>استورد الملف نفسه إلى SecureNet لتحصل على الميزات الكاملة: النفق المنقسم، مفتاح الإيقاف، القفز المزدوج.</item>
+    </string-array>
+    <string-array name="guide_tips">
+        <item>عامل ملف ‎.conf ككلمة مرور: يحتوي مفاتيح تعرّف جهازك — لا تشاركه ولا تنشره إطلاقاً.</item>
+        <item>احترس من قوائم «تكوينات مجانية» العشوائية على مواقع التواصل — من أنشأ التكوين يستطيع رؤية حركتك وتوجيهها.</item>
+        <item>لا يوجد Handshake؟ تحقق من منفذ Endpoint (جرّب 51820 ثم 443) ومن تطابق مفتاح الخادم العام مع صفحة المزود.</item>
+        <item>متصل بلا إنترنت؟ غالباً DNS المزود ناقص — اجعل DNS = 1.1.1.1 في التكوين.</item>
+        <item>بطء أو انقطاع على بيانات الهاتف؟ خفّض MTU إلى 1280–1380؛ وشاشة المُحسّن تقترح قيمة مناسبة.</item>
+        <item>ملف لكل جهاز يُبقي المفاتيح فريدة — وPresharedKey (عند توفيره) يضيف طبقة قوية إضافية.</item>
+    </string-array>
 </resources>

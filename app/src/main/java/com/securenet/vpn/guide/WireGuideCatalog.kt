@@ -5,9 +5,11 @@ import com.securenet.vpn.R
 
 /**
  * v1.7 — Catalog of sources for obtaining WireGuard profiles that import
- * straight into SecureNet (Servers tab → Import). Four categories cover the
+ * straight into SecureNet (Servers tab → Import). Five categories cover the
  * full spectrum the user asked for: free services, paid providers with a
- * config generator, self-hosted server software, and official clients/tools.
+ * config generator, self-hosted server software, router/firewall platforms
+ * and official clients/tools. Expanded in v1.7.1 from 23 to 36 sources,
+ * adding per-category step-by-step tutorials ([stepsRes]).
  *
  * The catalog is pure data so it can be unit-tested (URL shape, uniqueness,
  * category completeness) without any Android dependency beyond @StringRes.
@@ -15,9 +17,11 @@ import com.securenet.vpn.R
  *
  * URLs were verified against the providers' own documentation (dashboards,
  * knowledge bases and the GL.iNet/TP-Link provider guides) at release time.
+ * v1.7.1 additions were verified the same way (TorGuard member-area generator,
+ * PIA community tooling, Tailscale/GL.iNet official docs, App Store listings).
  */
 enum class GuideCategory {
-    FREE, PAID, SELF_HOSTED, APPS
+    FREE, PAID, SELF_HOSTED, ROUTERS, APPS
 }
 
 data class GuideEntry(
@@ -146,6 +150,29 @@ object WireGuideCatalog {
             category = GuideCategory.PAID,
             descriptionRes = R.string.guide_desc_strongvpn
         ),
+        GuideEntry(
+            id = "torguard",
+            name = "TorGuard",
+            url = "https://torguard.net",
+            category = GuideCategory.PAID,
+            descriptionRes = R.string.guide_desc_torguard
+        ),
+        GuideEntry(
+            id = "pia",
+            name = "Private Internet Access (PIA)",
+            url = "https://github.com/kylegrantlucas/pia-wg-config",
+            category = GuideCategory.PAID,
+            descriptionRes = R.string.guide_desc_pia,
+            noteRes = R.string.guide_note_pia
+        ),
+        GuideEntry(
+            id = "nordvpn",
+            name = "NordVPN",
+            url = "https://nordvpn.com",
+            category = GuideCategory.PAID,
+            descriptionRes = R.string.guide_desc_nordvpn,
+            noteRes = R.string.guide_note_nordvpn
+        ),
 
         // ------------------------------------------------------------------
         // SELF-HOSTED — run your own WireGuard server (VPS / Raspberry Pi)
@@ -178,6 +205,73 @@ object WireGuideCatalog {
             category = GuideCategory.SELF_HOSTED,
             descriptionRes = R.string.guide_desc_headscale
         ),
+        GuideEntry(
+            id = "tailscale",
+            name = "Tailscale (free personal plan)",
+            url = "https://tailscale.com",
+            category = GuideCategory.SELF_HOSTED,
+            descriptionRes = R.string.guide_desc_tailscale
+        ),
+        GuideEntry(
+            id = "netbird",
+            name = "NetBird",
+            url = "https://netbird.io",
+            category = GuideCategory.SELF_HOSTED,
+            descriptionRes = R.string.guide_desc_netbird
+        ),
+        GuideEntry(
+            id = "netmaker",
+            name = "Netmaker",
+            url = "https://netmaker.io",
+            category = GuideCategory.SELF_HOSTED,
+            descriptionRes = R.string.guide_desc_netmaker
+        ),
+        GuideEntry(
+            id = "firezone",
+            name = "Firezone",
+            url = "https://www.firezone.dev",
+            category = GuideCategory.SELF_HOSTED,
+            descriptionRes = R.string.guide_desc_firezone
+        ),
+        GuideEntry(
+            id = "wireguard-install",
+            name = "wireguard-install (one-command script)",
+            url = "https://github.com/angristan/wireguard-install",
+            category = GuideCategory.SELF_HOSTED,
+            descriptionRes = R.string.guide_desc_angristan
+        ),
+
+        // ------------------------------------------------------------------
+        // ROUTERS — WireGuard built into the box that already runs your net
+        // ------------------------------------------------------------------
+        GuideEntry(
+            id = "glinet",
+            name = "GL.iNet routers",
+            url = "https://www.gl-inet.com",
+            category = GuideCategory.ROUTERS,
+            descriptionRes = R.string.guide_desc_glinet
+        ),
+        GuideEntry(
+            id = "openwrt",
+            name = "OpenWrt",
+            url = "https://openwrt.org",
+            category = GuideCategory.ROUTERS,
+            descriptionRes = R.string.guide_desc_openwrt
+        ),
+        GuideEntry(
+            id = "opnsense",
+            name = "pfSense & OPNsense",
+            url = "https://opnsense.org",
+            category = GuideCategory.ROUTERS,
+            descriptionRes = R.string.guide_desc_opnsense
+        ),
+        GuideEntry(
+            id = "mikrotik",
+            name = "MikroTik (RouterOS 7+)",
+            url = "https://mikrotik.com",
+            category = GuideCategory.ROUTERS,
+            descriptionRes = R.string.guide_desc_mikrotik
+        ),
 
         // ------------------------------------------------------------------
         // APPS & TOOLS — official clients that also read the same .conf
@@ -202,6 +296,20 @@ object WireGuideCatalog {
             url = "https://www.wireguard.com/install/",
             category = GuideCategory.APPS,
             descriptionRes = R.string.guide_desc_wg_desktop
+        ),
+        GuideEntry(
+            id = "wg-ios",
+            name = "WireGuard for iOS (App Store)",
+            url = "https://apps.apple.com/app/wireguard/id1441195209",
+            category = GuideCategory.APPS,
+            descriptionRes = R.string.guide_desc_wg_ios
+        ),
+        GuideEntry(
+            id = "wg-macos",
+            name = "WireGuard for macOS (App Store)",
+            url = "https://apps.apple.com/app/wireguard/id1451685025",
+            category = GuideCategory.APPS,
+            descriptionRes = R.string.guide_desc_wg_macos
         )
     )
 
@@ -212,4 +320,17 @@ object WireGuideCatalog {
     /** Ordered section list for the guide screen. */
     fun sections(): List<Pair<GuideCategory, List<GuideEntry>>> =
         GuideCategory.entries.map { it to byCategory(it) }.filter { it.second.isNotEmpty() }
+
+    /**
+     * v1.7.1 — per-category step-by-step tutorial shown as a mini card under
+     * each section header (a string-array per category, EN + AR).
+     */
+    @StringRes
+    fun stepsRes(category: GuideCategory): Int = when (category) {
+        GuideCategory.FREE -> R.array.guide_steps_free
+        GuideCategory.PAID -> R.array.guide_steps_paid
+        GuideCategory.SELF_HOSTED -> R.array.guide_steps_selfhosted
+        GuideCategory.ROUTERS -> R.array.guide_steps_routers
+        GuideCategory.APPS -> R.array.guide_steps_apps
+    }
 }

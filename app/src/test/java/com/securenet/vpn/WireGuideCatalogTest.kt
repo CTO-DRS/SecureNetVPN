@@ -38,7 +38,13 @@ class WireGuideCatalogTest {
     }
 
     @Test
-    fun `all four categories are populated`() {
+    fun `entry urls are unique`() {
+        val urls = WireGuideCatalog.entries.map { it.url }
+        assertEquals(urls.size, urls.toSet().size)
+    }
+
+    @Test
+    fun `all five categories are populated`() {
         GuideCategory.entries.forEach { category ->
             val count = WireGuideCatalog.byCategory(category).size
             assertTrue("Category $category has no entries", count > 0)
@@ -48,16 +54,24 @@ class WireGuideCatalogTest {
     @Test
     fun `guide covers the expected breadth`() {
         assertTrue(
-            "Guide should list at least 20 sources, found ${WireGuideCatalog.entries.size}",
-            WireGuideCatalog.entries.size >= 20
+            "Guide should list at least 34 sources, found ${WireGuideCatalog.entries.size}",
+            WireGuideCatalog.entries.size >= 34
         )
         assertTrue(
-            "Paid section should cover at least 10 providers",
-            WireGuideCatalog.byCategory(GuideCategory.PAID).size >= 10
+            "Paid section should cover at least 16 providers",
+            WireGuideCatalog.byCategory(GuideCategory.PAID).size >= 16
         )
         assertTrue(
-            "Self-hosted section should list at least 3 tools",
-            WireGuideCatalog.byCategory(GuideCategory.SELF_HOSTED).size >= 3
+            "Self-hosted section should list at least 8 tools",
+            WireGuideCatalog.byCategory(GuideCategory.SELF_HOSTED).size >= 8
+        )
+        assertTrue(
+            "Routers section should list at least 4 platforms",
+            WireGuideCatalog.byCategory(GuideCategory.ROUTERS).size >= 4
+        )
+        assertTrue(
+            "Apps section should list at least 5 clients",
+            WireGuideCatalog.byCategory(GuideCategory.APPS).size >= 5
         )
     }
 
@@ -89,6 +103,48 @@ class WireGuideCatalogTest {
         )
         // Official client anchor
         assertTrue(byId.containsKey("wg-android"))
+    }
+
+    @Test
+    fun `v1_7_1 expanded sources are present and verified`() {
+        val byId = WireGuideCatalog.entries.associateBy { it.id }
+        // TorGuard: generator verified in the member's area (support docs)
+        assertEquals("https://torguard.net", byId.getValue("torguard").url)
+        // PIA: honest note required — no official generator, community tool linked
+        assertEquals(
+            "https://github.com/kylegrantlucas/pia-wg-config",
+            byId.getValue("pia").url
+        )
+        assertEquals(R.string.guide_note_pia, byId.getValue("pia").noteRes)
+        // NordVPN: entry must disclose the missing official .conf export
+        assertEquals(R.string.guide_note_nordvpn, byId.getValue("nordvpn").noteRes)
+        // Router anchors
+        assertEquals("https://www.gl-inet.com", byId.getValue("glinet").url)
+        assertEquals("https://openwrt.org", byId.getValue("openwrt").url)
+        assertEquals("https://opnsense.org", byId.getValue("opnsense").url)
+        assertEquals("https://mikrotik.com", byId.getValue("mikrotik").url)
+        // Mesh/self-hosted anchors
+        assertEquals("https://tailscale.com", byId.getValue("tailscale").url)
+        assertEquals(
+            "https://github.com/angristan/wireguard-install",
+            byId.getValue("wireguard-install").url
+        )
+        // Official Apple clients — App Store host, known listing IDs
+        assertEquals(
+            "https://apps.apple.com/app/wireguard/id1441195209",
+            byId.getValue("wg-ios").url
+        )
+        assertEquals(
+            "https://apps.apple.com/app/wireguard/id1451685025",
+            byId.getValue("wg-macos").url
+        )
+    }
+
+    @Test
+    fun `every category maps to a distinct steps resource`() {
+        val stepRes = GuideCategory.entries.map { WireGuideCatalog.stepsRes(it) }
+        assertTrue(stepRes.none { it == 0 })
+        assertEquals(stepRes.size, stepRes.toSet().size)
     }
 
     @Test
