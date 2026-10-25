@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.color.DynamicColors
 import com.securenet.vpn.di.AppContainer
 import com.securenet.vpn.di.AppProvider
+import com.securenet.vpn.util.CrashReporter
 import com.securenet.vpn.work.WorkScheduler
 
 /**
@@ -12,6 +13,11 @@ import com.securenet.vpn.work.WorkScheduler
  * applies app-wide configuration (Material You dynamic colors, persisted
  * theme mode, periodic WorkManager jobs) and exposes the container to
  * Services through the [AppProvider] contract.
+ *
+ * v1.6.1 — startup is crash-proof: the global crash reporter is installed
+ * before anything else, and every post-container initialisation step is
+ * individually guarded so an OEM-specific failure can never produce a
+ * launch crash loop again.
  */
 class SecureNetApp : Application(), AppProvider {
 
@@ -20,17 +26,28 @@ class SecureNetApp : Application(), AppProvider {
 
     override fun onCreate() {
         super.onCreate()
+
+        // Must be the very first line: from here on any uncaught exception
+        // is captured to filesDir/crash_reports/last_crash.txt.
+        CrashReporter.install(this)
+
         container = AppContainer(this)
 
-        DynamicColors.applyToActivitiesIfAvailable(this)
+        // Guarded: theme/prefs problems degrade to the system default look
+        // instead of killing the process (fixes the v1.6.0 keystore crash loop).
+        runCatching { DynamicColors.applyToActivitiesIfAvailable(this) }
+            .onFailure { android.util.Log.e(TAG, "DynamicColors failed", it) }
 
-        applyPersistedTheme()
+        runCatching { applyPersistedTheme() }
+            .onFailure { android.util.Log.e(TAG, "applyPersistedTheme failed", it) }
 
         // Periodic connection-log flush + daily usage aggregation.
-        WorkScheduler.scheduleAll(this)
+        runCatching { WorkScheduler.scheduleAll(this) }
+            .onFailure { android.util.Log.e(TAG, "WorkScheduler.scheduleAll failed", it) }
 
         // v1.3: re-arm the connection-schedule tick when a schedule is set.
-        com.securenet.vpn.work.ScheduleWorker.syncFromPrefs(this)
+        runCatching { com.securenet.vpn.work.ScheduleWorker.syncFromPrefs(this) }
+            .onFailure { android.util.Log.e(TAG, "ScheduleWorker.syncFromPrefs failed", it) }
     }
 
     override fun provideContainer(): AppContainer = container
@@ -45,5 +62,9 @@ class SecureNetApp : Application(), AppProvider {
                 else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
             }
         )
+    }
+
+    private companion object {
+        const val TAG = "SecureNetApp"
     }
 }

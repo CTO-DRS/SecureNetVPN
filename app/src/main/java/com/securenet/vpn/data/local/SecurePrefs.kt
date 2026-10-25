@@ -2,27 +2,75 @@ package com.securenet.vpn.data.local
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import java.security.KeyStore
 
 /**
  * Hardened key-value storage backed by EncryptedSharedPreferences
  * (AES-256 GCM values, AES-256 SIV keys, master key in Android Keystore).
+ *
+ * v1.6.1 — crash-proof on devices whose AndroidKeyStore is corrupt or whose
+ * encrypted prefs file can no longer be decrypted (restored/cloned data,
+ * keystore invalidation). See [PrefsRecoveryLadder]: encrypted creation,
+ * then a destructive purge + retry, then a plain file so the app always
+ * opens. The session log lives in a separate encrypted file and is never
+ * touched by the purge.
  */
 class SecurePrefs(context: Context) {
 
-    private val prefs: SharedPreferences by lazy {
-        val masterKey = MasterKey.Builder(context)
-            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-            .build()
+    private val appContext: Context = context.applicationContext
 
-        EncryptedSharedPreferences.create(
-            context,
-            FILE_NAME,
-            masterKey,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+    private val prefs: SharedPreferences by lazy { createPrefs() }
+
+    private fun createPrefs(): SharedPreferences =
+        PrefsRecoveryLadder.resolve(
+            attemptFresh = { tryBuildEncrypted(purge = false) },
+            recover = { tryBuildEncrypted(purge = true) },
+            fallback = {
+                Log.w(TAG, "Encrypted prefs unavailable on this device; using plain prefs")
+                appContext.getSharedPreferences(FILE_NAME_PLAIN, Context.MODE_PRIVATE)
+            }
         )
+
+    /**
+     * Builds the encrypted prefs. With [purge] set, first removes the stale
+     * keystore master-key alias and the undecryptable prefs file so creation
+     * starts from clean state.
+     */
+    private fun tryBuildEncrypted(purge: Boolean): SharedPreferences? {
+        if (purge) wipeCorruptState()
+        return try {
+            val masterKey = MasterKey.Builder(appContext)
+                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                .build()
+
+            EncryptedSharedPreferences.create(
+                appContext,
+                FILE_NAME,
+                masterKey,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            )
+        } catch (t: Throwable) {
+            Log.e(TAG, "EncryptedSharedPreferences creation failed (purge=$purge)", t)
+            null
+        }
+    }
+
+    private fun wipeCorruptState() {
+        try {
+            val keystore = KeyStore.getInstance("AndroidKeyStore").apply { load(null) }
+            keystore.deleteEntry(MasterKey.DEFAULT_MASTER_KEY_ALIAS)
+        } catch (t: Throwable) {
+            Log.w(TAG, "Could not purge keystore master-key alias", t)
+        }
+        try {
+            appContext.deleteSharedPreferences(FILE_NAME)
+        } catch (t: Throwable) {
+            Log.w(TAG, "Could not delete corrupt prefs file", t)
+        }
     }
 
     var onboardingCompleted: Boolean
@@ -227,7 +275,9 @@ class SecurePrefs(context: Context) {
     }
 
     companion object {
+        private const val TAG = "SecurePrefs"
         private const val FILE_NAME = "securenet_vault"
+        private const val FILE_NAME_PLAIN = "securenet_vault_plain"
         private const val DEFAULT_THEME = -1 // MODE_NIGHT_FOLLOW_SYSTEM
 
         private const val KEY_ONBOARDING = "onboarding_completed"

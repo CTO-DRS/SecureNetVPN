@@ -90,6 +90,7 @@ jobs:
 
             ### Features
             - WireGuard VPN (wireguard-go via JNI, foreground service, `vpn_channel` notifications)
+            - **FIX v1.6.1: Startup crash loop fixed — self-healing encrypted storage (purge + retry + plain fallback) for devices with corrupt AndroidKeyStore or restored/cloned app data, plus a global crash reporter that captures any future failure to a local file**
             - **NEW v1.6: Encrypted log backup — export/import the session log as a passphrase-protected .snback file (PBKDF2 120k + AES-256-GCM), non-destructive merge on restore**
             - **NEW v1.6: Always-on VPN mode — tunnel re-arms after reboot, app launch and swipe-away + per-server usage statistics (time, sessions, failures, share bars)**
             - **NEW v1.5: WireGuard profile import — scan a QR code, open a `.conf` file, or paste the config; export any profile as a scannable QR / PNG**
