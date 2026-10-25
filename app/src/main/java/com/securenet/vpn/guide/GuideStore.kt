@@ -48,6 +48,14 @@ interface GuideStore {
     /** Ids that currently carry a 1–5 star rating (v1.8.2, backup export). */
     fun ratedIds(): Set<String>
 
+    /**
+     * v1.8.3 — bulk delete: removes every signal (all ratings, all favorite
+     * bookmarks and all personal notes) in one irreversible sweep. Callers
+     * must confirm with the user first; the guide UI does so via a material
+     * dialog that spells out the exact counts being dropped.
+     */
+    fun clearAll()
+
     companion object {
         /** Shared clamping/normalisation rule for ratings. */
         fun normalizeRating(stars: Int): Int = when {
@@ -93,6 +101,12 @@ class InMemoryGuideStore : GuideStore {
     override fun noteIds(): Set<String> = notes.keys.toSet()
 
     override fun ratedIds(): Set<String> = ratings.keys.toSet()
+
+    override fun clearAll() {
+        ratings.clear()
+        favorites.clear()
+        notes.clear()
+    }
 }
 
 /**
@@ -138,6 +152,16 @@ class SharedPrefsGuideStore(context: Context) : GuideStore {
     override fun noteIds(): Set<String> = idsForPrefix(PREFIX_NOTE)
 
     override fun ratedIds(): Set<String> = idsForPrefix(PREFIX_RATING)
+
+    override fun clearAll() {
+        prefs.edit().apply {
+            prefs.all.keys.toList()
+                .filter { it.startsWith(PREFIX_RATING) ||
+                    it.startsWith(PREFIX_FAV) ||
+                    it.startsWith(PREFIX_NOTE) }
+                .forEach { remove(it) }
+        }.apply()
+    }
 
     private fun idsForPrefix(prefix: String): Set<String> =
         prefs.all.keys.mapNotNull { k ->

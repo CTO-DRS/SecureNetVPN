@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
@@ -71,7 +72,8 @@ class GuideFragment : Fragment() {
         store = GuideStoreProvider.get(requireContext())
         val builder = GuideUiBuilder(
             requireContext(), store, ::openUrl, ::copyUrl,
-            onSignalsChanged = { onFavoritesMembershipChanged() }
+            onSignalsChanged = { onFavoritesMembershipChanged() },
+            onSignalsCleared = { _builder?.let { onSignalsCleared(it) } }
         )
         _builder = builder
         binding.flowHost.addView(buildFlowStrip(builder))
@@ -109,6 +111,18 @@ class GuideFragment : Fragment() {
     private fun onFavoritesMembershipChanged() {
         val builder = _builder ?: return
         if (_binding != null && isFavoritesOnly()) render(builder)
+    }
+
+    /**
+     * v1.8.3 — after the confirmed bulk delete the whole surface changes
+     * (stats card disappears, stars/favorites/notes reset), so re-render
+     * unconditionally and confirm with a toast.
+     */
+    private fun onSignalsCleared(builder: GuideUiBuilder) {
+        if (_binding == null) return
+        render(builder)
+        Toast.makeText(requireContext(), R.string.guide_stats_cleared, Toast.LENGTH_SHORT)
+            .show()
     }
 
     /** choose a source → generate the .conf → import into SecureNet → connect */
@@ -160,7 +174,7 @@ class GuideFragment : Fragment() {
         } else {
             binding.tvGuideCount.visibility = View.GONE
             binding.tvGuideEmpty.visibility = View.GONE
-            builder.renderSections(binding.guideSections)
+            builder.renderSections(binding.guideSections, showStats = true)
         }
     }
 

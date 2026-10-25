@@ -438,6 +438,25 @@
                         android:src="@drawable/ic_arrow_right"
                         app:tint="@color/on_glass_secondary" />
                 </LinearLayout>
+
+                <!-- v1.8.3: multiple encrypted backups kept inside the app -->
+                <LinearLayout
+                    style="@style/SettingRow"
+                    android:id="@+id/rowVault"
+                    android:background="?attr/selectableItemBackground">
+
+                    <LinearLayout style="@style/SettingTextColumn">
+                        <TextView style="@style/SettingTitle" android:text="@string/settings_vault_title" />
+                        <TextView style="@style/SettingDesc" android:text="@string/settings_vault_desc" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_arrow_right"
+                        app:tint="@color/on_glass_secondary" />
+                </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

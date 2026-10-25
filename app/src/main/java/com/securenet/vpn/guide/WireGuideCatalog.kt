@@ -388,6 +388,17 @@ object WireGuideCatalog {
     fun byCategory(category: GuideCategory): List<GuideEntry> =
         entries.filter { it.category == category }
 
+    /**
+     * v1.8.3 — entry lookup by id; null for unknown ids (e.g. a signals
+     * snapshot restored from a backup of a newer catalog version), so
+     * statistics and UI rows can degrade gracefully.
+     */
+    fun byId(id: String): GuideEntry? = entriesById[id]
+
+    private val entriesById: Map<String, GuideEntry> by lazy {
+        entries.associateBy { it.id }
+    }
+
     /** Ordered section list for the guide screen. */
     fun sections(): List<Pair<GuideCategory, List<GuideEntry>>> =
         GuideCategory.entries.map { it to byCategory(it) }.filter { it.second.isNotEmpty() }

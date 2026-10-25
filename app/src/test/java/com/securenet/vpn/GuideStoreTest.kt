@@ -118,4 +118,36 @@ class GuideStoreTest {
         assertEquals("kept", GuideStore.normalizeNote("  kept "))
         assertNull(GuideStore.normalizeNote(null))
     }
+
+    @Test
+    fun `clearAll wipes every signal in one sweep`() {
+        store.setRating("mullvad", 5)
+        store.setRating("ivpn", 2)
+        store.setFavorite("mullvad", true)
+        store.setNote("ivpn", "night server")
+
+        store.clearAll()
+
+        assertEquals(0, store.rating("mullvad"))
+        assertEquals(0, store.rating("ivpn"))
+        assertFalse(store.isFavorite("mullvad"))
+        assertNull(store.note("ivpn"))
+        assertTrue(store.ratedIds().isEmpty())
+        assertTrue(store.favoriteIds().isEmpty())
+        assertTrue(store.noteIds().isEmpty())
+
+        // the store keeps working normally afterwards
+        store.setRating("mullvad", 4)
+        store.setFavorite("tailscale", true)
+        assertEquals(4, store.rating("mullvad"))
+        assertTrue(store.isFavorite("tailscale"))
+    }
+
+    @Test
+    fun `clearAll on an empty store is a safe no-op`() {
+        store.clearAll()
+        assertTrue(store.ratedIds().isEmpty())
+        assertTrue(store.favoriteIds().isEmpty())
+        assertTrue(store.noteIds().isEmpty())
+    }
 }
