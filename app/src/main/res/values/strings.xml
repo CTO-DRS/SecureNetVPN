@@ -456,7 +456,7 @@
     <string name="guide_stats_cleared">All guide signals cleared</string>
     <string name="settings_section_guide">WireGuard guide</string>
     <string name="settings_row_guide_title">Where to get WireGuard configs</string>
-    <string name="settings_row_guide_sub">36 free &amp; paid sources with links, tutorials and tips</string>
+    <string name="settings_row_guide_sub">44 free &amp; paid sources with links, tutorials and tips</string>
     <string name="guide_note_paid_only">WireGuard configs require a paid plan</string>
     <string name="guide_entry_button">Don\'t have a config? Where to get one — free &amp; paid…</string>
 
@@ -494,6 +494,19 @@
     <string name="guide_desc_openwrt">Turn almost any router into a WireGuard server or client: install the luci-proto-wireguard package and add the interface from LuCI.</string>
     <string name="guide_desc_opnsense">pfSense and OPNsense firewalls ship WireGuard — create a server and peers in the web UI, then export peer configs for your devices.</string>
     <string name="guide_desc_mikrotik">RouterOS 7 has native WireGuard — create the interface, add peers and print the client config from the terminal.</string>
+
+    <!-- v1.8.4 — eight more verified sources (riseup / purevpn / wg-portal / innernet / defguard / asuswrt-merlin / ddwrt / vyos) -->
+    <string name="guide_desc_riseup">RiseupVPN is the donation-funded, no-account VPN from the Riseup collective — its gateways speak WireGuard, and the linked community configurator exports ready-to-import .conf files for every gateway.</string>
+    <string name="guide_note_riseup">The official RiseupVPN client doesn\'t export .conf files — the linked open-source tool signs you in and builds the configs against Riseup\'s own gateways</string>
+    <string name="guide_desc_purevpn">Verified: the member area\'s Manual Configuration page issues WireGuard profiles — add the free WireGuard add-on, pick a location and download the .conf.</string>
+    <string name="guide_note_purevpn">WireGuard configs arrive as a member-area add-on — enable it once under Subscriptions</string>
+    <string name="guide_desc_wg_portal">Feature-packed admin portal for your own WireGuard server: web UI with QR codes, LDAP/OAuth users and one-click wg-quick .conf downloads — a single Go binary, Docker-ready.</string>
+    <string name="guide_desc_innernet">A private network system that uses WireGuard under the hood: invite-token peers, CIDR-based organisation and NAT traversal for your own overlay mesh.</string>
+    <string name="guide_desc_defguard">Self-hosted WireGuard platform with true MFA on every connection, SSO/LDAP identity integration and client profiles users download themselves — open-source core.</string>
+    <string name="guide_desc_asuswrt_merlin">The respected custom ASUS firmware — its VPN Director imports provider WireGuard profiles, so one .conf tunnels the whole household.</string>
+    <string name="guide_note_asuswrt_merlin">WireGuard needs a Wi-Fi 6/7 ASUS model (386.5+ firmware) — older Wi-Fi 5 routers stay on OpenVPN</string>
+    <string name="guide_desc_ddwrt">The veteran third-party router firmware: current builds ship a WireGuard tab for both server and client — turn spare hardware into a tunnel endpoint.</string>
+    <string name="guide_desc_vyos">Debian-based router/firewall OS: WireGuard interfaces are first-class with official site-to-site and road-warrior recipes in the docs.</string>
 
     <string name="guide_desc_wg_android">The official WireGuard app — useful to verify a profile, or to scan a provider QR and re-export the .conf for SecureNet.</string>
     <string name="guide_desc_wg_fdroid">The same official client from F-Droid, without Google services.</string>

@@ -456,7 +456,7 @@
     <string name="guide_stats_cleared">تم حذف جميع إشارات الدليل</string>
     <string name="settings_section_guide">دليل WireGuard</string>
     <string name="settings_row_guide_title">من أين أحصل على تكوينات WireGuard؟</string>
-    <string name="settings_row_guide_sub">36 مصدراً مجانياً ومدفوعاً مع الروابط والدروس والنصائح</string>
+    <string name="settings_row_guide_sub">44 مصدراً مجانياً ومدفوعاً مع الروابط والدروس والنصائح</string>
     <string name="guide_note_paid_only">تكوينات WireGuard تتطلب اشتراكاً مدفوعاً</string>
     <string name="guide_entry_button">ليس لديك تكوين؟ من أين تحصل على واحد — مجاني ومدفوع…</string>
 
@@ -494,6 +494,19 @@
     <string name="guide_desc_openwrt">حوّل أي راوتر مدعوم إلى خادم أو عميل WireGuard: ثبّت حزمة luci-proto-wireguard وأضف الواجهة من LuCI.</string>
     <string name="guide_desc_opnsense">جدارا pfSense وOPNsense يتضمنان WireGuard — أنشئ خادماً وأقراناً من واجهة الويب ثم صدّر تكوينات الأقران لأجهزتك.</string>
     <string name="guide_desc_mikrotik">‏RouterOS 7 يتضمن WireGuard أصلياً — أنشئ الواجهة وأضف الأقران واطبع تكوين العميل من الطرفية.</string>
+
+    <!-- v1.8.4 — eight more verified sources -->
+    <string name="guide_desc_riseup">‏RiseupVPN خدمة VPN ممولة بالتبرعات لا تتطلب حساباً من جمعية Riseup — بواباتها تتحدث WireGuard، والأداة المجتمعية المرتبطة تُصدّر ملفات ‎.conf جاهزة للاستيراد لكل بوابة.</string>
+    <string name="guide_note_riseup">تطبيق RiseupVPN الرسمي لا يُصدّر ملفات ‎.conf — الأداة المفتوحة المرتبطة تسجّل دخولك وتبني التكوينات على بوابات Riseup نفسها</string>
+    <string name="guide_desc_purevpn">موثّق: صفحة Manual Configuration في منطقة الأعضاء تُصدر ملفات WireGuard — أضف إضافة WireGuard المجانية واختر الموقع ونزّل ملف ‎.conf.</string>
+    <string name="guide_note_purevpn">تكوينات WireGuard تُسلَّم كإضافة في منطقة الأعضاء — فعّلها مرة واحدة من قسم الاشتراكات</string>
+    <string name="guide_desc_wg_portal">بوابة إدارة متكاملة لخادم WireGuard الخاص بك: واجهة ويب مع رموز QR ومستخدمو LDAP/OAuth وتنزيل ملفات ‎wg-quick بنقرة واحدة — ملف Go واحد جاهز للدوكر.</string>
+    <string name="guide_desc_innernet">شبكة خاصة تعتمد WireGuard تحت الغطاء: دعوة الأقران برموز وتنظيم بمحاور CIDR وتجاوز NAT لشبكتك الخاصة.</string>
+    <string name="guide_desc_defguard">منصة WireGuard ذاتية الاستضافة مع تحقق متعدد العوامل لكل اتصال وتكامل هوية SSO/LDAP وملفات عملاء يُنزّلها المستخدمون بأنفسهم — نواة مفتوحة المصدر.</string>
+    <string name="guide_desc_asuswrt_merlin">البرنامج المخصص المحترم لأجهزة ASUS — مدير VPN فيه يستورد ملفات WireGuard للمزودين مباشرة، فينفقُل منزلك كله بنفق واحد.</string>
+    <string name="guide_note_asuswrt_merlin">يتطلب WireGuard راوتر ASUS بشريحة Wi-Fi 6/7 (إصدار 386.5 فأحدث) — الأجهزة الأقدم تبقى على OpenVPN</string>
+    <string name="guide_desc_ddwrt">برنامج الراوتر الخارجي الأعرق: الإصدارات الحالية تتضمن تبويب WireGuard للخادم والعميل معاً — حوّل جهازاً قديماً إلى نقطة نفق.</string>
+    <string name="guide_desc_vyos">نظام تشغيل راوتر/جدار ناري مبني على Debian: واجهات WireGuard مواطن من الدرجة الأولى مع وصفات رسمية للاتصال من موقع إلى موقع وللمتنقلين.</string>
 
     <string name="guide_desc_wg_android">تطبيق WireGuard الرسمي — مفيد للتحقق من ملف، أو مسح رمز QR من مزود وإعادة تصديره ‎.conf إلى SecureNet.</string>
     <string name="guide_desc_wg_fdroid">العميل الرسمي نفسه من F-Droid، دون خدمات Google.</string>
