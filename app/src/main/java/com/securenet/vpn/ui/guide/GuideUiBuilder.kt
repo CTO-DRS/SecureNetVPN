@@ -16,6 +16,7 @@ import com.securenet.vpn.R
 import com.securenet.vpn.guide.GuideCategory
 import com.securenet.vpn.guide.GuideEntry
 import com.securenet.vpn.guide.GuideSignalsData
+import com.securenet.vpn.guide.GuideSmart
 import com.securenet.vpn.guide.GuideStats
 import com.securenet.vpn.guide.GuideStore
 import com.securenet.vpn.guide.WireGuideCatalog
@@ -74,6 +75,9 @@ class GuideUiBuilder(
         host.removeAllViews()
         onOpenFullGuide?.let { host.addView(openFullGuideLink(it)) }
         if (showStats) {
+            // v1.8.9 — smart picks lead, statistics follow: recommendations
+            // are the actionable part, the stats card the analytical one.
+            smartPicksCard()?.let { host.addView(it) }
             statsCard()?.let { host.addView(it) }
         }
         WireGuideCatalog.sections().forEach { (category, entries) ->
@@ -90,6 +94,116 @@ class GuideUiBuilder(
     fun renderFiltered(host: LinearLayout, entries: List<GuideEntry>) {
         host.removeAllViews()
         WireGuideFilter.sortWithSignals(entries, store).forEach { host.addView(entryCard(it)) }
+    }
+
+    /** v1.8.9 — typo-tolerant fallback: a hint line, then closest matches. */
+    fun renderFuzzy(host: LinearLayout, entries: List<GuideEntry>) {
+        host.removeAllViews()
+        host.addView(TextView(context).apply {
+            text = getString(R.string.guide_fuzzy_hint)
+            setTextColor(resolveColor(android.R.attr.textColorSecondary))
+            textSize = 12f
+            setPadding(dp(4), dp(2), dp(4), dp(4))
+        })
+        WireGuideFilter.sortWithSignals(entries, store).forEach { host.addView(entryCard(it)) }
+    }
+
+    // ------------------------------------------------------------------
+    // v1.8.9 — smart picks: recommendations grounded in the user's signals
+    // ------------------------------------------------------------------
+
+    /**
+     * The "Smart picks for you" card — up to three sources scored from the
+     * user's own ratings/favorites/notes by [GuideSmart.recommendations],
+     * each with a reason chip naming why it surfaced. Hidden while the
+     * engine has nothing grounded to say (no signals, nothing scored).
+     */
+    private fun smartPicksCard(): MaterialCardView? {
+        val picks = GuideSmart.recommendations(GuideSignalsData.snapshot(store))
+        if (picks.isEmpty()) return null
+
+        val body = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(12), dp(10), dp(12), dp(10))
+            addView(TextView(context).apply {
+                text = getString(R.string.guide_smart_title)
+                setTextColor(resolveColor(com.google.android.material.R.attr.colorPrimary))
+                textSize = 14f
+                setTypeface(typeface, Typeface.BOLD)
+            })
+            addView(TextView(context).apply {
+                text = getString(R.string.guide_smart_hint)
+                setTextColor(resolveColor(android.R.attr.textColorSecondary))
+                textSize = 11.5f
+                setLineSpacing(dp(2).toFloat(), 1f)
+                layoutParams = LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply { topMargin = dp(3) }
+            })
+            picks.forEach { rec -> addView(smartPickRow(rec)) }
+        }
+        return MaterialCardView(context).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply { bottomMargin = dp(8) }
+            radius = dp(12).toFloat()
+            setContentPadding(0, 0, 0, 0)
+            addView(body)
+        }
+    }
+
+    /** One pick row: category icon + name + reason chip; tap opens detail. */
+    private fun smartPickRow(rec: GuideSmart.Recommendation): LinearLayout {
+        val row = LinearLayout(context).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = android.view.Gravity.CENTER_VERTICAL
+            isClickable = true
+            isFocusable = true
+            layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply { topMargin = dp(4) }
+            setPadding(dp(4), dp(6), dp(4), dp(6))
+        }
+        row.addView(ImageView(context).apply {
+            setImageResource(iconFor(rec.entry.category))
+            layoutParams = LinearLayout.LayoutParams(dp(26), dp(26)).apply {
+                marginEnd = dp(8)
+            }
+        })
+        row.addView(TextView(context).apply {
+            text = rec.entry.name
+            setTextColor(resolveColor(com.google.android.material.R.attr.colorOnSurface))
+            textSize = 13f
+            maxLines = 1
+            ellipsize = android.text.TextUtils.TruncateAt.END
+            layoutParams = LinearLayout.LayoutParams(
+                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f
+            )
+        })
+        row.addView(TextView(context).apply {
+            text = getString(reasonRes(rec.reason))
+            setTextColor(resolveColor(com.google.android.material.R.attr.colorPrimary))
+            textSize = 10.5f
+            maxLines = 2
+            gravity = android.view.Gravity.END
+            layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply { marginStart = dp(6) }
+        })
+        onOpenDetail?.let { open ->
+            row.setOnClickListener { open(rec.entry) }
+        }
+        return row
+    }
+
+    private fun reasonRes(reason: GuideSmart.Reason): Int = when (reason) {
+        GuideSmart.Reason.TOP_CATEGORY -> R.string.guide_smart_reason_top
+        GuideSmart.Reason.EDITORS_CHOICE -> R.string.guide_smart_reason_editors
+        GuideSmart.Reason.COLD_START -> R.string.guide_smart_reason_cold
     }
 
     /** One illustrated how-to step: icon in a circle + caption below. */
@@ -559,6 +673,19 @@ class GuideUiBuilder(
                     ViewGroup.LayoutParams.WRAP_CONTENT
                 ).apply { topMargin = dp(4) }
             })
+            // v1.8.9 — smart insights about the user's own pattern.
+            GuideSmart.insights(signals).forEach { insight ->
+                addView(TextView(context).apply {
+                    text = insightText(insight)
+                    setTextColor(resolveColor(com.google.android.material.R.attr.colorOnSurface))
+                    textSize = 11.5f
+                    setLineSpacing(dp(2).toFloat(), 1f)
+                    layoutParams = LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                    ).apply { topMargin = dp(3) }
+                })
+            }
             if (stats.ratedCount > 0) {
                 addView(TextView(context).apply {
                     text = getString(
@@ -609,6 +736,17 @@ class GuideUiBuilder(
             setContentPadding(0, 0, 0, 0)
             addView(body)
         }
+    }
+
+    /** EN/AR rendering of one [GuideSmart.Insight] line. */
+    private fun insightText(insight: GuideSmart.Insight): String = when (insight.type) {
+        GuideSmart.Type.TOP_CATEGORY ->
+            getString(
+                R.string.guide_smart_insight_top,
+                getString(sectionTitleRes(insight.category!!)), insight.count
+            )
+        GuideSmart.Type.UNRATED_IN_TOP_CATEGORY ->
+            getString(R.string.guide_smart_insight_unrated, insight.count)
     }
 
     /** One ranked row: `N.` + name (+ ♥) + stars, stars forced LTR. v1.8.7 — tap opens the detail screen. */
