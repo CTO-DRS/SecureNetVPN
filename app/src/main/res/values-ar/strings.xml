@@ -460,6 +460,17 @@
     <string name="guide_note_paid_only">تكوينات WireGuard تتطلب اشتراكاً مدفوعاً</string>
     <string name="guide_entry_button">ليس لديك تكوين؟ من أين تحصل على واحد — مجاني ومدفوع…</string>
 
+    <!-- v1.8.7 — صفحة تفاصيل المصدر -->
+    <string name="guide_detail_title">تفاصيل المصدر</string>
+    <string name="guide_detail_share">مشاركة</string>
+    <string name="guide_detail_share_via">مشاركة هذا المصدر عبر</string>
+    <string name="guide_detail_steps_title">كيف تستخدم مصدراً مثل هذا</string>
+    <string name="guide_detail_yours_title">إشاراتك</string>
+    <string name="guide_detail_yours_hint">قيّم وضَع في المفضلة وأضف ملاحظتك — كل شيء يبقى على جهازك ويسافر داخل نسختك الاحتياطية المشفرة.</string>
+    <string name="guide_detail_related_title">المزيد في هذه الفئة</string>
+    <string name="guide_detail_related_empty">لا مصادر أخرى في هذه الفئة بعد.</string>
+    <string name="guide_detail_unknown">المصدر غير موجود — قد يكون من إصدار دليل أقدم.</string>
+
     <string name="guide_desc_warp_wgcf">شبكة WARP المجانية من Cloudflare كتكوين WireGuard حقيقي: شغّل أداة wgcf مفتوحة المصدر مرة واحدة على حاسوب لتسجيل الحساب وتصدير ملف مجاني غير محدود.</string>
     <string name="guide_desc_proton_free">أنشئ حساباً مجانياً ثم لوحة الحساب → Downloads → WireGuard configuration. الخطة المجانية تنشئ تكوينات للخوادم المجانية، والمدفوعة تفتح كل المواقع.</string>
     <string name="guide_desc_mullvad">مزود يضع الخصوصية أولاً (5 يورو شهرياً ثابت). بعد الدخول، منشئ التكوينات يتيح اختيار الدولة والمدينة والمنفذ وينزّل ملف ‎.conf مباشرة.</string>

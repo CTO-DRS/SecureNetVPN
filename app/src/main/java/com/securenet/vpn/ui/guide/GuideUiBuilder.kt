@@ -54,7 +54,8 @@ class GuideUiBuilder(
     private val onCopyUrl: (String) -> Unit,
     private val onOpenFullGuide: (() -> Unit)? = null,
     private val onSignalsChanged: (() -> Unit)? = null,
-    private val onSignalsCleared: (() -> Unit)? = null
+    private val onSignalsCleared: (() -> Unit)? = null,
+    private val onOpenDetail: ((GuideEntry) -> Unit)? = null
 ) {
 
     /** Category icon (also used as the leading illustration on every card). */
@@ -333,6 +334,14 @@ class GuideUiBuilder(
             radius = dp(12).toFloat()
             setContentPadding(0, 0, 0, 0)
             addView(body)
+            // v1.8.7 — the whole card opens the per-source detail screen;
+            // interactive children (stars, favorite, buttons, selectable
+            // URL) keep consuming their own taps.
+            onOpenDetail?.let { open ->
+                isClickable = true
+                isFocusable = true
+                setOnClickListener { open(entry) }
+            }
         }
     }
 
@@ -361,8 +370,8 @@ class GuideUiBuilder(
         if (store.note(entry.id) != null) R.string.guide_note_edit
         else R.string.guide_note_add
 
-    /** Heart bookmark on the card's title row; toggles in place. */
-    private fun favoriteToggle(entry: GuideEntry): TextView = TextView(context).apply {
+    /** Heart bookmark; toggles in place. Public since v1.8.7 for the detail screen. */
+    fun favoriteToggle(entry: GuideEntry): TextView = TextView(context).apply {
         textSize = 18f
         setPadding(dp(8), dp(2), dp(2), dp(2))
         layoutParams = LinearLayout.LayoutParams(
@@ -388,9 +397,10 @@ class GuideUiBuilder(
     /**
      * Tappable 1–5 star rating row. Forced LTR so stars always read 1→5,
      * matching the numeric rating in every locale. Tapping the currently
-     * top-rated star clears the rating.
+     * top-rated star clears the rating. Public since v1.8.7 — the detail
+     * screen reuses the exact same widget so signals behave identically.
      */
-    private fun starRow(entry: GuideEntry): LinearLayout {
+    fun starRow(entry: GuideEntry): LinearLayout {
         val stars = mutableListOf<TextView>()
         val row = LinearLayout(context).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -601,7 +611,7 @@ class GuideUiBuilder(
         }
     }
 
-    /** One ranked row: `N.` + name (+ ♥) + stars, stars forced LTR. */
+    /** One ranked row: `N.` + name (+ ♥) + stars, stars forced LTR. v1.8.7 — tap opens the detail screen. */
     private fun mostRatedRow(rank: Int, ranked: GuideStats.Ranked): LinearLayout {
         val row = LinearLayout(context).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -641,6 +651,13 @@ class GuideUiBuilder(
                 ViewGroup.LayoutParams.WRAP_CONTENT
             ).apply { marginStart = dp(6) }
         })
+        onOpenDetail?.let { open ->
+            WireGuideCatalog.byId(ranked.id)?.let { entry ->
+                row.isClickable = true
+                row.isFocusable = true
+                row.setOnClickListener { open(entry) }
+            }
+        }
         return row
     }
 

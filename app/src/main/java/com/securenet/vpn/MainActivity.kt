@@ -13,6 +13,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.securenet.vpn.databinding.ActivityMainBinding
 import com.securenet.vpn.service.SecureNetVpnService
 import com.securenet.vpn.ui.dashboard.DashboardFragment
+import com.securenet.vpn.ui.guide.GuideDetailFragment
 import com.securenet.vpn.ui.guide.GuideFragment
 import com.securenet.vpn.ui.history.HistoryFragment
 import com.securenet.vpn.ui.permissions.PermissionManager
@@ -143,6 +144,20 @@ class MainActivity : AppCompatActivity(), PermissionRequestHost {
     fun openConfigGuide() {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainer, GuideFragment())
+            .addToBackStack(null)
+            .commitAllowingStateLoss()
+        setBottomNavVisible(false)
+    }
+
+    /**
+     * v1.8.7 — per-source detail page for one WireGuard config source,
+     * opened by tapping a card in the guide (list or statistics ranking) or
+     * a related row on the detail screen itself. Same hosting contract as
+     * [openConfigGuide]: bottom nav hidden, restored on any pop path.
+     */
+    fun openGuideDetail(sourceId: String) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainer, GuideDetailFragment.newInstance(sourceId))
             .addToBackStack(null)
             .commitAllowingStateLoss()
         setBottomNavVisible(false)
