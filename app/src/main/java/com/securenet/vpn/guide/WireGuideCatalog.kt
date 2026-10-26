@@ -11,9 +11,11 @@ import com.securenet.vpn.R
  * and official clients/tools. Expanded in v1.7.1 from 23 to 36 sources,
  * adding per-category step-by-step tutorials ([stepsRes]), in v1.8.4 from
  * 36 to 44 (RiseupVPN community configs, PureVPN, WireGuard Portal /
- * innernet / defguard, Asuswrt-Merlin / DD-WRT / VyOS) and in v1.8.5 to
+ * innernet / defguard, Asuswrt-Merlin / DD-WRT / VyOS), in v1.8.5 to
  * 52 (12VPX / Njalla / Cryptostorm, Amnezia / Pro Custodibus, Ubiquiti
- * UniFi / FreshTomato, WireSock).
+ * UniFi / FreshTomato, WireSock) and in v1.8.6 to 60 (VPNBook,
+ * linuxserver/wireguard / WireHole / Pritunl, pfSense / IPFire / ASUS
+ * stock firmware, NetworkManager).
  *
  * The catalog is pure data so it can be unit-tested (URL shape, uniqueness,
  * category completeness) without any Android dependency beyond @StringRes.
@@ -65,6 +67,14 @@ object WireGuideCatalog {
             category = GuideCategory.FREE,
             descriptionRes = R.string.guide_desc_riseup,
             noteRes = R.string.guide_note_riseup
+        ),
+        GuideEntry(
+            id = "vpnbook",
+            name = "VPNBook (free public configs)",
+            url = "https://www.vpnbook.com/freevpn/wireguard-vpn",
+            category = GuideCategory.FREE,
+            descriptionRes = R.string.guide_desc_vpnbook,
+            noteRes = R.string.guide_note_vpnbook
         ),
 
         // ------------------------------------------------------------------
@@ -317,6 +327,28 @@ object WireGuideCatalog {
             category = GuideCategory.SELF_HOSTED,
             descriptionRes = R.string.guide_desc_procustodibus
         ),
+        GuideEntry(
+            id = "linuxserver-wireguard",
+            name = "linuxserver/wireguard (Docker)",
+            url = "https://docs.linuxserver.io/images/docker-wireguard/",
+            category = GuideCategory.SELF_HOSTED,
+            descriptionRes = R.string.guide_desc_lsio_wireguard
+        ),
+        GuideEntry(
+            id = "wirehole",
+            name = "WireHole (WireGuard + Pi-hole + Unbound)",
+            url = "https://github.com/IAmStoxe/wirehole",
+            category = GuideCategory.SELF_HOSTED,
+            descriptionRes = R.string.guide_desc_wirehole
+        ),
+        GuideEntry(
+            id = "pritunl",
+            name = "Pritunl",
+            url = "https://docs.pritunl.com/kb/vpn/getting-started/wireguard",
+            category = GuideCategory.SELF_HOSTED,
+            descriptionRes = R.string.guide_desc_pritunl,
+            noteRes = R.string.guide_note_pritunl
+        ),
 
         // ------------------------------------------------------------------
         // ROUTERS — WireGuard built into the box that already runs your net
@@ -386,6 +418,28 @@ object WireGuideCatalog {
             descriptionRes = R.string.guide_desc_freshtomato,
             noteRes = R.string.guide_note_freshtomato
         ),
+        GuideEntry(
+            id = "pfsense",
+            name = "pfSense",
+            url = "https://docs.netgate.com/pfsense/en/latest/vpn/wireguard/index.html",
+            category = GuideCategory.ROUTERS,
+            descriptionRes = R.string.guide_desc_pfsense
+        ),
+        GuideEntry(
+            id = "ipfire",
+            name = "IPFire",
+            url = "https://www.ipfire.org/docs/configuration/services/wireguard",
+            category = GuideCategory.ROUTERS,
+            descriptionRes = R.string.guide_desc_ipfire
+        ),
+        GuideEntry(
+            id = "asus-stock",
+            name = "ASUS routers (stock firmware)",
+            url = "https://www.asus.com/support/faq/1048280",
+            category = GuideCategory.ROUTERS,
+            descriptionRes = R.string.guide_desc_asus_stock,
+            noteRes = R.string.guide_note_asus_stock
+        ),
 
         // ------------------------------------------------------------------
         // APPS & TOOLS — official clients that also read the same .conf
@@ -432,6 +486,13 @@ object WireGuideCatalog {
             category = GuideCategory.APPS,
             descriptionRes = R.string.guide_desc_wiresock,
             noteRes = R.string.guide_note_wiresock
+        ),
+        GuideEntry(
+            id = "networkmanager",
+            name = "NetworkManager (Linux built-in)",
+            url = "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/configuring_and_managing_networking/assembly_setting-up-a-wireguard-vpn_configuring-and-managing-networking",
+            category = GuideCategory.APPS,
+            descriptionRes = R.string.guide_desc_networkmanager
         )
     )
 
@@ -464,6 +525,7 @@ object WireGuideCatalog {
         "12vpx" to listOf("12vpx", "dutch", "12 في بي اكس", "هولندي"),
         "njalla" to listOf("njalla", "njal", "crypto", "نيالا", "نچالا"),
         "cryptostorm" to listOf("cryptostorm", "cstorm", "token", "كريبتو ستورم", "رمز"),
+        "vpnbook" to listOf("vpnbook", "free", "no signup", "في بي بوك", "مجاني", "بدون تسجيل"),
         "wg-easy" to listOf("docker", "web ui", "دوكر", "ويب"),
         "pivpn" to listOf("raspberry", "pi", "debian", "رازبيري", "راسبيري"),
         "algo" to listOf("ansible", "trail of bits", "أنسيبل"),
@@ -479,6 +541,9 @@ object WireGuideCatalog {
         "defguard" to listOf("mfa", "2fa", "zero trust", "rust", "دى فجارد", "دفقارد"),
         "amnezia" to listOf("amnezia", "amneziawg", "obfuscation", "censorship", "امنزيا", "حجب"),
         "procustodibus" to listOf("custodibus", "monitoring", "agent", "برو كوستوديبوس", "مراقبة"),
+        "linuxserver-wireguard" to listOf("linuxserver", "lsio", "docker", "لينكس سيرفر", "دوكر"),
+        "wirehole" to listOf("wirehole", "pi-hole", "unbound", "وايرهول", "باي هول", "أونباوند"),
+        "pritunl" to listOf("pritunl", "enterprise", "openvpn", "بريتونل", "مؤسسي"),
         "glinet" to listOf("gl-inet", "travel", "سفر", "راوتر سفر"),
         "openwrt" to listOf("openwrt", "luci", "اوبنوورت"),
         "opnsense" to listOf("pfsense", "opnsense", "firewall", "جدار ناري"),
@@ -488,12 +553,16 @@ object WireGuideCatalog {
         "vyos" to listOf("vyatta", "linux router", "فايوس", "في أو إس"),
         "unifi" to listOf("ubiquiti", "udm", "dream machine", "unifi", "يونيفي", "يويبيكوتي"),
         "freshtomato" to listOf("tomato", "broadcom", "freshtomato", "فريش طوماتو"),
+        "pfsense" to listOf("pfsense", "netgate", "firewall", "بي ف سينس", "جدار ناري"),
+        "ipfire" to listOf("ipfire", "firewall", "آي فاير", "جدار ناري"),
+        "asus-stock" to listOf("asus", "stock", "vpn fusion", "ايسوس", "أصلي"),
         "wg-android" to listOf("android", "official", "اندرويد"),
         "wg-fdroid" to listOf("fdroid", "open source", "فدرويد"),
         "wg-desktop" to listOf("windows", "linux", "mac", "ويندوز", "لينكس"),
         "wg-ios" to listOf("ios", "iphone", "ipad", "ايفون", "آيباد", "ابل"),
         "wg-macos" to listOf("macos", "mac", "ماك", "ماك بوك", "ابل"),
-        "wiresock" to listOf("wiresock", "windows", "third-party", "وايرسوك")
+        "wiresock" to listOf("wiresock", "windows", "third-party", "وايرسوك"),
+        "networkmanager" to listOf("networkmanager", "linux", "nmcli", "لينكس", "مدير الشبكة")
     )
 
     /** Curated search keywords for one entry id (never empty for real ids). */
