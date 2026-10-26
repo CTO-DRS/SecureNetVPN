@@ -9,7 +9,9 @@ import com.securenet.vpn.R
  * full spectrum the user asked for: free services, paid providers with a
  * config generator, self-hosted server software, router/firewall platforms
  * and official clients/tools. Expanded in v1.7.1 from 23 to 36 sources,
- * adding per-category step-by-step tutorials ([stepsRes]).
+ * adding per-category step-by-step tutorials ([stepsRes]), and again in
+ * v1.8.4 from 36 to 44 (RiseupVPN community configs, PureVPN, WireGuard
+ * Portal / innernet / defguard, Asuswrt-Merlin / DD-WRT / VyOS).
  *
  * The catalog is pure data so it can be unit-tested (URL shape, uniqueness,
  * category completeness) without any Android dependency beyond @StringRes.
@@ -53,6 +55,14 @@ object WireGuideCatalog {
             url = "https://account.protonvpn.com/downloads",
             category = GuideCategory.FREE,
             descriptionRes = R.string.guide_desc_proton_free
+        ),
+        GuideEntry(
+            id = "riseup",
+            name = "RiseupVPN (community configs)",
+            url = "https://github.com/kmille/riseup-vpn-configurator",
+            category = GuideCategory.FREE,
+            descriptionRes = R.string.guide_desc_riseup,
+            noteRes = R.string.guide_note_riseup
         ),
 
         // ------------------------------------------------------------------
@@ -173,6 +183,14 @@ object WireGuideCatalog {
             descriptionRes = R.string.guide_desc_nordvpn,
             noteRes = R.string.guide_note_nordvpn
         ),
+        GuideEntry(
+            id = "purevpn",
+            name = "PureVPN",
+            url = "https://support.purevpn.com/en_US/account/how-to-add-wireguard-via-member-area",
+            category = GuideCategory.PAID,
+            descriptionRes = R.string.guide_desc_purevpn,
+            noteRes = R.string.guide_note_purevpn
+        ),
 
         // ------------------------------------------------------------------
         // SELF-HOSTED — run your own WireGuard server (VPS / Raspberry Pi)
@@ -240,6 +258,27 @@ object WireGuideCatalog {
             category = GuideCategory.SELF_HOSTED,
             descriptionRes = R.string.guide_desc_angristan
         ),
+        GuideEntry(
+            id = "wg-portal",
+            name = "WireGuard Portal",
+            url = "https://github.com/h44z/wg-portal",
+            category = GuideCategory.SELF_HOSTED,
+            descriptionRes = R.string.guide_desc_wg_portal
+        ),
+        GuideEntry(
+            id = "innernet",
+            name = "innernet",
+            url = "https://github.com/tonarino/innernet",
+            category = GuideCategory.SELF_HOSTED,
+            descriptionRes = R.string.guide_desc_innernet
+        ),
+        GuideEntry(
+            id = "defguard",
+            name = "defguard",
+            url = "https://defguard.net",
+            category = GuideCategory.SELF_HOSTED,
+            descriptionRes = R.string.guide_desc_defguard
+        ),
 
         // ------------------------------------------------------------------
         // ROUTERS — WireGuard built into the box that already runs your net
@@ -271,6 +310,28 @@ object WireGuideCatalog {
             url = "https://mikrotik.com",
             category = GuideCategory.ROUTERS,
             descriptionRes = R.string.guide_desc_mikrotik
+        ),
+        GuideEntry(
+            id = "asuswrt-merlin",
+            name = "Asuswrt-Merlin",
+            url = "https://www.asuswrt-merlin.net",
+            category = GuideCategory.ROUTERS,
+            descriptionRes = R.string.guide_desc_asuswrt_merlin,
+            noteRes = R.string.guide_note_asuswrt_merlin
+        ),
+        GuideEntry(
+            id = "ddwrt",
+            name = "DD-WRT",
+            url = "https://dd-wrt.com",
+            category = GuideCategory.ROUTERS,
+            descriptionRes = R.string.guide_desc_ddwrt
+        ),
+        GuideEntry(
+            id = "vyos",
+            name = "VyOS",
+            url = "https://vyos.io",
+            category = GuideCategory.ROUTERS,
+            descriptionRes = R.string.guide_desc_vyos
         ),
 
         // ------------------------------------------------------------------
@@ -338,19 +399,27 @@ object WireGuideCatalog {
         "torguard" to listOf("torguard", "تورجارد"),
         "pia" to listOf("pia", "private internet access", "برايفات انترنيت"),
         "nordvpn" to listOf("nord", "norway", "نورد"),
+        "purevpn" to listOf("purevpn", "pure", "بيور", "بور في بي ان"),
         "wg-easy" to listOf("docker", "web ui", "دوكر", "ويب"),
         "pivpn" to listOf("raspberry", "pi", "debian", "رازبيري", "راسبيري"),
         "algo" to listOf("ansible", "trail of bits", "أنسيبل"),
         "headscale" to listOf("tailscale", "self", "هيدسكيل"),
+        "riseup" to listOf("riseup", "bitmask", "donation", "non-profit", "رايزب", "ريز اب", "مجاني"),
         "tailscale" to listOf("mesh", "personal", "تيلسكيل", "ميش"),
         "netbird" to listOf("netbird", "mesh", "نت بيرد"),
         "netmaker" to listOf("netmaker", "mesh", "نت ميكر"),
         "firezone" to listOf("firezone", "zero trust", "فايرزون"),
         "wireguard-install" to listOf("script", "bash", "ubuntu", "سكربت", "سكريبت"),
+        "wg-portal" to listOf("portal", "ldap", "oauth", "web ui", "بوابة", "ويب"),
+        "innernet" to listOf("overlay", "cidr", "rust", "اينرنت"),
+        "defguard" to listOf("mfa", "2fa", "zero trust", "rust", "دى فجارد", "دفقارد"),
         "glinet" to listOf("gl-inet", "travel", "سفر", "راوتر سفر"),
         "openwrt" to listOf("openwrt", "luci", "اوبنوورت"),
         "opnsense" to listOf("pfsense", "opnsense", "firewall", "جدار ناري"),
         "mikrotik" to listOf("routeros", "ميكروتك"),
+        "asuswrt-merlin" to listOf("asus", "merlin", "firmware", "ايسوس", "مرلين"),
+        "ddwrt" to listOf("dd-wrt", "broadcom", "firmware", "دي دي"),
+        "vyos" to listOf("vyatta", "linux router", "فايوس", "في أو إس"),
         "wg-android" to listOf("android", "official", "اندرويد"),
         "wg-fdroid" to listOf("fdroid", "open source", "فدرويد"),
         "wg-desktop" to listOf("windows", "linux", "mac", "ويندوز", "لينكس"),

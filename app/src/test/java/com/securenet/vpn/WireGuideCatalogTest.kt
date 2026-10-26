@@ -67,20 +67,24 @@ class WireGuideCatalogTest {
     @Test
     fun `guide covers the expected breadth`() {
         assertTrue(
-            "Guide should list at least 34 sources, found ${WireGuideCatalog.entries.size}",
-            WireGuideCatalog.entries.size >= 34
+            "Guide should list at least 42 sources, found ${WireGuideCatalog.entries.size}",
+            WireGuideCatalog.entries.size >= 42
         )
         assertTrue(
-            "Paid section should cover at least 16 providers",
-            WireGuideCatalog.byCategory(GuideCategory.PAID).size >= 16
+            "Free section should list at least 3 sources",
+            WireGuideCatalog.byCategory(GuideCategory.FREE).size >= 3
         )
         assertTrue(
-            "Self-hosted section should list at least 8 tools",
-            WireGuideCatalog.byCategory(GuideCategory.SELF_HOSTED).size >= 8
+            "Paid section should cover at least 17 providers",
+            WireGuideCatalog.byCategory(GuideCategory.PAID).size >= 17
         )
         assertTrue(
-            "Routers section should list at least 4 platforms",
-            WireGuideCatalog.byCategory(GuideCategory.ROUTERS).size >= 4
+            "Self-hosted section should list at least 11 tools",
+            WireGuideCatalog.byCategory(GuideCategory.SELF_HOSTED).size >= 11
+        )
+        assertTrue(
+            "Routers section should list at least 6 platforms",
+            WireGuideCatalog.byCategory(GuideCategory.ROUTERS).size >= 6
         )
         assertTrue(
             "Apps section should list at least 5 clients",
@@ -151,6 +155,35 @@ class WireGuideCatalogTest {
             "https://apps.apple.com/app/wireguard/id1451685025",
             byId.getValue("wg-macos").url
         )
+    }
+
+    @Test
+    fun `v1_8_4 expanded sources are present and verified`() {
+        val byId = WireGuideCatalog.entries.associateBy { it.id }
+        // RiseupVPN: free donation-funded service, community tool with honest note
+        assertEquals(
+            "https://github.com/kmille/riseup-vpn-configurator",
+            byId.getValue("riseup").url
+        )
+        assertEquals(R.string.guide_note_riseup, byId.getValue("riseup").noteRes)
+        // PureVPN: official member-area WireGuard add-on, disclosed via note
+        assertEquals(
+            "https://support.purevpn.com/en_US/account/how-to-add-wireguard-via-member-area",
+            byId.getValue("purevpn").url
+        )
+        assertEquals(R.string.guide_note_purevpn, byId.getValue("purevpn").noteRes)
+        // Self-hosted anchors (GitHub repos verified at release time)
+        assertEquals("https://github.com/h44z/wg-portal", byId.getValue("wg-portal").url)
+        assertEquals("https://github.com/tonarino/innernet", byId.getValue("innernet").url)
+        assertEquals("https://defguard.net", byId.getValue("defguard").url)
+        // Router anchors
+        assertEquals("https://www.asuswrt-merlin.net", byId.getValue("asuswrt-merlin").url)
+        assertEquals(
+            R.string.guide_note_asuswrt_merlin,
+            byId.getValue("asuswrt-merlin").noteRes
+        )
+        assertEquals("https://dd-wrt.com", byId.getValue("ddwrt").url)
+        assertEquals("https://vyos.io", byId.getValue("vyos").url)
     }
 
     @Test
