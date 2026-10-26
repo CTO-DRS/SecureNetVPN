@@ -184,6 +184,39 @@
                         android:text="@string/guide_detail_share"
                         android:textSize="12sp" />
                 </LinearLayout>
+
+                <!-- v1.8.8: scannable QR of the official URL — hop to
+                     another device; tap the code to open here instead. -->
+                <TextView
+                    android:id="@+id/tvQrTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center_horizontal"
+                    android:text="@string/guide_detail_qr_title"
+                    android:textColor="@color/on_glass_secondary"
+                    android:textSize="11.5sp" />
+
+                <ImageView
+                    android:id="@+id/ivQr"
+                    android:layout_width="160dp"
+                    android:layout_height="160dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="8dp"
+                    android:background="@android:color/white"
+                    android:contentDescription="@string/guide_detail_qr_cd"
+                    android:padding="10dp"
+                    android:scaleType="fitCenter" />
+
+                <TextView
+                    android:id="@+id/tvQrHost"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:fontFamily="monospace"
+                    android:gravity="center_horizontal"
+                    android:textColor="@color/on_glass_secondary"
+                    android:textSize="11sp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

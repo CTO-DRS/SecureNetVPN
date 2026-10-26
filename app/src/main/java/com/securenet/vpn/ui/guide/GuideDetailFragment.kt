@@ -23,6 +23,7 @@ import com.securenet.vpn.R
 import com.securenet.vpn.databinding.FragmentGuideDetailBinding
 import com.securenet.vpn.guide.GuideCategory
 import com.securenet.vpn.guide.GuideDetail
+import com.securenet.vpn.guide.GuideDetailQr
 import com.securenet.vpn.guide.GuideEntry
 import com.securenet.vpn.guide.GuideStore
 import com.securenet.vpn.guide.GuideStoreProvider
@@ -34,7 +35,9 @@ import com.securenet.vpn.guide.WireGuideCatalog
  * row here. One screen answers everything about a source at a glance:
  *  - identity: category icon + name + category label + Editor's choice badge
  *    + the favorite heart;
- *  - the link: selectable URL with open / copy / share actions;
+ *  - the link: selectable URL with open / copy / share actions, plus the
+ *    v1.8.8 scannable QR of the official URL (tap it to open here) and the
+ *    bare host rendered under the code — a glanceable trust signal;
  *  - the full description and the editorial small-print note;
  *  - the category's step-by-step tutorial (same content the section header
  *    carries, so the detail page stands alone);
@@ -107,6 +110,7 @@ class GuideDetailFragment : Fragment() {
         binding.tvDetailBadge.visibility =
             if (facts.editorsChoice) View.VISIBLE else View.GONE
         binding.tvDetailUrl.text = entry.url
+        renderQr(entry)
         binding.tvDetailDesc.text = getString(entry.descriptionRes)
         if (entry.noteRes != null) {
             binding.tvDetailNote.text = getString(entry.noteRes)
@@ -141,6 +145,28 @@ class GuideDetailFragment : Fragment() {
             }
 
         renderRelated(entry)
+    }
+
+    /** v1.8.8 — QR of the official URL + the bare host under it. */
+    private fun renderQr(entry: GuideEntry) {
+        val host = GuideDetail.hostOf(entry)
+        if (host != null) {
+            binding.tvQrHost.text =
+                getString(R.string.guide_detail_host_prefix) + " " + host
+            binding.tvQrHost.visibility = View.VISIBLE
+        } else {
+            binding.tvQrHost.visibility = View.GONE
+        }
+        val qr = GuideDetailQr.bitmap(entry.url)
+        if (qr != null) {
+            binding.ivQr.setImageBitmap(qr)
+            binding.ivQr.setOnClickListener { openUrl(entry.url) }
+            binding.ivQr.visibility = View.VISIBLE
+            binding.tvQrTitle.visibility = View.VISIBLE
+        } else {
+            binding.ivQr.visibility = View.GONE
+            binding.tvQrTitle.visibility = View.GONE
+        }
     }
 
     private fun refreshUserNote(facts: GuideDetail.Facts) {

@@ -58,4 +58,21 @@ object GuideDetail {
 
     /** One-line share text: "name — url". */
     fun shareText(entry: GuideEntry): String = "${entry.name} — ${entry.url}"
+
+    /**
+     * v1.8.8 — the bare official host of [entry]'s URL ("nordvpn.com",
+     * "play.google.com"), shown under the QR so the destination domain is
+     * readable at a glance — a small trust signal when the code itself is
+     * not human-scannable. Strips the "www." prefix; null when the URL
+     * does not parse (never happens for catalog entries — enforced by test).
+     */
+    fun hostOf(entry: GuideEntry): String? = hostOf(entry.url)
+
+    /** Bare host of [url], "www." stripped and lowercased, or null. */
+    fun hostOf(url: String): String? = try {
+        java.net.URI(url).host?.lowercase()?.removePrefix("www.")
+            ?.takeIf { it.isNotBlank() }
+    } catch (_: Exception) {
+        null
+    }
 }
