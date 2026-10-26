@@ -67,28 +67,28 @@ class WireGuideCatalogTest {
     @Test
     fun `guide covers the expected breadth`() {
         assertTrue(
-            "Guide should list at least 42 sources, found ${WireGuideCatalog.entries.size}",
-            WireGuideCatalog.entries.size >= 42
+            "Guide should list at least 50 sources, found ${WireGuideCatalog.entries.size}",
+            WireGuideCatalog.entries.size >= 50
         )
         assertTrue(
             "Free section should list at least 3 sources",
             WireGuideCatalog.byCategory(GuideCategory.FREE).size >= 3
         )
         assertTrue(
-            "Paid section should cover at least 17 providers",
-            WireGuideCatalog.byCategory(GuideCategory.PAID).size >= 17
+            "Paid section should cover at least 20 providers",
+            WireGuideCatalog.byCategory(GuideCategory.PAID).size >= 20
         )
         assertTrue(
-            "Self-hosted section should list at least 11 tools",
-            WireGuideCatalog.byCategory(GuideCategory.SELF_HOSTED).size >= 11
+            "Self-hosted section should list at least 13 tools",
+            WireGuideCatalog.byCategory(GuideCategory.SELF_HOSTED).size >= 13
         )
         assertTrue(
-            "Routers section should list at least 6 platforms",
-            WireGuideCatalog.byCategory(GuideCategory.ROUTERS).size >= 6
+            "Routers section should list at least 8 platforms",
+            WireGuideCatalog.byCategory(GuideCategory.ROUTERS).size >= 8
         )
         assertTrue(
-            "Apps section should list at least 5 clients",
-            WireGuideCatalog.byCategory(GuideCategory.APPS).size >= 5
+            "Apps section should list at least 6 clients",
+            WireGuideCatalog.byCategory(GuideCategory.APPS).size >= 6
         )
     }
 
@@ -184,6 +184,41 @@ class WireGuideCatalogTest {
         )
         assertEquals("https://dd-wrt.com", byId.getValue("ddwrt").url)
         assertEquals("https://vyos.io", byId.getValue("vyos").url)
+    }
+
+    @Test
+    fun `v1_8_5 expanded sources are present and verified`() {
+        val byId = WireGuideCatalog.entries.associateBy { it.id }
+        // Paid: three more generators verified against official pages
+        assertEquals("https://12vpx.com", byId.getValue("12vpx").url)
+        assertEquals("https://njal.la/vpn", byId.getValue("njalla").url)
+        assertEquals(R.string.guide_note_njalla, byId.getValue("njalla").noteRes)
+        assertEquals("https://cryptostorm.is/wireguard", byId.getValue("cryptostorm").url)
+        // Self-hosted: obfuscation-focused Amnezia + Pro Custodibus management
+        assertEquals(
+            "https://amnezia.org/self-hosted",
+            byId.getValue("amnezia").url
+        )
+        assertEquals(
+            "https://www.procustodibus.com",
+            byId.getValue("procustodibus").url
+        )
+        // Routers: Ubiquiti official help article + FreshTomato wiki with honest note
+        assertEquals(
+            "https://help.ui.com/hc/en-us/articles/115005445768-UniFi-Gateway-WireGuard-VPN-Server",
+            byId.getValue("unifi").url
+        )
+        assertEquals(
+            "https://wiki.freshtomato.org/doku.php/vpn-wireguard",
+            byId.getValue("freshtomato").url
+        )
+        assertEquals(
+            R.string.guide_note_freshtomato,
+            byId.getValue("freshtomato").noteRes
+        )
+        // Apps: third-party Windows client with honest licensing note
+        assertEquals("https://wiresock.net", byId.getValue("wiresock").url)
+        assertEquals(R.string.guide_note_wiresock, byId.getValue("wiresock").noteRes)
     }
 
     @Test

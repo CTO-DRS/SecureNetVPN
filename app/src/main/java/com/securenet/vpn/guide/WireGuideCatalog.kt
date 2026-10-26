@@ -9,9 +9,11 @@ import com.securenet.vpn.R
  * full spectrum the user asked for: free services, paid providers with a
  * config generator, self-hosted server software, router/firewall platforms
  * and official clients/tools. Expanded in v1.7.1 from 23 to 36 sources,
- * adding per-category step-by-step tutorials ([stepsRes]), and again in
- * v1.8.4 from 36 to 44 (RiseupVPN community configs, PureVPN, WireGuard
- * Portal / innernet / defguard, Asuswrt-Merlin / DD-WRT / VyOS).
+ * adding per-category step-by-step tutorials ([stepsRes]), in v1.8.4 from
+ * 36 to 44 (RiseupVPN community configs, PureVPN, WireGuard Portal /
+ * innernet / defguard, Asuswrt-Merlin / DD-WRT / VyOS) and in v1.8.5 to
+ * 52 (12VPX / Njalla / Cryptostorm, Amnezia / Pro Custodibus, Ubiquiti
+ * UniFi / FreshTomato, WireSock).
  *
  * The catalog is pure data so it can be unit-tested (URL shape, uniqueness,
  * category completeness) without any Android dependency beyond @StringRes.
@@ -191,6 +193,28 @@ object WireGuideCatalog {
             descriptionRes = R.string.guide_desc_purevpn,
             noteRes = R.string.guide_note_purevpn
         ),
+        GuideEntry(
+            id = "12vpx",
+            name = "12VPX",
+            url = "https://12vpx.com",
+            category = GuideCategory.PAID,
+            descriptionRes = R.string.guide_desc_12vpx
+        ),
+        GuideEntry(
+            id = "njalla",
+            name = "Njalla",
+            url = "https://njal.la/vpn",
+            category = GuideCategory.PAID,
+            descriptionRes = R.string.guide_desc_njalla,
+            noteRes = R.string.guide_note_njalla
+        ),
+        GuideEntry(
+            id = "cryptostorm",
+            name = "Cryptostorm",
+            url = "https://cryptostorm.is/wireguard",
+            category = GuideCategory.PAID,
+            descriptionRes = R.string.guide_desc_cryptostorm
+        ),
 
         // ------------------------------------------------------------------
         // SELF-HOSTED — run your own WireGuard server (VPS / Raspberry Pi)
@@ -279,6 +303,20 @@ object WireGuideCatalog {
             category = GuideCategory.SELF_HOSTED,
             descriptionRes = R.string.guide_desc_defguard
         ),
+        GuideEntry(
+            id = "amnezia",
+            name = "Amnezia (self-hosted)",
+            url = "https://amnezia.org/self-hosted",
+            category = GuideCategory.SELF_HOSTED,
+            descriptionRes = R.string.guide_desc_amnezia
+        ),
+        GuideEntry(
+            id = "procustodibus",
+            name = "Pro Custodibus",
+            url = "https://www.procustodibus.com",
+            category = GuideCategory.SELF_HOSTED,
+            descriptionRes = R.string.guide_desc_procustodibus
+        ),
 
         // ------------------------------------------------------------------
         // ROUTERS — WireGuard built into the box that already runs your net
@@ -333,6 +371,21 @@ object WireGuideCatalog {
             category = GuideCategory.ROUTERS,
             descriptionRes = R.string.guide_desc_vyos
         ),
+        GuideEntry(
+            id = "unifi",
+            name = "Ubiquiti UniFi gateways",
+            url = "https://help.ui.com/hc/en-us/articles/115005445768-UniFi-Gateway-WireGuard-VPN-Server",
+            category = GuideCategory.ROUTERS,
+            descriptionRes = R.string.guide_desc_unifi
+        ),
+        GuideEntry(
+            id = "freshtomato",
+            name = "FreshTomato",
+            url = "https://wiki.freshtomato.org/doku.php/vpn-wireguard",
+            category = GuideCategory.ROUTERS,
+            descriptionRes = R.string.guide_desc_freshtomato,
+            noteRes = R.string.guide_note_freshtomato
+        ),
 
         // ------------------------------------------------------------------
         // APPS & TOOLS — official clients that also read the same .conf
@@ -371,6 +424,14 @@ object WireGuideCatalog {
             url = "https://apps.apple.com/app/wireguard/id1451685025",
             category = GuideCategory.APPS,
             descriptionRes = R.string.guide_desc_wg_macos
+        ),
+        GuideEntry(
+            id = "wiresock",
+            name = "WireSock Secure Connect (Windows)",
+            url = "https://wiresock.net",
+            category = GuideCategory.APPS,
+            descriptionRes = R.string.guide_desc_wiresock,
+            noteRes = R.string.guide_note_wiresock
         )
     )
 
@@ -400,6 +461,9 @@ object WireGuideCatalog {
         "pia" to listOf("pia", "private internet access", "برايفات انترنيت"),
         "nordvpn" to listOf("nord", "norway", "نورد"),
         "purevpn" to listOf("purevpn", "pure", "بيور", "بور في بي ان"),
+        "12vpx" to listOf("12vpx", "dutch", "12 في بي اكس", "هولندي"),
+        "njalla" to listOf("njalla", "njal", "crypto", "نيالا", "نچالا"),
+        "cryptostorm" to listOf("cryptostorm", "cstorm", "token", "كريبتو ستورم", "رمز"),
         "wg-easy" to listOf("docker", "web ui", "دوكر", "ويب"),
         "pivpn" to listOf("raspberry", "pi", "debian", "رازبيري", "راسبيري"),
         "algo" to listOf("ansible", "trail of bits", "أنسيبل"),
@@ -413,6 +477,8 @@ object WireGuideCatalog {
         "wg-portal" to listOf("portal", "ldap", "oauth", "web ui", "بوابة", "ويب"),
         "innernet" to listOf("overlay", "cidr", "rust", "اينرنت"),
         "defguard" to listOf("mfa", "2fa", "zero trust", "rust", "دى فجارد", "دفقارد"),
+        "amnezia" to listOf("amnezia", "amneziawg", "obfuscation", "censorship", "امنزيا", "حجب"),
+        "procustodibus" to listOf("custodibus", "monitoring", "agent", "برو كوستوديبوس", "مراقبة"),
         "glinet" to listOf("gl-inet", "travel", "سفر", "راوتر سفر"),
         "openwrt" to listOf("openwrt", "luci", "اوبنوورت"),
         "opnsense" to listOf("pfsense", "opnsense", "firewall", "جدار ناري"),
@@ -420,11 +486,14 @@ object WireGuideCatalog {
         "asuswrt-merlin" to listOf("asus", "merlin", "firmware", "ايسوس", "مرلين"),
         "ddwrt" to listOf("dd-wrt", "broadcom", "firmware", "دي دي"),
         "vyos" to listOf("vyatta", "linux router", "فايوس", "في أو إس"),
+        "unifi" to listOf("ubiquiti", "udm", "dream machine", "unifi", "يونيفي", "يويبيكوتي"),
+        "freshtomato" to listOf("tomato", "broadcom", "freshtomato", "فريش طوماتو"),
         "wg-android" to listOf("android", "official", "اندرويد"),
         "wg-fdroid" to listOf("fdroid", "open source", "فدرويد"),
         "wg-desktop" to listOf("windows", "linux", "mac", "ويندوز", "لينكس"),
         "wg-ios" to listOf("ios", "iphone", "ipad", "ايفون", "آيباد", "ابل"),
-        "wg-macos" to listOf("macos", "mac", "ماك", "ماك بوك", "ابل")
+        "wg-macos" to listOf("macos", "mac", "ماك", "ماك بوك", "ابل"),
+        "wiresock" to listOf("wiresock", "windows", "third-party", "وايرسوك")
     )
 
     /** Curated search keywords for one entry id (never empty for real ids). */

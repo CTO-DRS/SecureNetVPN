@@ -456,7 +456,7 @@
     <string name="guide_stats_cleared">تم حذف جميع إشارات الدليل</string>
     <string name="settings_section_guide">دليل WireGuard</string>
     <string name="settings_row_guide_title">من أين أحصل على تكوينات WireGuard؟</string>
-    <string name="settings_row_guide_sub">44 مصدراً مجانياً ومدفوعاً مع الروابط والدروس والنصائح</string>
+    <string name="settings_row_guide_sub">52 مصدراً مجانياً ومدفوعاً مع الروابط والدروس والنصائح</string>
     <string name="guide_note_paid_only">تكوينات WireGuard تتطلب اشتراكاً مدفوعاً</string>
     <string name="guide_entry_button">ليس لديك تكوين؟ من أين تحصل على واحد — مجاني ومدفوع…</string>
 
@@ -507,6 +507,19 @@
     <string name="guide_note_asuswrt_merlin">يتطلب WireGuard راوتر ASUS بشريحة Wi-Fi 6/7 (إصدار 386.5 فأحدث) — الأجهزة الأقدم تبقى على OpenVPN</string>
     <string name="guide_desc_ddwrt">برنامج الراوتر الخارجي الأعرق: الإصدارات الحالية تتضمن تبويب WireGuard للخادم والعميل معاً — حوّل جهازاً قديماً إلى نقطة نفق.</string>
     <string name="guide_desc_vyos">نظام تشغيل راوتر/جدار ناري مبني على Debian: واجهات WireGuard مواطن من الدرجة الأولى مع وصفات رسمية للاتصال من موقع إلى موقع وللمتنقلين.</string>
+
+    <!-- v1.8.5 — eight more verified sources -->
+    <string name="guide_desc_12vpx">مزوّد هولندي صغير يركّز على الخصوصية: سجّل الدخول وافتح صفحة WireGuard ونزّل حزمة ZIP بتكوينات جاهزة لكل موقع — مع حزم للراوترات مثل GL.iNet وMerlin.</string>
+    <string name="guide_desc_njalla">جمعية الخصوصية التي تقف خلف نطاقات Njalla تشغّل VPN بسيطاً: أضف خانة VPN واضغط “Use WireGuard” ونزّل ملف ‎.conf — وتُقبل العملات الرقمية.</string>
+    <string name="guide_note_njalla">تكوين عميل نشط واحد في كل مرة — أعد تنزيله (أو أضف خانة أخرى) عند تبديل الأجهزة</string>
+    <string name="guide_desc_cryptostorm">خدمة خصوصية عريقة بنظام الرموز: الصق رمز وصولك في صفحة WireGuard فيولّد لك التكوين — الوضع البسيط ينشئ المفاتيح عنك، والمتقدم يُبقي مفتاحك الخاص على جهازك.</string>
+    <string name="guide_desc_amnezia">VPN ذاتي الاستضافة مفتوح المصدر يثبّت WireGuard (أو فرع AmneziaWG المقاوم للحجب) على خادمك الخاص بنقرات قليلة — ويُصدّر ملفات ‎.conf عادية للاستيراد إلى SecureNet.</string>
+    <string name="guide_desc_procustodibus">طبقة إدارة فوق شبكة WireGuard قائمة: لوحة ويب بالمراقبة وتنبيهات انتهاء الأقران ورموز QR، مزامَنة عبر وكيل خفيف على كل مضيف.</string>
+    <string name="guide_desc_unifi">بوابات UniFi ‏(Dream Machine وCloud Gateway وغيرها) تتضمن خادم وعميل WireGuard داخل تطبيق Network — أنشئ المستخدمين ونزّل ملفات لكل جهاز.</string>
+    <string name="guide_desc_freshtomato">برنامج راوترات Broadcom بواجهة WireGuard كاملة: استورد ملف ‎.conf من مزودك واضبط التوجيه حسب السياسة ومفتاح الإيقاف — مُتحقَّق منه من الويكي الرسمي.</string>
+    <string name="guide_note_freshtomato">واجهة WireGuard تأتي على إصدارات ARM فقط — إصدارات MIPS تفتقدها؛ استيراد ملفات المزودين منذ r2025.3</string>
+    <string name="guide_desc_wiresock">عميل Windows طرفي مبني حول WireGuard بواجهة حديثة ومفتاح إيقاف وتقسيم نطاق وإنتاجية عالية — بديل شائع للتطبيق الرسمي.</string>
+    <string name="guide_note_wiresock">مجاني للاستخدام الشخصي والتعليمي وغير الربحي — ليس تطبيق WireGuard الرسمي</string>
 
     <string name="guide_desc_wg_android">تطبيق WireGuard الرسمي — مفيد للتحقق من ملف، أو مسح رمز QR من مزود وإعادة تصديره ‎.conf إلى SecureNet.</string>
     <string name="guide_desc_wg_fdroid">العميل الرسمي نفسه من F-Droid، دون خدمات Google.</string>
