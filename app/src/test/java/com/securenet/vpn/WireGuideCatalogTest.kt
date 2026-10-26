@@ -67,28 +67,28 @@ class WireGuideCatalogTest {
     @Test
     fun `guide covers the expected breadth`() {
         assertTrue(
-            "Guide should list at least 50 sources, found ${WireGuideCatalog.entries.size}",
-            WireGuideCatalog.entries.size >= 50
+            "Guide should list at least 58 sources, found ${WireGuideCatalog.entries.size}",
+            WireGuideCatalog.entries.size >= 58
         )
         assertTrue(
-            "Free section should list at least 3 sources",
-            WireGuideCatalog.byCategory(GuideCategory.FREE).size >= 3
+            "Free section should list at least 4 sources",
+            WireGuideCatalog.byCategory(GuideCategory.FREE).size >= 4
         )
         assertTrue(
             "Paid section should cover at least 20 providers",
             WireGuideCatalog.byCategory(GuideCategory.PAID).size >= 20
         )
         assertTrue(
-            "Self-hosted section should list at least 13 tools",
-            WireGuideCatalog.byCategory(GuideCategory.SELF_HOSTED).size >= 13
+            "Self-hosted section should list at least 16 tools",
+            WireGuideCatalog.byCategory(GuideCategory.SELF_HOSTED).size >= 16
         )
         assertTrue(
-            "Routers section should list at least 8 platforms",
-            WireGuideCatalog.byCategory(GuideCategory.ROUTERS).size >= 8
+            "Routers section should list at least 11 platforms",
+            WireGuideCatalog.byCategory(GuideCategory.ROUTERS).size >= 11
         )
         assertTrue(
-            "Apps section should list at least 6 clients",
-            WireGuideCatalog.byCategory(GuideCategory.APPS).size >= 6
+            "Apps section should list at least 7 clients",
+            WireGuideCatalog.byCategory(GuideCategory.APPS).size >= 7
         )
     }
 
@@ -219,6 +219,54 @@ class WireGuideCatalogTest {
         // Apps: third-party Windows client with honest licensing note
         assertEquals("https://wiresock.net", byId.getValue("wiresock").url)
         assertEquals(R.string.guide_note_wiresock, byId.getValue("wiresock").noteRes)
+    }
+
+    @Test
+    fun `v1_8_6 expanded sources are present and verified`() {
+        val byId = WireGuideCatalog.entries.associateBy { it.id }
+        // Free: VPNBook — public no-signup configs with honest 7-day expiry note
+        assertEquals(
+            "https://www.vpnbook.com/freevpn/wireguard-vpn",
+            byId.getValue("vpnbook").url
+        )
+        assertEquals(R.string.guide_note_vpnbook, byId.getValue("vpnbook").noteRes)
+        // Self-hosted: LinuxServer image, WireHole stack, Pritunl with client-auth note
+        assertEquals(
+            "https://docs.linuxserver.io/images/docker-wireguard/",
+            byId.getValue("linuxserver-wireguard").url
+        )
+        assertEquals("https://github.com/IAmStoxe/wirehole", byId.getValue("wirehole").url)
+        assertEquals(
+            "https://docs.pritunl.com/kb/vpn/getting-started/wireguard",
+            byId.getValue("pritunl").url
+        )
+        assertEquals(R.string.guide_note_pritunl, byId.getValue("pritunl").noteRes)
+        // Routers: pfSense + IPFire official docs, ASUS stock firmware with model note
+        assertEquals(
+            "https://docs.netgate.com/pfsense/en/latest/vpn/wireguard/index.html",
+            byId.getValue("pfsense").url
+        )
+        assertEquals(
+            "https://www.ipfire.org/docs/configuration/services/wireguard",
+            byId.getValue("ipfire").url
+        )
+        assertEquals(
+            "https://www.asus.com/support/faq/1048280",
+            byId.getValue("asus-stock").url
+        )
+        assertEquals(R.string.guide_note_asus_stock, byId.getValue("asus-stock").noteRes)
+        // Apps: NetworkManager via Red Hat's official RHEL 9 WireGuard chapter
+        assertEquals(
+            "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/configuring_and_managing_networking/assembly_setting-up-a-wireguard-vpn_configuring-and-managing-networking",
+            byId.getValue("networkmanager").url
+        )
+        // Every new id carries EN+AR search keywords
+        listOf(
+            "vpnbook", "linuxserver-wireguard", "wirehole", "pritunl",
+            "pfsense", "ipfire", "asus-stock", "networkmanager"
+        ).forEach { id ->
+            assertTrue("No search keywords for $id", WireGuideCatalog.keywordsOf(id).isNotEmpty())
+        }
     }
 
     @Test

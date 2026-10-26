@@ -456,7 +456,7 @@
     <string name="guide_stats_cleared">تم حذف جميع إشارات الدليل</string>
     <string name="settings_section_guide">دليل WireGuard</string>
     <string name="settings_row_guide_title">من أين أحصل على تكوينات WireGuard؟</string>
-    <string name="settings_row_guide_sub">52 مصدراً مجانياً ومدفوعاً مع الروابط والدروس والنصائح</string>
+    <string name="settings_row_guide_sub">60 مصدراً مجانياً ومدفوعاً مع الروابط والدروس والنصائح</string>
     <string name="guide_note_paid_only">تكوينات WireGuard تتطلب اشتراكاً مدفوعاً</string>
     <string name="guide_entry_button">ليس لديك تكوين؟ من أين تحصل على واحد — مجاني ومدفوع…</string>
 
@@ -498,6 +498,8 @@
     <!-- v1.8.4 — eight more verified sources -->
     <string name="guide_desc_riseup">‏RiseupVPN خدمة VPN ممولة بالتبرعات لا تتطلب حساباً من جمعية Riseup — بواباتها تتحدث WireGuard، والأداة المجتمعية المرتبطة تُصدّر ملفات ‎.conf جاهزة للاستيراد لكل بوابة.</string>
     <string name="guide_note_riseup">تطبيق RiseupVPN الرسمي لا يُصدّر ملفات ‎.conf — الأداة المفتوحة المرتبطة تسجّل دخولك وتبني التكوينات على بوابات Riseup نفسها</string>
+    <string name="guide_desc_vpnbook">خدمة VPN مجانية عريقة: اختر أحد الخوادم العلنية في أمريكا أو بريطانيا أو كندا أو ألمانيا أو فرنسا ونزّل ملف ‎.conf جاهزاً أو رمز QR — بلا حساب ولا تسجيل، وتموّلها الإعلانات والتبرعات.</string>
+    <string name="guide_note_vpnbook">التكوينات تنتهي بعد 7 أيام وكلمة مرور الصفحة المشتركة تتبدل دورياً — أعد التنزيل للتحديث</string>
     <string name="guide_desc_purevpn">موثّق: صفحة Manual Configuration في منطقة الأعضاء تُصدر ملفات WireGuard — أضف إضافة WireGuard المجانية واختر الموقع ونزّل ملف ‎.conf.</string>
     <string name="guide_note_purevpn">تكوينات WireGuard تُسلَّم كإضافة في منطقة الأعضاء — فعّلها مرة واحدة من قسم الاشتراكات</string>
     <string name="guide_desc_wg_portal">بوابة إدارة متكاملة لخادم WireGuard الخاص بك: واجهة ويب مع رموز QR ومستخدمو LDAP/OAuth وتنزيل ملفات ‎wg-quick بنقرة واحدة — ملف Go واحد جاهز للدوكر.</string>
@@ -515,11 +517,20 @@
     <string name="guide_desc_cryptostorm">خدمة خصوصية عريقة بنظام الرموز: الصق رمز وصولك في صفحة WireGuard فيولّد لك التكوين — الوضع البسيط ينشئ المفاتيح عنك، والمتقدم يُبقي مفتاحك الخاص على جهازك.</string>
     <string name="guide_desc_amnezia">VPN ذاتي الاستضافة مفتوح المصدر يثبّت WireGuard (أو فرع AmneziaWG المقاوم للحجب) على خادمك الخاص بنقرات قليلة — ويُصدّر ملفات ‎.conf عادية للاستيراد إلى SecureNet.</string>
     <string name="guide_desc_procustodibus">طبقة إدارة فوق شبكة WireGuard قائمة: لوحة ويب بالمراقبة وتنبيهات انتهاء الأقران ورموز QR، مزامَنة عبر وكيل خفيف على كل مضيف.</string>
+    <string name="guide_desc_lsio_wireguard">صورة Docker من LinuxServer.io: ملف compose واحد يبني خادم WireGuard كاملاً بواجهة ويب لإدارة الأقران ورموز QR وتكوينات العملاء — مع أنفاق وضع العميل لتوجيه الحاوية نفسها عبر مزوّدك.</string>
+    <string name="guide_desc_wirehole">حزمة docker-compose تجمع WireGuard وPi-hole وUnbound: نفق كامل أو مقسّم مع حجب الإعلانات وDNS تكراري في نشر واحد، يُدار من واجهة ويب.</string>
+    <string name="guide_desc_pritunl">خادم VPN موزع مفتوح المصدر بوضع WireGuard في كل اتصال — خوادم متماثلة وعناوين ثابتة للعملاء وتوجيه بين العملاء وتبديل تلقائي خلال ~13 ثانية، يُدار من لوحة ويب متقنة.</string>
+    <string name="guide_note_pritunl">وضع WireGuard يعتمد على مصادقة الطبقات المتعددة في عميل Pritunl — الاتصالات ليست استيراد ملفات ‎.conf عادية</string>
     <string name="guide_desc_unifi">بوابات UniFi ‏(Dream Machine وCloud Gateway وغيرها) تتضمن خادم وعميل WireGuard داخل تطبيق Network — أنشئ المستخدمين ونزّل ملفات لكل جهاز.</string>
     <string name="guide_desc_freshtomato">برنامج راوترات Broadcom بواجهة WireGuard كاملة: استورد ملف ‎.conf من مزودك واضبط التوجيه حسب السياسة ومفتاح الإيقاف — مُتحقَّق منه من الويكي الرسمي.</string>
     <string name="guide_note_freshtomato">واجهة WireGuard تأتي على إصدارات ARM فقط — إصدارات MIPS تفتقدها؛ استيراد ملفات المزودين منذ r2025.3</string>
+    <string name="guide_desc_pfsense">منصة جدار الحماية مفتوحة المصدر مع WireGuard مدمج: صفحة VPN ← WireGuard للأنفاق والأقران، مع وصفات رسمية للوصول عن بُعد والربط بين مواقعين.</string>
+    <string name="guide_desc_ipfire">توزيعة جدار الحماية المجتمعية بدعم WireGuard أصلي: أنفاق مضيف-إلى-شبكة (Roadwarrior) وشبكة-إلى-شبكة تُضبط من واجهة الويب مباشرة.</string>
+    <string name="guide_desc_asus_stock">برنامج ASUS الأصلي أضاف خادم وعميل WireGuard تحت VPN Fusion — أنشئ الملفات الشخصية مع رموز QR من واجهة الراوتر مباشرة دون برمجيات طرفية.</string>
+    <string name="guide_note_asus_stock">يتطلب إصدار البرنامج 3.0.0.4.388 أو أحدث على الطرازات الداعمة لـ VPN Fusion — راجع قائمة الطرازات المرتبطة في الدليل</string>
     <string name="guide_desc_wiresock">عميل Windows طرفي مبني حول WireGuard بواجهة حديثة ومفتاح إيقاف وتقسيم نطاق وإنتاجية عالية — بديل شائع للتطبيق الرسمي.</string>
     <string name="guide_note_wiresock">مجاني للاستخدام الشخصي والتعليمي وغير الربحي — ليس تطبيق WireGuard الرسمي</string>
+    <string name="guide_desc_networkmanager">‏WireGuard مدمج في NetworkManager على كل توزيعات لينكس الحديثة: أنشئ الواجهة عبر nmcli أو محرر الاتصالات — دليل Red Hat الرسمي لـ RHEL 9 يغطي الخادم والعميل من ألف إلى ياء.</string>
 
     <string name="guide_desc_wg_android">تطبيق WireGuard الرسمي — مفيد للتحقق من ملف، أو مسح رمز QR من مزود وإعادة تصديره ‎.conf إلى SecureNet.</string>
     <string name="guide_desc_wg_fdroid">العميل الرسمي نفسه من F-Droid، دون خدمات Google.</string>

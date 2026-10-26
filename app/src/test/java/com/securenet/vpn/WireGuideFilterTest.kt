@@ -56,9 +56,14 @@ class WireGuideFilterTest {
 
     @Test
     fun `multi token query requires every token`() {
-        // pivpn is the only entry whose haystack holds both tokens
-        val hits = WireGuideFilter.filter(entries, "raspberry pi")
-        assertEquals(listOf("pivpn"), hits.map { it.id })
+        // v1.8.6 — pivpn matches by its own keywords ("raspberry", "pi");
+        // wirehole joins via the self-hosted category terms ("raspberry")
+        // plus its curated "pi-hole" keyword — both haystacks genuinely
+        // hold every token, in stable catalog order.
+        assertEquals(
+            listOf("pivpn", "wirehole"),
+            WireGuideFilter.filter(entries, "raspberry pi").map { it.id }
+        )
 
         // tokens spanning different entries must not AND together
         assertTrue(WireGuideFilter.filter(entries, "raspberry nordvpn").isEmpty())
