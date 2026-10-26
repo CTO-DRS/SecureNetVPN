@@ -17,3 +17,8 @@ go/libwg/libwgcore
 # Native libs are rebuilt by CI (go/build-wireguard-go.sh)
 app/src/main/jniLibs/
 go/libwg/go.sum
+
+# Signing material (kept outside the repo)
+*.jks
+*.keystore
+keystore.properties
