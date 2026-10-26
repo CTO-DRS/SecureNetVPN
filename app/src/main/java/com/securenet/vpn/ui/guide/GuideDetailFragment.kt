@@ -1,0 +1,329 @@
+package com.securenet.vpn.ui.guide
+
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.FrameLayout
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.widget.Toast
+import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
+import com.securenet.vpn.MainActivity
+import com.securenet.vpn.R
+import com.securenet.vpn.databinding.FragmentGuideDetailBinding
+import com.securenet.vpn.guide.GuideCategory
+import com.securenet.vpn.guide.GuideDetail
+import com.securenet.vpn.guide.GuideEntry
+import com.securenet.vpn.guide.GuideStore
+import com.securenet.vpn.guide.GuideStoreProvider
+import com.securenet.vpn.guide.WireGuideCatalog
+
+/**
+ * v1.8.7 — full-screen detail page for one WireGuard config source, opened
+ * by tapping any card in the guide (list, statistics ranking) or a related
+ * row here. One screen answers everything about a source at a glance:
+ *  - identity: category icon + name + category label + Editor's choice badge
+ *    + the favorite heart;
+ *  - the link: selectable URL with open / copy / share actions;
+ *  - the full description and the editorial small-print note;
+ *  - the category's step-by-step tutorial (same content the section header
+ *    carries, so the detail page stands alone);
+ *  - "your signals": the big interactive star row, the personal note with
+ *    add/edit/remove — the exact same [GuideUiBuilder] widgets the cards
+ *    use, so behaviour (tap-to-clear stars, RTL-safe LTR stars) matches;
+ *  - "more in this category": up to five sibling sources ranked by the
+ *    user's own signals ([GuideDetail.related]); tapping one swaps this
+ *    screen's content in place — a natural way to hop through a category.
+ *
+ * Hosting contract mirrors [GuideFragment]: pushed by
+ * [MainActivity.openGuideDetail] (bottom nav hidden) and restores the nav
+ * in onDestroyView for any pop path. An unknown id (catalog version drift
+ * after a restore) degrades to a toast + pop instead of a blank screen.
+ */
+class GuideDetailFragment : Fragment() {
+
+    private var _binding: FragmentGuideDetailBinding? = null
+    private val binding get() = _binding!!
+    private lateinit var store: GuideStore
+    private var builder: GuideUiBuilder? = null
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentGuideDetailBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        store = GuideStoreProvider.get(requireContext())
+
+        val id = requireArguments().getString(ARG_ID)
+        val entry = id?.let { WireGuideCatalog.byId(it) }
+        if (entry == null) {
+            // Catalog version drift (e.g. a restored backup references a
+            // newer/renamed source): explain and leave gracefully.
+            Toast.makeText(
+                requireContext(), R.string.guide_detail_unknown, Toast.LENGTH_SHORT
+            ).show()
+            parentFragmentManager.popBackStack()
+            return
+        }
+
+        builder = GuideUiBuilder(
+            requireContext(), store, ::openUrl, ::copyUrl
+        )
+        binding.btnBack.setOnClickListener { parentFragmentManager.popBackStack() }
+        binding.btnOpen.setOnClickListener { openUrl(entry.url) }
+        binding.btnCopy.setOnClickListener { copyUrl(entry.url) }
+        binding.btnShare.setOnClickListener { share(entry) }
+        binding.btnNote.setOnClickListener { showNoteDialog(entry) }
+        binding.tvUserNote.setOnClickListener { showNoteDialog(entry) }
+
+        bind(entry)
+    }
+
+    /** Renders (or re-renders, on related-hop) the whole screen for [entry]. */
+    private fun bind(entry: GuideEntry) {
+        val facts = GuideDetail.facts(entry, store)
+
+        binding.scrollDetail.smoothScrollTo(0, 0)
+
+        binding.ivDetailIcon.setImageResource(iconFor(entry.category))
+        binding.tvDetailName.text = entry.name
+        binding.tvDetailCategory.setText(categoryLabel(entry.category))
+        binding.tvDetailBadge.visibility =
+            if (facts.editorsChoice) View.VISIBLE else View.GONE
+        binding.tvDetailUrl.text = entry.url
+        binding.tvDetailDesc.text = getString(entry.descriptionRes)
+        if (entry.noteRes != null) {
+            binding.tvDetailNote.text = getString(entry.noteRes)
+            binding.tvDetailNote.visibility = View.VISIBLE
+        } else {
+            binding.tvDetailNote.visibility = View.GONE
+        }
+
+        // Signals: the shared widgets repaint in place on tap.
+        binding.favHost.removeAllViews()
+        binding.favHost.addView(builder!!.favoriteToggle(entry))
+        binding.llStars.removeAllViews()
+        binding.llStars.addView(builder!!.starRow(entry))
+        refreshUserNote(facts)
+
+        // Category tutorial steps, numbered like the section cards.
+        binding.llSteps.removeAllViews()
+        context?.resources?.getStringArray(WireGuideCatalog.stepsRes(entry.category))
+            ?.forEachIndexed { index, step ->
+                binding.llSteps.addView(TextView(requireContext()).apply {
+                    text = (index + 1).toString() + " · " + step
+                    setTextColor(resolveColor(android.R.attr.textColorSecondary))
+                    textSize = 12f
+                    setLineSpacing(dp(2).toFloat(), 1f)
+                    if (index > 0) {
+                        layoutParams = LinearLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT
+                        ).apply { topMargin = dp(3) }
+                    }
+                })
+            }
+
+        renderRelated(entry)
+    }
+
+    private fun refreshUserNote(facts: GuideDetail.Facts) {
+        val note = facts.note
+        if (note == null) {
+            binding.tvUserNote.visibility = View.GONE
+            binding.btnNote.setText(R.string.guide_note_add)
+        } else {
+            binding.tvUserNote.text =
+                getString(R.string.guide_user_note_prefix) + " " + note
+            binding.tvUserNote.visibility = View.VISIBLE
+            binding.btnNote.setText(R.string.guide_note_edit)
+        }
+    }
+
+    /** "More in this category" — signals-ranked siblings, tap to hop. */
+    private fun renderRelated(entry: GuideEntry) {
+        val related = GuideDetail.related(entry, store)
+        binding.llRelated.removeAllViews()
+        if (related.isEmpty()) {
+            binding.tvRelatedEmpty.visibility = View.VISIBLE
+            return
+        }
+        binding.tvRelatedEmpty.visibility = View.GONE
+        related.forEach { sibling ->
+            binding.llRelated.addView(relatedRow(sibling))
+        }
+    }
+
+    private fun relatedRow(sibling: GuideEntry): View {
+        val stars = store.rating(sibling.id)
+        val fav = store.isFavorite(sibling.id)
+        val row = LinearLayout(requireContext()).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = android.view.Gravity.CENTER_VERTICAL
+            isClickable = true
+            isFocusable = true
+            layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply { topMargin = dp(4) }
+            setPadding(dp(4), dp(6), dp(4), dp(6))
+        }
+        row.addView(android.widget.ImageView(requireContext()).apply {
+            setImageResource(iconFor(sibling.category))
+            layoutParams = LinearLayout.LayoutParams(dp(26), dp(26)).apply {
+                marginEnd = dp(8)
+            }
+        })
+        row.addView(TextView(requireContext()).apply {
+            text = if (fav) "♥ " + sibling.name else sibling.name
+            setTextColor(resolveColor(com.google.android.material.R.attr.colorOnSurface))
+            textSize = 13f
+            maxLines = 1
+            ellipsize = android.text.TextUtils.TruncateAt.END
+            layoutParams = LinearLayout.LayoutParams(
+                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f
+            )
+        })
+        row.addView(TextView(requireContext()).apply {
+            text = "\u2605".repeat(stars).ifEmpty { "\u2606" }
+            setTextColor(resolveColor(com.google.android.material.R.attr.colorPrimary))
+            textSize = 12f
+            layoutDirection = View.LAYOUT_DIRECTION_LTR
+            layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply { marginStart = dp(6) }
+        })
+        row.setOnClickListener {
+            WireGuideCatalog.byId(sibling.id)?.let(::bind)
+        }
+        return row
+    }
+
+    private fun showNoteDialog(entry: GuideEntry) {
+        val input = EditText(requireContext()).apply {
+            setText(store.note(entry.id))
+            hint = getString(R.string.guide_note_hint)
+            setSingleLine(false)
+            minLines = 2
+            maxLines = 4
+        }
+        val container = FrameLayout(requireContext()).apply {
+            setPadding(dp(20), dp(8), dp(20), 0)
+            addView(input, FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ))
+        }
+        val dialog = MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.guide_note_dialog_title)
+            .setView(container)
+            .setPositiveButton(R.string.guide_note_save) { _, _ ->
+                store.setNote(entry.id, input.text?.toString())
+                refreshUserNote(GuideDetail.facts(entry, store))
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+        if (store.note(entry.id) != null) {
+            dialog.setNeutralButton(R.string.guide_note_remove) { _, _ ->
+                store.setNote(entry.id, null)
+                refreshUserNote(GuideDetail.facts(entry, store))
+            }
+        }
+        dialog.show()
+    }
+
+    private fun share(entry: GuideEntry) {
+        val launched = runCatching {
+            val send = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, GuideDetail.shareText(entry))
+            }
+            startActivity(Intent.createChooser(send, getString(R.string.guide_detail_share_via)))
+        }.isSuccess
+        if (!launched) {
+            view?.let {
+                Snackbar.make(it, R.string.guide_no_browser, Snackbar.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun openUrl(url: String) {
+        val launched = runCatching {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+        }.isSuccess
+        if (!launched) {
+            view?.let {
+                Snackbar.make(it, R.string.guide_no_browser, Snackbar.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun copyUrl(url: String) {
+        runCatching {
+            val clipboard =
+                requireContext().getSystemService(Context.CLIPBOARD_SERVICE)
+                    as ClipboardManager
+            clipboard.setPrimaryClip(
+                ClipData.newPlainText("WireGuard config source", url)
+            )
+        }
+        view?.let {
+            Snackbar.make(it, R.string.guide_link_copied, Snackbar.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun iconFor(category: GuideCategory): Int = when (category) {
+        GuideCategory.FREE -> R.drawable.ic_globe
+        GuideCategory.PAID -> R.drawable.ic_auto_awesome
+        GuideCategory.SELF_HOSTED -> R.drawable.ic_dns
+        GuideCategory.ROUTERS -> R.drawable.ic_wifi
+        GuideCategory.APPS -> R.drawable.ic_qr_code
+    }
+
+    private fun categoryLabel(category: GuideCategory): Int = when (category) {
+        GuideCategory.FREE -> R.string.guide_section_free
+        GuideCategory.PAID -> R.string.guide_section_paid
+        GuideCategory.SELF_HOSTED -> R.string.guide_section_selfhosted
+        GuideCategory.ROUTERS -> R.string.guide_section_routers
+        GuideCategory.APPS -> R.string.guide_section_apps
+    }
+
+    private fun resolveColor(attr: Int): Int {
+        val value = android.util.TypedValue()
+        requireContext().theme.resolveAttribute(attr, value, true)
+        return value.data
+    }
+
+    private fun dp(value: Int): Int =
+        (value * requireContext().resources.displayMetrics.density).toInt()
+
+    override fun onDestroyView() {
+        (activity as? MainActivity)?.setBottomNavVisible(true)
+        _binding = null
+        builder = null
+        super.onDestroyView()
+    }
+
+    companion object {
+        private const val ARG_ID = "source_id"
+
+        fun newInstance(sourceId: String): GuideDetailFragment =
+            GuideDetailFragment().apply { arguments = bundleOf(ARG_ID to sourceId) }
+    }
+}

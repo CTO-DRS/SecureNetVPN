@@ -41,13 +41,20 @@ class ConfigGuideDialogFragment : BottomSheetDialogFragment() {
             GuideStoreProvider.get(requireContext()),
             onOpenUrl = ::openUrl,
             onCopyUrl = ::copyUrl,
-            onOpenFullGuide = ::openFullGuide
+            onOpenFullGuide = ::openFullGuide,
+            onOpenDetail = ::openDetail
         ).renderSections(sectionsHost)
     }
 
     private fun openFullGuide() {
         dismissAllowingStateLoss()
         (activity as? MainActivity)?.openConfigGuide()
+    }
+
+    /** v1.8.7 — tapping a source card jumps to its full detail page. */
+    private fun openDetail(entry: com.securenet.vpn.guide.GuideEntry) {
+        dismissAllowingStateLoss()
+        (activity as? MainActivity)?.openGuideDetail(entry.id)
     }
 
     private fun openUrl(url: String) {

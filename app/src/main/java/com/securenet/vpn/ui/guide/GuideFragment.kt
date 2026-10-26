@@ -73,7 +73,10 @@ class GuideFragment : Fragment() {
         val builder = GuideUiBuilder(
             requireContext(), store, ::openUrl, ::copyUrl,
             onSignalsChanged = { onFavoritesMembershipChanged() },
-            onSignalsCleared = { _builder?.let { onSignalsCleared(it) } }
+            onSignalsCleared = { _builder?.let { onSignalsCleared(it) } },
+            onOpenDetail = { entry ->
+                (activity as? MainActivity)?.openGuideDetail(entry.id)
+            }
         )
         _builder = builder
         binding.flowHost.addView(buildFlowStrip(builder))
