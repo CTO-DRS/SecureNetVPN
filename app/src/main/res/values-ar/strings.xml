@@ -474,6 +474,16 @@
     <string name="guide_detail_qr_cd">رمز QR للرابط الرسمي للمصدر</string>
     <string name="guide_detail_host_prefix">العنوان الرسمي:</string>
 
+    <!-- v1.8.9 محرّك الدليل الذكي -->
+    <string name="guide_smart_title">مقترحات ذكية لك</string>
+    <string name="guide_smart_hint">مبنية على تقييماتك ومفضلاتك وملاحظاتك — انقر أحدها لفتحه.</string>
+    <string name="guide_smart_reason_top">تناسب أكثر فئاتك تفاعلاً</string>
+    <string name="guide_smart_reason_editors">اختيار المحرر لم تُقيّمه بعد</string>
+    <string name="guide_smart_reason_cold">نقطة انطلاق موثوقة</string>
+    <string name="guide_smart_insight_top">الفئة الأكثر تفاعلاً منك: %1$s · %2$d إشارات</string>
+    <string name="guide_smart_insight_unrated">%1$d مصادر فيها لم تُقيّم بعد — جرّبها</string>
+    <string name="guide_fuzzy_hint">لا تطابق تام — أقرب النتائج:</string>
+
     <string name="guide_desc_warp_wgcf">شبكة WARP المجانية من Cloudflare كتكوين WireGuard حقيقي: شغّل أداة wgcf مفتوحة المصدر مرة واحدة على حاسوب لتسجيل الحساب وتصدير ملف مجاني غير محدود.</string>
     <string name="guide_desc_proton_free">أنشئ حساباً مجانياً ثم لوحة الحساب → Downloads → WireGuard configuration. الخطة المجانية تنشئ تكوينات للخوادم المجانية، والمدفوعة تفتح كل المواقع.</string>
     <string name="guide_desc_mullvad">مزود يضع الخصوصية أولاً (5 يورو شهرياً ثابت). بعد الدخول، منشئ التكوينات يتيح اختيار الدولة والمدينة والمنفذ وينزّل ملف ‎.conf مباشرة.</string>

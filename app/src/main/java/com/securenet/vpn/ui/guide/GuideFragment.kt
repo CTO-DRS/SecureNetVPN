@@ -18,6 +18,7 @@ import com.securenet.vpn.MainActivity
 import com.securenet.vpn.R
 import com.securenet.vpn.databinding.FragmentGuideBinding
 import com.securenet.vpn.guide.GuideCategory
+import com.securenet.vpn.guide.GuideSmart
 import com.securenet.vpn.guide.GuideStore
 import com.securenet.vpn.guide.GuideStoreProvider
 import com.securenet.vpn.guide.WireGuideCatalog
@@ -29,7 +30,9 @@ import com.securenet.vpn.guide.WireGuideFilter
  * Adds on top of the shared [GuideUiBuilder] rendering:
  *  - an illustrated 4-step flow strip (choose → generate → import → connect);
  *  - live search across names, URLs, EN/AR keywords ([WireGuideFilter]) and
- *    the user's personal notes (v1.8.1);
+ *    the user's personal notes (v1.8.1), with the v1.8.9 typo-tolerant
+ *    fuzzy fallback ([GuideSmart.fuzzySearch]) when nothing matches
+ *    exactly;
  *  - category filter chips (All / Favorites / Free / Paid / Self-hosted /
  *    Routers / Apps).
  *
@@ -171,6 +174,18 @@ class GuideFragment : Fragment() {
                 else
                     R.string.guide_no_results
             )
+            // v1.8.9 — typo-tolerant fallback: when nothing matches exactly,
+            // retry with edit-distance matching before showing the dead end.
+            if (entries.isEmpty() && query.isNotBlank() && !favOnly) {
+                val fuzzy = GuideSmart.fuzzySearch(WireGuideCatalog.entries, query, notes)
+                if (fuzzy.isNotEmpty()) {
+                    binding.tvGuideCount.text =
+                        getString(R.string.guide_results_count, fuzzy.size)
+                    binding.tvGuideEmpty.visibility = View.GONE
+                    builder.renderFuzzy(binding.guideSections, fuzzy)
+                    return
+                }
+            }
             binding.tvGuideEmpty.visibility =
                 if (entries.isEmpty()) View.VISIBLE else View.GONE
             builder.renderFiltered(binding.guideSections, entries)
