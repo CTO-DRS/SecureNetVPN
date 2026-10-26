@@ -456,7 +456,7 @@
     <string name="guide_stats_cleared">All guide signals cleared</string>
     <string name="settings_section_guide">WireGuard guide</string>
     <string name="settings_row_guide_title">Where to get WireGuard configs</string>
-    <string name="settings_row_guide_sub">44 free &amp; paid sources with links, tutorials and tips</string>
+    <string name="settings_row_guide_sub">52 free &amp; paid sources with links, tutorials and tips</string>
     <string name="guide_note_paid_only">WireGuard configs require a paid plan</string>
     <string name="guide_entry_button">Don\'t have a config? Where to get one — free &amp; paid…</string>
 
@@ -507,6 +507,19 @@
     <string name="guide_note_asuswrt_merlin">WireGuard needs a Wi-Fi 6/7 ASUS model (386.5+ firmware) — older Wi-Fi 5 routers stay on OpenVPN</string>
     <string name="guide_desc_ddwrt">The veteran third-party router firmware: current builds ship a WireGuard tab for both server and client — turn spare hardware into a tunnel endpoint.</string>
     <string name="guide_desc_vyos">Debian-based router/firewall OS: WireGuard interfaces are first-class with official site-to-site and road-warrior recipes in the docs.</string>
+
+    <!-- v1.8.5 — eight more verified sources (12vpx / njalla / cryptostorm / amnezia / procustodibus / unifi / freshtomato / wiresock) -->
+    <string name="guide_desc_12vpx">Small privacy-focused Dutch provider: log in, open the WireGuard page and download a ZIP of ready-made configs for every location — with router bundles for GL.iNet and Merlin.</string>
+    <string name="guide_desc_njalla">The privacy-first registrar collective runs a lean VPN: add a VPN slot, press “Use WireGuard” and download the .conf — crypto payments welcome.</string>
+    <string name="guide_note_njalla">One active client config at a time — re-download it (or add another slot) when you switch devices</string>
+    <string name="guide_desc_cryptostorm">Veteran token-based privacy service: paste your access token into the WireGuard page and it generates the config — Simple mode mints keys for you, Advanced keeps your private key on-device.</string>
+    <string name="guide_desc_amnezia">Open-source self-hosted VPN that installs WireGuard (or the block-resistant AmneziaWG fork) on your own VPS in a few clicks — and exports plain .conf files for SecureNet.</string>
+    <string name="guide_desc_procustodibus">Management layer over an existing WireGuard network: a web console with monitoring, peer expiry alerts and QR codes, synced by a lightweight agent on each host.</string>
+    <string name="guide_desc_unifi">UniFi gateways (Dream Machine, Cloud Gateway and friends) ship a WireGuard server and client inside the Network app — create users and download per-device profiles.</string>
+    <string name="guide_desc_freshtomato">The Broadcom-router firmware with a full WireGuard GUI: import a wg-quick provider .conf, set policy routing and a kill switch — verified against the official wiki.</string>
+    <string name="guide_note_freshtomato">WireGuard GUI ships on ARM builds only — MIPS models lack it; provider .conf import since r2025.3</string>
+    <string name="guide_desc_wiresock">Third-party Windows client around WireGuard with a modern UI, kill switch, split tunneling and high throughput — a popular alternative to the official app.</string>
+    <string name="guide_note_wiresock">Free for personal / educational / non-profit use — not the official WireGuard client</string>
 
     <string name="guide_desc_wg_android">The official WireGuard app — useful to verify a profile, or to scan a provider QR and re-export the .conf for SecureNet.</string>
     <string name="guide_desc_wg_fdroid">The same official client from F-Droid, without Google services.</string>
