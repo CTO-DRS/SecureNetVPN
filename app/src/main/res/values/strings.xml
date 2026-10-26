@@ -470,6 +470,9 @@
     <string name="guide_detail_related_title">More in this category</string>
     <string name="guide_detail_related_empty">No other sources in this category yet.</string>
     <string name="guide_detail_unknown">Source not found — it may come from an older catalog version.</string>
+    <string name="guide_detail_qr_title">Scan to open on another device</string>
+    <string name="guide_detail_qr_cd">QR code of the source\'s official link</string>
+    <string name="guide_detail_host_prefix">Official address:</string>
 
     <string name="guide_desc_warp_wgcf">Cloudflare\'s free WARP network as a real WireGuard config: run the open-source wgcf tool once on a PC to register and export an unlimited free profile.</string>
     <string name="guide_desc_proton_free">Create a free account, then dashboard → Downloads → WireGuard configuration. The free plan generates configs for the free servers; paid plans unlock all locations.</string>

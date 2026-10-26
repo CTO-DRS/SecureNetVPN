@@ -470,6 +470,9 @@
     <string name="guide_detail_related_title">المزيد في هذه الفئة</string>
     <string name="guide_detail_related_empty">لا مصادر أخرى في هذه الفئة بعد.</string>
     <string name="guide_detail_unknown">المصدر غير موجود — قد يكون من إصدار دليل أقدم.</string>
+    <string name="guide_detail_qr_title">امسح الرمز لفتح المصدر على جهاز آخر</string>
+    <string name="guide_detail_qr_cd">رمز QR للرابط الرسمي للمصدر</string>
+    <string name="guide_detail_host_prefix">العنوان الرسمي:</string>
 
     <string name="guide_desc_warp_wgcf">شبكة WARP المجانية من Cloudflare كتكوين WireGuard حقيقي: شغّل أداة wgcf مفتوحة المصدر مرة واحدة على حاسوب لتسجيل الحساب وتصدير ملف مجاني غير محدود.</string>
     <string name="guide_desc_proton_free">أنشئ حساباً مجانياً ثم لوحة الحساب → Downloads → WireGuard configuration. الخطة المجانية تنشئ تكوينات للخوادم المجانية، والمدفوعة تفتح كل المواقع.</string>
