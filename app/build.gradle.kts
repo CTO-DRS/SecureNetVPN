@@ -3,6 +3,10 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
+// Optional shared debug keystore (git-ignored). Without it, Android's default debug key is used.
+val customDebugKeystore = rootProject.file("keystore/debug.keystore")
+val hasCustomDebugKeystore = customDebugKeystore.exists()
+
 android {
     namespace = "com.securenet.vpn"
     compileSdk = 35
@@ -41,24 +45,26 @@ android {
     }
 
     signingConfigs {
-        create("customDebug") {
-            storeFile = rootProject.file("keystore/debug.keystore")
-            storePassword = "android"
-            keyAlias = "androiddebugkey"
-            keyPassword = "android"
+        if (hasCustomDebugKeystore) {
+            create("customDebug") {
+                storeFile = customDebugKeystore
+                storePassword = "android" // Android's public default debug password
+                keyAlias = "androiddebugkey"
+                keyPassword = "android"
+            }
         }
     }
 
     buildTypes {
         debug {
             isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName("customDebug")
+            signingConfig = if (hasCustomDebugKeystore) signingConfigs.getByName("customDebug") else signingConfigs.getByName("debug")
         }
         release {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            signingConfig = signingConfigs.getByName("customDebug")
+            signingConfig = if (hasCustomDebugKeystore) signingConfigs.getByName("customDebug") else signingConfigs.getByName("debug")
         }
     }
 
