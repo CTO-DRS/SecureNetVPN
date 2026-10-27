@@ -489,6 +489,10 @@
     <string name="guide_detail_verdict_editors">اختيار المحرر لم تُقيّمه بعد — يستحق نظرة</string>
     <string name="guide_smart_reason_similar">يشبه ما تشاهده</string>
 
+    <!-- v1.8.11 ويدجت المقترحات الذكية -->
+    <string name="widget_smart_picks_description">مقترحاتك الذكية من الدليل مباشرة على الشاشة الرئيسية</string>
+    <string name="widget_smart_empty">قيّم بعض المصادر وتظهر مقترحاتك هنا</string>
+
     <string name="guide_desc_warp_wgcf">شبكة WARP المجانية من Cloudflare كتكوين WireGuard حقيقي: شغّل أداة wgcf مفتوحة المصدر مرة واحدة على حاسوب لتسجيل الحساب وتصدير ملف مجاني غير محدود.</string>
     <string name="guide_desc_proton_free">أنشئ حساباً مجانياً ثم لوحة الحساب → Downloads → WireGuard configuration. الخطة المجانية تنشئ تكوينات للخوادم المجانية، والمدفوعة تفتح كل المواقع.</string>
     <string name="guide_desc_mullvad">مزود يضع الخصوصية أولاً (5 يورو شهرياً ثابت). بعد الدخول، منشئ التكوينات يتيح اختيار الدولة والمدينة والمنفذ وينزّل ملف ‎.conf مباشرة.</string>

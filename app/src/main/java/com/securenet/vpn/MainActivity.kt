@@ -13,6 +13,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.securenet.vpn.databinding.ActivityMainBinding
 import com.securenet.vpn.service.SecureNetVpnService
 import com.securenet.vpn.ui.dashboard.DashboardFragment
+import com.securenet.vpn.guide.WireGuideCatalog
 import com.securenet.vpn.ui.guide.GuideDetailFragment
 import com.securenet.vpn.ui.guide.GuideFragment
 import com.securenet.vpn.ui.history.HistoryFragment
@@ -79,7 +80,34 @@ class MainActivity : AppCompatActivity(), PermissionRequestHost {
         if (savedInstanceState == null) {
             binding.bottomNav.selectedItemId = R.id.nav_dashboard
             maybeAutoConnectOnLaunch()
+            consumeWidgetDetailIntent(intent)
         }
+    }
+
+    /**
+     * v1.8.11 — smart-picks widget taps land here with the source id to
+     * open. singleTask delivers relaunches via [onNewIntent]; a cold start
+     * carries the extra on the launch intent. The extra is consumed so a
+     * configuration recreation does not re-open the detail page.
+     */
+    private fun consumeWidgetDetailIntent(launchIntent: Intent?) {
+        val sourceId = launchIntent?.getStringExtra(EXTRA_OPEN_GUIDE_DETAIL) ?: return
+        launchIntent.removeExtra(EXTRA_OPEN_GUIDE_DETAIL)
+        if (WireGuideCatalog.byId(sourceId) != null) {
+            openGuideDetail(sourceId)
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        consumeWidgetDetailIntent(intent)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Any signal change (stars, favorites, notes, restore, deletes)
+        // repaints the smart-picks widget the moment the app is foreground.
+        com.securenet.vpn.widget.GuideSmartWidgetProvider.pushUpdate(this)
     }
 
     /**
@@ -164,6 +192,12 @@ class MainActivity : AppCompatActivity(), PermissionRequestHost {
     }
 
     companion object {
+        /**
+         * v1.8.11 — the smart-picks widget puts a guide source id under
+         * this extra; the activity opens that source's detail page.
+         */
+        const val EXTRA_OPEN_GUIDE_DETAIL = "open_guide_detail"
+
         /** Permissions explained + requested one at a time, in this order. */
         val ESSENTIAL_PERMISSIONS = listOf(
             Manifest.permission.POST_NOTIFICATIONS,
