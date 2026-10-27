@@ -554,6 +554,12 @@
     <string name="guide_desc_wirehole">docker-compose stack bundling WireGuard, Pi-hole and Unbound: a full- or split-tunnel VPN with ad blocking and recursive DNS in one deployment, managed from a web UI.</string>
     <string name="guide_desc_pritunl">Open-source distributed VPN server with WireGuard mode on every connection — replicated servers, static client IPs, client-to-client routing and ~13s failover, managed from a polished web console.</string>
     <string name="guide_note_pritunl">WireGuard mode rides on the Pritunl client\'s multi-layer authentication — connections are not vanilla wg-quick .conf imports</string>
+    <string name="guide_desc_wgdashboard">Free, open-source web dashboard for a WireGuard server you already run: manage peers, set allowed IPs and hand out QR codes and .conf downloads from any browser.</string>
+    <string name="guide_desc_ansible_wg">Free Ansible role that turns any Ubuntu, Debian or Arch machine into a WireGuard peer — configuration-as-code for repeatable rebuilds and multi-server fleets.</string>
+    <string name="guide_desc_oracle_free">Self-hosting\'s best-kept secret: Oracle\'s Always Free tier gives you a real VPS (Arm instances included) at zero cost — install wg-easy or the one-command script above and own your VPN outright.</string>
+    <string name="guide_note_oracle_free">Always Free covers 4 Arm OCPUs and 24 GB RAM split across up to 4 instances — a card is required at sign-up, but the free tier is never charged</string>
+    <string name="guide_desc_hetzner">The homelab favorite for paid self-hosting: cheap European VPS with generous bandwidth where you run the one-command script above and control the whole machine.</string>
+    <string name="guide_note_hetzner">Shared-vCPU cloud instances start around €4.5 a month — pair one with the wireguard-install script above</string>
     <string name="guide_desc_unifi">UniFi gateways (Dream Machine, Cloud Gateway and friends) ship a WireGuard server and client inside the Network app — create users and download per-device profiles.</string>
     <string name="guide_desc_freshtomato">The Broadcom-router firmware with a full WireGuard GUI: import a wg-quick provider .conf, set policy routing and a kill switch — verified against the official wiki.</string>
     <string name="guide_note_freshtomato">WireGuard GUI ships on ARM builds only — MIPS models lack it; provider .conf import since r2025.3</string>
@@ -561,6 +567,14 @@
     <string name="guide_desc_ipfire">The community firewall distribution with native WireGuard support: host-to-net roadwarrior and net-to-net tunnels configured straight from the web GUI.</string>
     <string name="guide_desc_asus_stock">ASUS stock firmware gained a WireGuard server and client under VPN Fusion — generate profiles with QR codes right from the router\'s web GUI, no third-party firmware needed.</string>
     <string name="guide_note_asus_stock">Needs firmware 3.0.0.4.388 or later on VPN Fusion-supported models — check the model list linked in the guide</string>
+    <string name="guide_desc_openbsd">The free, most security-audited firewall OS: WireGuard lives in the base kernel since 6.8 (wg(4)) — a DIY firewall for people who read the man pages.</string>
+    <string name="guide_desc_firewalla">The paid consumer firewall appliance: Gold and Purple models run a WireGuard server and client out of the box, managed entirely from a phone-first app.</string>
+    <string name="guide_note_firewalla">WireGuard support ships on Gold, Purple, Blue and Plus models — VPN server and client modes included</string>
+    <string name="guide_desc_netgate_appliance">Ready-made paid hardware from the pfSense makers, shipping with the pfSense+ edition preinstalled — the community CE edition stays free to install on your own box.</string>
+    <string name="guide_note_netgate">Appliances bundle pfSense+ software and support; the CE edition remains free for self-install</string>
+    <string name="guide_desc_keenetic">Paid routers with WireGuard server and client built straight into KeeneticOS 3.3+ — no third-party firmware or add-on packages required.</string>
+    <string name="guide_note_keenetic">Native WireGuard arrived in KeeneticOS 3.3 — check your model\'s release channel before buying</string>
+    <string name="guide_desc_turris">The paid, open-source-first router from CZ.NIC: Turris OS (OpenWrt-based) with WireGuard configurable from the friendly admin interface.</string>
     <string name="guide_desc_wiresock">Third-party Windows client around WireGuard with a modern UI, kill switch, split tunneling and high throughput — a popular alternative to the official app.</string>
     <string name="guide_note_wiresock">Free for personal / educational / non-profit use — not the official WireGuard client</string>
     <string name="guide_desc_networkmanager">WireGuard is built into NetworkManager on every modern desktop Linux: create the interface with nmcli or the connection editor — Red Hat\'s official RHEL 9 guide covers server and client end to end.</string>
