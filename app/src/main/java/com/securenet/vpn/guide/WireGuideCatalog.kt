@@ -15,7 +15,13 @@ import com.securenet.vpn.R
  * 52 (12VPX / Njalla / Cryptostorm, Amnezia / Pro Custodibus, Ubiquiti
  * UniFi / FreshTomato, WireSock) and in v1.8.6 to 60 (VPNBook,
  * linuxserver/wireguard / WireHole / Pritunl, pfSense / IPFire / ASUS
- * stock firmware, NetworkManager).
+ * stock firmware, NetworkManager). In v1.8.12 to 69 with explicit
+ * free-vs-paid coverage of the self-hosted and router/firewall sections:
+ * free — WGDashboard, the githubixx Ansible role, Oracle Cloud Always
+ * Free, OpenBSD wg(4); paid — Hetzner Cloud VPS, Firewalla, Netgate
+ * pfSense+ appliances, Keenetic, Turris Omnia. Free/paid markers live
+ * in the search keywords (free/مجاني, paid/مدفوع) so filtering by
+ * price works through the same search path.
  *
  * The catalog is pure data so it can be unit-tested (URL shape, uniqueness,
  * category completeness) without any Android dependency beyond @StringRes.
@@ -349,6 +355,38 @@ object WireGuideCatalog {
             descriptionRes = R.string.guide_desc_pritunl,
             noteRes = R.string.guide_note_pritunl
         ),
+        // v1.8.12 — self-hosted, free software
+        GuideEntry(
+            id = "wgdashboard",
+            name = "WGDashboard",
+            url = "https://github.com/donaldzou/WGDashboard",
+            category = GuideCategory.SELF_HOSTED,
+            descriptionRes = R.string.guide_desc_wgdashboard
+        ),
+        GuideEntry(
+            id = "ansible-wireguard",
+            name = "Ansible WireGuard role (githubixx)",
+            url = "https://github.com/githubixx/ansible-role-wireguard",
+            category = GuideCategory.SELF_HOSTED,
+            descriptionRes = R.string.guide_desc_ansible_wg
+        ),
+        // v1.8.12 — self-hosted, the hosting bill: free tier vs paid VPS
+        GuideEntry(
+            id = "oracle-alwaysfree",
+            name = "Oracle Cloud (Always Free VPS)",
+            url = "https://www.oracle.com/cloud/free/",
+            category = GuideCategory.SELF_HOSTED,
+            descriptionRes = R.string.guide_desc_oracle_free,
+            noteRes = R.string.guide_note_oracle_free
+        ),
+        GuideEntry(
+            id = "hetzner-cloud",
+            name = "Hetzner Cloud VPS",
+            url = "https://www.hetzner.com/cloud",
+            category = GuideCategory.SELF_HOSTED,
+            descriptionRes = R.string.guide_desc_hetzner,
+            noteRes = R.string.guide_note_hetzner
+        ),
 
         // ------------------------------------------------------------------
         // ROUTERS — WireGuard built into the box that already runs your net
@@ -439,6 +477,46 @@ object WireGuideCatalog {
             category = GuideCategory.ROUTERS,
             descriptionRes = R.string.guide_desc_asus_stock,
             noteRes = R.string.guide_note_asus_stock
+        ),
+        // v1.8.12 — free firewall OS
+        GuideEntry(
+            id = "openbsd-wg",
+            name = "OpenBSD (wg(4) firewall)",
+            url = "https://man.openbsd.org/wg",
+            category = GuideCategory.ROUTERS,
+            descriptionRes = R.string.guide_desc_openbsd
+        ),
+        // v1.8.12 — paid firewall appliances & routers
+        GuideEntry(
+            id = "firewalla",
+            name = "Firewalla (Gold / Purple)",
+            url = "https://firewalla.com",
+            category = GuideCategory.ROUTERS,
+            descriptionRes = R.string.guide_desc_firewalla,
+            noteRes = R.string.guide_note_firewalla
+        ),
+        GuideEntry(
+            id = "netgate-appliance",
+            name = "Netgate pfSense+ appliances",
+            url = "https://www.netgate.com/appliances",
+            category = GuideCategory.ROUTERS,
+            descriptionRes = R.string.guide_desc_netgate_appliance,
+            noteRes = R.string.guide_note_netgate
+        ),
+        GuideEntry(
+            id = "keenetic",
+            name = "Keenetic routers",
+            url = "https://keenetic.com",
+            category = GuideCategory.ROUTERS,
+            descriptionRes = R.string.guide_desc_keenetic,
+            noteRes = R.string.guide_note_keenetic
+        ),
+        GuideEntry(
+            id = "turris-omnia",
+            name = "Turris Omnia",
+            url = "https://omnia.turris.cz/en/",
+            category = GuideCategory.ROUTERS,
+            descriptionRes = R.string.guide_desc_turris
         ),
 
         // ------------------------------------------------------------------
@@ -544,6 +622,24 @@ object WireGuideCatalog {
         "linuxserver-wireguard" to listOf("linuxserver", "lsio", "docker", "لينكس سيرفر", "دوكر"),
         "wirehole" to listOf("wirehole", "pi-hole", "unbound", "وايرهول", "باي هول", "أونباوند"),
         "pritunl" to listOf("pritunl", "enterprise", "openvpn", "بريتونل", "مؤسسي"),
+        "wgdashboard" to listOf("wgdashboard", "dashboard", "web ui", "peers", "free",
+            "لوحة تحكم", "داشبورد", "مجاني"),
+        "ansible-wireguard" to listOf("ansible", "automation", "iac", "free",
+            "أنسيبل", "أتمتة", "مجاني"),
+        "oracle-alwaysfree" to listOf("oracle", "always free", "vps", "arm", "free",
+            "أوراكل", "سيرفر مجاني", "مجاني"),
+        "hetzner-cloud" to listOf("hetzner", "vps", "cloud", "paid",
+            "هتزنر", "سيرفر", "مدفوع"),
+        "openbsd-wg" to listOf("openbsd", "unix", "firewall", "free",
+            "أوبن بي إس دي", "جدار ناري", "مجاني"),
+        "firewalla" to listOf("firewalla", "gold", "purple", "appliance", "firewall", "paid",
+            "فايرولا", "جدار ناري", "مدفوع"),
+        "netgate-appliance" to listOf("netgate", "pfsense plus", "appliance", "hardware", "firewall", "paid",
+            "نتغيت", "جدار ناري", "مدفوع"),
+        "keenetic" to listOf("keenetic", "keeneticos", "router", "paid",
+            "كينيتك", "مدفوع"),
+        "turris-omnia" to listOf("turris", "omnia", "open source", "router", "paid",
+            "توريس", "أومنيا", "مدفوع"),
         "glinet" to listOf("gl-inet", "travel", "سفر", "راوتر سفر"),
         "openwrt" to listOf("openwrt", "luci", "اوبنوورت"),
         "opnsense" to listOf("pfsense", "opnsense", "firewall", "جدار ناري"),

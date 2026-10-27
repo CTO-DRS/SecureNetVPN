@@ -554,6 +554,12 @@
     <string name="guide_desc_wirehole">حزمة docker-compose تجمع WireGuard وPi-hole وUnbound: نفق كامل أو مقسّم مع حجب الإعلانات وDNS تكراري في نشر واحد، يُدار من واجهة ويب.</string>
     <string name="guide_desc_pritunl">خادم VPN موزع مفتوح المصدر بوضع WireGuard في كل اتصال — خوادم متماثلة وعناوين ثابتة للعملاء وتوجيه بين العملاء وتبديل تلقائي خلال ~13 ثانية، يُدار من لوحة ويب متقنة.</string>
     <string name="guide_note_pritunl">وضع WireGuard يعتمد على مصادقة الطبقات المتعددة في عميل Pritunl — الاتصالات ليست استيراد ملفات ‎.conf عادية</string>
+    <string name="guide_desc_wgdashboard">لوحة تحكم ويب مجانية ومفتوحة المصدر لخادم WireGuard قائم لديك: أدر العقد واضبط عناوين IP المسموحة ووزّع رموز QR وملفات ‎.conf من أي متصفح.</string>
+    <string name="guide_desc_ansible_wg">دور Ansible مجاني يحوّل أي جهاز أوبنتو أو ديبيان أو آرتش إلى عقدة WireGuard — الإعداد كشيف برمجي لإعادة البناء المتكرر ومزارع الخوادم المتعددة.</string>
+    <string name="guide_desc_oracle_free">السر الأهم للاستضافة الذاتية: باقة Oracle Always Free تمنحك سيرفراً افتراضياً حقيقياً (بما فيها مثيلات Arm) بلا أي تكلفة — ثبّت wg-easy أو السكربت أعلاه وامتلك شبكتك بالكامل.</string>
+    <string name="guide_note_oracle_free">الباقة المجانية تشمل 4 معالجات Arm و24 جيجابايت ذاكرة موزعة حتى 4 مثيلات — تُطلب بطاقة عند التسجيل دون أي خصم على الباقة المجانية</string>
+    <string name="guide_desc_hetzner">المفضل لدى هواة الخوادم للاستضافة الذاتية المدفوعة: سيرفر أوروبي رخيص بنطاق ترددي سخي تشغّل عليه السكربت أعلاه وتتحكم بالجهاز كاملاً.</string>
+    <string name="guide_note_hetzner">المثيلات السحابية بمعالج مشترك تبدأ من نحو 4.5 يورو شهرياً — اقرن إحداها بسكربت wireguard-install أعلاه</string>
     <string name="guide_desc_unifi">بوابات UniFi ‏(Dream Machine وCloud Gateway وغيرها) تتضمن خادم وعميل WireGuard داخل تطبيق Network — أنشئ المستخدمين ونزّل ملفات لكل جهاز.</string>
     <string name="guide_desc_freshtomato">برنامج راوترات Broadcom بواجهة WireGuard كاملة: استورد ملف ‎.conf من مزودك واضبط التوجيه حسب السياسة ومفتاح الإيقاف — مُتحقَّق منه من الويكي الرسمي.</string>
     <string name="guide_note_freshtomato">واجهة WireGuard تأتي على إصدارات ARM فقط — إصدارات MIPS تفتقدها؛ استيراد ملفات المزودين منذ r2025.3</string>
@@ -561,6 +567,14 @@
     <string name="guide_desc_ipfire">توزيعة جدار الحماية المجتمعية بدعم WireGuard أصلي: أنفاق مضيف-إلى-شبكة (Roadwarrior) وشبكة-إلى-شبكة تُضبط من واجهة الويب مباشرة.</string>
     <string name="guide_desc_asus_stock">برنامج ASUS الأصلي أضاف خادم وعميل WireGuard تحت VPN Fusion — أنشئ الملفات الشخصية مع رموز QR من واجهة الراوتر مباشرة دون برمجيات طرفية.</string>
     <string name="guide_note_asus_stock">يتطلب إصدار البرنامج 3.0.0.4.388 أو أحدث على الطرازات الداعمة لـ VPN Fusion — راجع قائمة الطرازات المرتبطة في الدليل</string>
+    <string name="guide_desc_openbsd">نظام الجدران النارية المجاني الأكثر تدقيقاً أمنياً: WireGuard مدمج في النواة الأساسية منذ الإصدار 6.8 (‎wg(4)) — جدار تشيّده بنفسك لمن يقرأ صفحات الدليل.</string>
+    <string name="guide_desc_firewalla">جهاز الجدار الناري المدفوع للمنازل: طرازا Gold وPurple يشغّلان خادم وعميل WireGuard من الصندوق مع إدارة كاملة من تطبيق هاتف أنيق.</string>
+    <string name="guide_note_firewalla">دعم WireGuard متوفر في طرازات Gold وPurple وBlue وPlus — مع وضعي الخادم والعميل معاً</string>
+    <string name="guide_desc_netgate_appliance">عتاد جاهز ومدفوع من صنّاع pfSense يأتي بنسخة pfSense+ مثبتة مسبقاً — وتبقى النسخة المجتمعية CE مجانية لتثبيتها على جهازك الخاص.</string>
+    <string name="guide_note_netgate">الأجهزة تتضمن نسخة pfSense+ مع الدعم؛ وتبقى نسخة CE مجانية للتثبيت الذاتي</string>
+    <string name="guide_desc_keenetic">راوترات مدفوعة بخادم وعميل WireGuard مدمجين مباشرة في KeeneticOS 3.3+ — دون برمجيات بديلة أو حزم إضافية.</string>
+    <string name="guide_note_keenetic">دعم WireGuard الأصلي وصل في KeeneticOS 3.3 — تحقق من قناة تحديث طرازك قبل الشراء</string>
+    <string name="guide_desc_turris">الراوتر المدفوع الذي يقدّم المصدر المفتوح أولاً من CZ.NIC: نظام Turris OS (مبني على OpenWrt) مع إعداد WireGuard من واجهة إدارة ودية.</string>
     <string name="guide_desc_wiresock">عميل Windows طرفي مبني حول WireGuard بواجهة حديثة ومفتاح إيقاف وتقسيم نطاق وإنتاجية عالية — بديل شائع للتطبيق الرسمي.</string>
     <string name="guide_note_wiresock">مجاني للاستخدام الشخصي والتعليمي وغير الربحي — ليس تطبيق WireGuard الرسمي</string>
     <string name="guide_desc_networkmanager">‏WireGuard مدمج في NetworkManager على كل توزيعات لينكس الحديثة: أنشئ الواجهة عبر nmcli أو محرر الاتصالات — دليل Red Hat الرسمي لـ RHEL 9 يغطي الخادم والعميل من ألف إلى ياء.</string>

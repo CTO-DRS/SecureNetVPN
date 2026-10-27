@@ -45,13 +45,38 @@ class WireGuideFilterTest {
 
     @Test
     fun `arabic category terms select whole categories`() {
+        // v1.8.12 — price terms stay whole-category selectors for FREE/PAID
+        // and now ALSO reach the self-hosted / router entries that carry an
+        // explicit price marker in their curated keywords, so "مجاني" and
+        // "مدفوع" span sections by design.
         val free = WireGuideFilter.filter(entries, "مجاني")
-        assertTrue(free.isNotEmpty())
-        assertTrue(free.all { it.category == GuideCategory.FREE })
-
         val paid = WireGuideFilter.filter(entries, "مدفوع")
+        assertTrue(free.isNotEmpty())
         assertTrue(paid.isNotEmpty())
-        assertTrue(paid.all { it.category == GuideCategory.PAID })
+        // every hit is either a native FREE/PAID entry or one of the
+        // v1.8.12 entries that deliberately carry the price marker
+        val freeMarked = setOf(
+            "wgdashboard", "ansible-wireguard", "oracle-alwaysfree", "openbsd-wg"
+        )
+        val paidMarked = setOf(
+            "hetzner-cloud", "firewalla", "netgate-appliance", "keenetic", "turris-omnia"
+        )
+        assertTrue(free.all { it.category == GuideCategory.FREE || it.id in freeMarked })
+        assertTrue(paid.all { it.category == GuideCategory.PAID || it.id in paidMarked })
+        // exact, deterministic reach: the whole native section + marked entries
+        assertEquals(
+            WireGuideCatalog.byCategory(GuideCategory.FREE).map { it.id }.toSet() + freeMarked,
+            free.map { it.id }.toSet()
+        )
+        assertEquals(
+            WireGuideCatalog.byCategory(GuideCategory.PAID).map { it.id }.toSet() + paidMarked,
+            paid.map { it.id }.toSet()
+        )
+        // v1.8.12 — the price terms now cross sections
+        assertTrue(free.any { it.category == GuideCategory.SELF_HOSTED })
+        assertTrue(free.any { it.category == GuideCategory.ROUTERS })
+        assertTrue(paid.any { it.category == GuideCategory.SELF_HOSTED })
+        assertTrue(paid.any { it.category == GuideCategory.ROUTERS })
     }
 
     @Test

@@ -270,6 +270,59 @@ class WireGuideCatalogTest {
     }
 
     @Test
+    fun `v1_8_12 expanded sources are present and verified`() {
+        val byId = WireGuideCatalog.entries.associateBy { it.id }
+        // Self-hosted, free software: dashboard + configuration-as-code
+        assertEquals(
+            "https://github.com/donaldzou/WGDashboard",
+            byId.getValue("wgdashboard").url
+        )
+        assertEquals(
+            "https://github.com/githubixx/ansible-role-wireguard",
+            byId.getValue("ansible-wireguard").url
+        )
+        // Self-hosted hosting: permanent free tier vs paid VPS
+        assertEquals(
+            "https://www.oracle.com/cloud/free/",
+            byId.getValue("oracle-alwaysfree").url
+        )
+        assertEquals(R.string.guide_note_oracle_free, byId.getValue("oracle-alwaysfree").noteRes)
+        assertEquals("https://www.hetzner.com/cloud", byId.getValue("hetzner-cloud").url)
+        assertEquals(R.string.guide_note_hetzner, byId.getValue("hetzner-cloud").noteRes)
+        // Routers & firewalls: free OS vs paid appliances
+        assertEquals("https://man.openbsd.org/wg", byId.getValue("openbsd-wg").url)
+        assertEquals("https://firewalla.com", byId.getValue("firewalla").url)
+        assertEquals(R.string.guide_note_firewalla, byId.getValue("firewalla").noteRes)
+        assertEquals("https://www.netgate.com/appliances", byId.getValue("netgate-appliance").url)
+        assertEquals(R.string.guide_note_netgate, byId.getValue("netgate-appliance").noteRes)
+        assertEquals("https://keenetic.com", byId.getValue("keenetic").url)
+        assertEquals(R.string.guide_note_keenetic, byId.getValue("keenetic").noteRes)
+        assertEquals("https://omnia.turris.cz/en/", byId.getValue("turris-omnia").url)
+        // Every new id carries EN+AR search keywords
+        listOf(
+            "wgdashboard", "ansible-wireguard", "oracle-alwaysfree", "hetzner-cloud",
+            "openbsd-wg", "firewalla", "netgate-appliance", "keenetic", "turris-omnia"
+        ).forEach { id ->
+            assertTrue("No search keywords for $id", WireGuideCatalog.keywordsOf(id).isNotEmpty())
+        }
+        // The v1.8.12 promise: both sections now cover free AND paid options,
+        // discoverable through the same search keywords (free/مجاني, paid/مدفوع).
+        val freeKeys = setOf("free", "مجاني")
+        val paidKeys = setOf("paid", "مدفوع")
+        listOf(GuideCategory.SELF_HOSTED, GuideCategory.ROUTERS).forEach { category ->
+            val ids = WireGuideCatalog.byCategory(category).map { it.id }
+            assertTrue(
+                "$category must cover free options",
+                ids.any { WireGuideCatalog.keywordsOf(it).intersect(freeKeys).isNotEmpty() }
+            )
+            assertTrue(
+                "$category must cover paid options",
+                ids.any { WireGuideCatalog.keywordsOf(it).intersect(paidKeys).isNotEmpty() }
+            )
+        }
+    }
+
+    @Test
     fun `every category maps to a distinct steps resource`() {
         val stepRes = GuideCategory.entries.map { WireGuideCatalog.stepsRes(it) }
         assertTrue(stepRes.none { it == 0 })
