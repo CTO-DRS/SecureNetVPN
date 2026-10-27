@@ -489,6 +489,10 @@
     <string name="guide_detail_verdict_editors">Editor\'s pick you haven\'t rated yet — worth a look</string>
     <string name="guide_smart_reason_similar">similar to what you\'re viewing</string>
 
+    <!-- v1.8.11 smart picks widget -->
+    <string name="widget_smart_picks_description">Your personal smart picks from the guide, right on the home screen</string>
+    <string name="widget_smart_empty">Rate a few sources and your picks appear here</string>
+
     <string name="guide_desc_warp_wgcf">Cloudflare\'s free WARP network as a real WireGuard config: run the open-source wgcf tool once on a PC to register and export an unlimited free profile.</string>
     <string name="guide_desc_proton_free">Create a free account, then dashboard → Downloads → WireGuard configuration. The free plan generates configs for the free servers; paid plans unlock all locations.</string>
     <string name="guide_desc_mullvad">Privacy-first provider (flat €5/month). After login, the WireGuard config generator picks country, city and port and downloads the .conf directly.</string>
