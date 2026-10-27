@@ -126,6 +126,18 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- v1.8.10: personalized smart verdict grounded in the user's
+             signals — hidden entirely when nothing data-grounded applies. -->
+        <TextView
+            android:id="@+id/tvSmartVerdict"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_sm"
+            android:textColor="@color/on_glass_primary"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
         <!-- Link card: URL + open / copy / share -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"

@@ -25,6 +25,8 @@ import com.securenet.vpn.guide.GuideCategory
 import com.securenet.vpn.guide.GuideDetail
 import com.securenet.vpn.guide.GuideDetailQr
 import com.securenet.vpn.guide.GuideEntry
+import com.securenet.vpn.guide.GuideSignalsData
+import com.securenet.vpn.guide.GuideSmart
 import com.securenet.vpn.guide.GuideStore
 import com.securenet.vpn.guide.GuideStoreProvider
 import com.securenet.vpn.guide.WireGuideCatalog
@@ -101,6 +103,7 @@ class GuideDetailFragment : Fragment() {
     /** Renders (or re-renders, on related-hop) the whole screen for [entry]. */
     private fun bind(entry: GuideEntry) {
         val facts = GuideDetail.facts(entry, store)
+        val signals = GuideSignalsData.snapshot(store)
 
         binding.scrollDetail.smoothScrollTo(0, 0)
 
@@ -111,6 +114,7 @@ class GuideDetailFragment : Fragment() {
             if (facts.editorsChoice) View.VISIBLE else View.GONE
         binding.tvDetailUrl.text = entry.url
         renderQr(entry)
+        renderVerdict(entry, signals)
         binding.tvDetailDesc.text = getString(entry.descriptionRes)
         if (entry.noteRes != null) {
             binding.tvDetailNote.text = getString(entry.noteRes)
@@ -144,7 +148,33 @@ class GuideDetailFragment : Fragment() {
                 })
             }
 
-        renderRelated(entry)
+        renderRelated(entry, signals)
+    }
+
+    /**
+     * v1.8.10 — the smart verdict line under the identity card: what the
+     * user's own signals say about THIS source ("fits your most-engaged
+     * category: Paid · 8 signals" / "Editor's pick you haven't rated yet").
+     * Hidden entirely when nothing data-grounded applies — the page never
+     * invents praise, and a cold start stays neutral.
+     */
+    private fun renderVerdict(entry: GuideEntry, signals: GuideSignalsData) {
+        val verdict = GuideSmart.verdict(entry, signals)
+        if (verdict == null) {
+            binding.tvSmartVerdict.visibility = View.GONE
+            return
+        }
+        val line = when (verdict.kind) {
+            GuideSmart.VerdictKind.TOP_CATEGORY -> getString(
+                R.string.guide_detail_verdict_top,
+                getString(categoryLabel(verdict.category ?: entry.category)),
+                verdict.count
+            )
+            GuideSmart.VerdictKind.EDITORS_CHOICE ->
+                getString(R.string.guide_detail_verdict_editors)
+        }
+        binding.tvSmartVerdict.text = "✦ $line"
+        binding.tvSmartVerdict.visibility = View.VISIBLE
     }
 
     /** v1.8.8 — QR of the official URL + the bare host under it. */
@@ -183,7 +213,7 @@ class GuideDetailFragment : Fragment() {
     }
 
     /** "More in this category" — signals-ranked siblings, tap to hop. */
-    private fun renderRelated(entry: GuideEntry) {
+    private fun renderRelated(entry: GuideEntry, signals: GuideSignalsData) {
         val related = GuideDetail.related(entry, store)
         binding.llRelated.removeAllViews()
         if (related.isEmpty()) {
@@ -192,11 +222,21 @@ class GuideDetailFragment : Fragment() {
         }
         binding.tvRelatedEmpty.visibility = View.GONE
         related.forEach { sibling ->
-            binding.llRelated.addView(relatedRow(sibling))
+            binding.llRelated.addView(relatedRow(sibling, entry, signals))
         }
     }
 
-    private fun relatedRow(sibling: GuideEntry): View {
+    /**
+     * v1.8.10 — a sibling row optionally carries a smart reason line under
+     * the name ("similar to what you're viewing" / "Editor's pick you
+     * haven't rated yet"), so the list explains itself instead of just
+     * ranking. No grounded reason → the plain row from v1.8.7.
+     */
+    private fun relatedRow(
+        sibling: GuideEntry,
+        current: GuideEntry,
+        signals: GuideSignalsData
+    ): View {
         val stars = store.rating(sibling.id)
         val fav = store.isFavorite(sibling.id)
         val row = LinearLayout(requireContext()).apply {
@@ -204,10 +244,6 @@ class GuideDetailFragment : Fragment() {
             gravity = android.view.Gravity.CENTER_VERTICAL
             isClickable = true
             isFocusable = true
-            layoutParams = LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            ).apply { topMargin = dp(4) }
             setPadding(dp(4), dp(6), dp(4), dp(6))
         }
         row.addView(android.widget.ImageView(requireContext()).apply {
@@ -239,7 +275,41 @@ class GuideDetailFragment : Fragment() {
         row.setOnClickListener {
             WireGuideCatalog.byId(sibling.id)?.let(::bind)
         }
-        return row
+
+        val reason = GuideSmart.siblingReason(sibling, current, signals)
+        if (reason == null) {
+            row.layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply { topMargin = dp(4) }
+            return row
+        }
+        return LinearLayout(requireContext()).apply {
+            orientation = LinearLayout.VERTICAL
+            layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply { topMargin = dp(4) }
+            row.layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+            addView(row)
+            addView(TextView(requireContext()).apply {
+                text = "✦ " + getString(reasonRes(reason))
+                setTextColor(resolveColor(com.google.android.material.R.attr.colorPrimary))
+                textSize = 11f
+                setPadding(dp(36), 0, dp(4), 0)
+            })
+        }
+    }
+
+    /** v1.8.10 — chip text for a smart reason; mirrors the picks card. */
+    private fun reasonRes(reason: GuideSmart.Reason): Int = when (reason) {
+        GuideSmart.Reason.TOP_CATEGORY -> R.string.guide_smart_reason_top
+        GuideSmart.Reason.EDITORS_CHOICE -> R.string.guide_smart_reason_editors
+        GuideSmart.Reason.COLD_START -> R.string.guide_smart_reason_cold
+        GuideSmart.Reason.SIMILAR -> R.string.guide_smart_reason_similar
     }
 
     private fun showNoteDialog(entry: GuideEntry) {

@@ -204,6 +204,7 @@ class GuideUiBuilder(
         GuideSmart.Reason.TOP_CATEGORY -> R.string.guide_smart_reason_top
         GuideSmart.Reason.EDITORS_CHOICE -> R.string.guide_smart_reason_editors
         GuideSmart.Reason.COLD_START -> R.string.guide_smart_reason_cold
+        GuideSmart.Reason.SIMILAR -> R.string.guide_smart_reason_similar
     }
 
     /** One illustrated how-to step: icon in a circle + caption below. */

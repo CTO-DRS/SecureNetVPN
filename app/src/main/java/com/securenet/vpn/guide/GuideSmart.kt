@@ -28,14 +28,18 @@ object GuideSmart {
     // Recommendations
     // ------------------------------------------------------------------
 
-    /** Why a source surfaced in the smart picks card. */
+    /** Why a source surfaced in the smart picks card — or, since v1.8.10,
+     *  in the "more in this category" list of a detail page. */
     enum class Reason {
         /** Lives in the category the user signals the most. */
         TOP_CATEGORY,
         /** Editor's-choice reliability pick the user has not rated yet. */
         EDITORS_CHOICE,
         /** No signals yet — a trusted starting point from the shortlist. */
-        COLD_START
+        COLD_START,
+        /** v1.8.10 — shares catalog keywords with the source the user is
+         *  currently viewing (same brand family, jurisdiction, tech…). */
+        SIMILAR
     }
 
     data class Recommendation(
@@ -96,6 +100,92 @@ object GuideSmart {
 
         return picks.ifEmpty { coldStart() }
     }
+
+    // ------------------------------------------------------------------
+    // Detail-page intelligence (v1.8.10)
+    // ------------------------------------------------------------------
+
+    /** Which data-grounded statement the detail page makes about a source. */
+    enum class VerdictKind {
+        /** The viewed source lives in the user's most-engaged category. */
+        TOP_CATEGORY,
+        /** The viewed source is an unrated Editor's-choice pick. */
+        EDITORS_CHOICE
+    }
+
+    /** A personalized one-liner rendered under the detail identity card. */
+    data class Verdict(
+        val kind: VerdictKind,
+        /** Category the verdict is about, when applicable. */
+        val category: GuideCategory?,
+        /** Signals backing the verdict (0 for the Editor's-choice line). */
+        val count: Int
+    )
+
+    /**
+     * The detail page's smart verdict for [entry]: "this fits the category
+     * you engage with most (X · N signals)" when it does, else "Editor's
+     * pick you haven't rated yet" when applicable, else null — the page
+     * stays neutral instead of inventing praise. Cold start (no signals at
+     * all) always yields null: a verdict without user data would be noise.
+     */
+    fun verdict(
+        entry: GuideEntry,
+        signals: GuideSignalsData,
+        catalog: List<GuideEntry> = WireGuideCatalog.entries
+    ): Verdict? {
+        if (signals.isEmpty()) return null
+        val top = categoryAffinity(
+            signals, catalog.associateBy { it.id }
+        ).entries.maxWithOrNull(
+            compareBy<Map.Entry<GuideCategory, Int>> { it.value }
+                .thenBy { it.key.ordinal }   // deterministic on ties
+        )
+        if (top != null && entry.category == top.key) {
+            return Verdict(VerdictKind.TOP_CATEGORY, top.key, top.value)
+        }
+        if (WireGuideCatalog.isEditorsChoice(entry.id) &&
+            entry.id !in signals.ratings
+        ) {
+            return Verdict(VerdictKind.EDITORS_CHOICE, null, 0)
+        }
+        return null
+    }
+
+    /**
+     * Why [sibling] surfaced in "more in this category" for the source
+     * [current] the user is viewing. Priority: a real relational link
+     * ([Reason.SIMILAR] — shared catalog keywords, symmetric) beats the
+     * trust nudge ([Reason.EDITORS_CHOICE] — badged but still unrated).
+     * A sibling the user already knows or that shares nothing specific
+     * gets no chip at all — silence beats filler.
+     */
+    fun siblingReason(
+        sibling: GuideEntry,
+        current: GuideEntry,
+        signals: GuideSignalsData
+    ): Reason? {
+        if (sibling.id == current.id) return null
+        if (sharedKeywords(sibling, current).isNotEmpty()) return Reason.SIMILAR
+        if (WireGuideCatalog.isEditorsChoice(sibling.id) &&
+            sibling.id !in signals.ratings
+        ) {
+            return Reason.EDITORS_CHOICE
+        }
+        return null
+    }
+
+    /**
+     * Catalog keywords (EN aliases + Arabic transliterations) that [a] and
+     * [b] share, lowercased and trimmed — the raw material behind
+     * [Reason.SIMILAR]. Symmetric by construction; empty when the two
+     * sources have nothing specific in common.
+     */
+    fun sharedKeywords(a: GuideEntry, b: GuideEntry): Set<String> =
+        WireGuideCatalog.keywordsOf(a.id).mapTo(mutableSetOf()) { it.lowercase().trim() }
+            .intersect(
+                WireGuideCatalog.keywordsOf(b.id).mapTo(mutableSetOf()) { it.lowercase().trim() }
+            )
 
     /** Signals per category (favorites + ratings + notes), all included. */
     fun categoryAffinity(
