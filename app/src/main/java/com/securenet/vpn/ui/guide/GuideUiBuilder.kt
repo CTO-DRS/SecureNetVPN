@@ -66,6 +66,7 @@ class GuideUiBuilder(
         GuideCategory.SELF_HOSTED -> R.drawable.ic_dns
         GuideCategory.ROUTERS -> R.drawable.ic_wifi
         GuideCategory.APPS -> R.drawable.ic_qr_code
+        GuideCategory.MESH -> R.drawable.ic_mesh
     }
 
     /** Unfiltered browse view: optional "full guide" link, sections, tips.
@@ -299,6 +300,7 @@ class GuideUiBuilder(
         GuideCategory.SELF_HOSTED -> R.string.guide_section_selfhosted
         GuideCategory.ROUTERS -> R.string.guide_section_routers
         GuideCategory.APPS -> R.string.guide_section_apps
+        GuideCategory.MESH -> R.string.guide_section_mesh
     }
 
     /** Small numbered tutorial card tailored to the section's category. */

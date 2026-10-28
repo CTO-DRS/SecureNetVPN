@@ -197,6 +197,17 @@
                         android:textSize="12sp" />
                 </LinearLayout>
 
+                <!-- v1.8.13: side-by-side comparison against a second source
+                     (opens the comparison bottom sheet). -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCompare"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/guide_detail_compare"
+                    android:textSize="12sp" />
+
                 <!-- v1.8.8: scannable QR of the official URL — hop to
                      another device; tap the code to open here instead. -->
                 <TextView

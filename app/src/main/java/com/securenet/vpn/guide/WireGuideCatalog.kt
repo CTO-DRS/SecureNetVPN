@@ -23,6 +23,14 @@ import com.securenet.vpn.R
  * in the search keywords (free/مجاني, paid/مدفوع) so filtering by
  * price works through the same search path.
  *
+ * v1.8.13 — the mesh tools (Headscale, Tailscale, NetBird, Netmaker,
+ * Firezone) leave self-hosted for their own [GuideCategory.MESH] section:
+ * coordination servers that knit many peers into one virtual network are
+ * a different mental model from running a single wg server, and they were
+ * crowding the self-hosted list. All five are free software / have a free
+ * personal or community tier, so they carry the free/مجاني price markers
+ * and surface in the new quick free/paid filter alongside the sections.
+ *
  * The catalog is pure data so it can be unit-tested (URL shape, uniqueness,
  * category completeness) without any Android dependency beyond @StringRes.
  * Descriptions live in strings.xml (EN) and values-ar/strings.xml (AR).
@@ -33,7 +41,13 @@ import com.securenet.vpn.R
  * PIA community tooling, Tailscale/GL.iNet official docs, App Store listings).
  */
 enum class GuideCategory {
-    FREE, PAID, SELF_HOSTED, ROUTERS, APPS
+    FREE, PAID, SELF_HOSTED, ROUTERS, APPS,
+
+    /** v1.8.13 — coordination servers / overlay networks that connect many
+     *  peers into one virtual WireGuard mesh (Tailscale-style). Appended
+     *  last so the ordinals of the original five categories stay stable
+     *  for the smart layer's tie-breaking. */
+    MESH
 }
 
 data class GuideEntry(
@@ -257,41 +271,6 @@ object WireGuideCatalog {
             descriptionRes = R.string.guide_desc_algo
         ),
         GuideEntry(
-            id = "headscale",
-            name = "Headscale",
-            url = "https://github.com/juanfont/headscale",
-            category = GuideCategory.SELF_HOSTED,
-            descriptionRes = R.string.guide_desc_headscale
-        ),
-        GuideEntry(
-            id = "tailscale",
-            name = "Tailscale (free personal plan)",
-            url = "https://tailscale.com",
-            category = GuideCategory.SELF_HOSTED,
-            descriptionRes = R.string.guide_desc_tailscale
-        ),
-        GuideEntry(
-            id = "netbird",
-            name = "NetBird",
-            url = "https://netbird.io",
-            category = GuideCategory.SELF_HOSTED,
-            descriptionRes = R.string.guide_desc_netbird
-        ),
-        GuideEntry(
-            id = "netmaker",
-            name = "Netmaker",
-            url = "https://netmaker.io",
-            category = GuideCategory.SELF_HOSTED,
-            descriptionRes = R.string.guide_desc_netmaker
-        ),
-        GuideEntry(
-            id = "firezone",
-            name = "Firezone",
-            url = "https://www.firezone.dev",
-            category = GuideCategory.SELF_HOSTED,
-            descriptionRes = R.string.guide_desc_firezone
-        ),
-        GuideEntry(
             id = "wireguard-install",
             name = "wireguard-install (one-command script)",
             url = "https://github.com/angristan/wireguard-install",
@@ -386,6 +365,47 @@ object WireGuideCatalog {
             category = GuideCategory.SELF_HOSTED,
             descriptionRes = R.string.guide_desc_hetzner,
             noteRes = R.string.guide_note_hetzner
+        ),
+
+        // ------------------------------------------------------------------
+        // MESH — v1.8.13: coordination servers that knit many peers into
+        // one virtual network. Free software / free personal or community
+        // tiers, so every entry carries the free/مجاني price markers.
+        // ------------------------------------------------------------------
+        GuideEntry(
+            id = "headscale",
+            name = "Headscale",
+            url = "https://github.com/juanfont/headscale",
+            category = GuideCategory.MESH,
+            descriptionRes = R.string.guide_desc_headscale
+        ),
+        GuideEntry(
+            id = "tailscale",
+            name = "Tailscale (free personal plan)",
+            url = "https://tailscale.com",
+            category = GuideCategory.MESH,
+            descriptionRes = R.string.guide_desc_tailscale
+        ),
+        GuideEntry(
+            id = "netbird",
+            name = "NetBird",
+            url = "https://netbird.io",
+            category = GuideCategory.MESH,
+            descriptionRes = R.string.guide_desc_netbird
+        ),
+        GuideEntry(
+            id = "netmaker",
+            name = "Netmaker",
+            url = "https://netmaker.io",
+            category = GuideCategory.MESH,
+            descriptionRes = R.string.guide_desc_netmaker
+        ),
+        GuideEntry(
+            id = "firezone",
+            name = "Firezone",
+            url = "https://www.firezone.dev",
+            category = GuideCategory.MESH,
+            descriptionRes = R.string.guide_desc_firezone
         ),
 
         // ------------------------------------------------------------------
@@ -607,12 +627,17 @@ object WireGuideCatalog {
         "wg-easy" to listOf("docker", "web ui", "دوكر", "ويب"),
         "pivpn" to listOf("raspberry", "pi", "debian", "رازبيري", "راسبيري"),
         "algo" to listOf("ansible", "trail of bits", "أنسيبل"),
-        "headscale" to listOf("tailscale", "self", "هيدسكيل"),
+        "headscale" to listOf("tailscale", "mesh", "self", "free",
+            "هيدسكيل", "ميش", "مجاني"),
         "riseup" to listOf("riseup", "bitmask", "donation", "non-profit", "رايزب", "ريز اب", "مجاني"),
-        "tailscale" to listOf("mesh", "personal", "تيلسكيل", "ميش"),
-        "netbird" to listOf("netbird", "mesh", "نت بيرد"),
-        "netmaker" to listOf("netmaker", "mesh", "نت ميكر"),
-        "firezone" to listOf("firezone", "zero trust", "فايرزون"),
+        "tailscale" to listOf("mesh", "personal", "free",
+            "تيلسكيل", "ميش", "مجاني"),
+        "netbird" to listOf("netbird", "mesh", "free",
+            "نت بيرد", "ميش", "مجاني"),
+        "netmaker" to listOf("netmaker", "mesh", "free",
+            "نت ميكر", "ميش", "مجاني"),
+        "firezone" to listOf("firezone", "mesh", "zero trust", "free",
+            "فايرزون", "ميش", "مجاني"),
         "wireguard-install" to listOf("script", "bash", "ubuntu", "سكربت", "سكريبت"),
         "wg-portal" to listOf("portal", "ldap", "oauth", "web ui", "بوابة", "ويب"),
         "innernet" to listOf("overlay", "cidr", "rust", "اينرنت"),
@@ -717,5 +742,6 @@ object WireGuideCatalog {
         GuideCategory.SELF_HOSTED -> R.array.guide_steps_selfhosted
         GuideCategory.ROUTERS -> R.array.guide_steps_routers
         GuideCategory.APPS -> R.array.guide_steps_apps
+        GuideCategory.MESH -> R.array.guide_steps_mesh
     }
 }
