@@ -415,6 +415,26 @@
     <string name="guide_section_selfhosted">Self-hosted servers</string>
     <string name="guide_section_apps">Apps &amp; tools</string>
     <string name="guide_section_routers">Routers &amp; firewalls</string>
+    <!-- v1.8.13: the mesh tools in their own section -->
+    <string name="guide_section_mesh">Mesh networks</string>
+    <!-- v1.8.13: quick price filter above the list + comparison rows -->
+    <string name="guide_price_free">Free</string>
+    <string name="guide_price_paid">Paid</string>
+    <string name="guide_detail_compare">Compare side-by-side</string>
+    <string name="guide_compare_title">Side-by-side comparison</string>
+    <string name="guide_compare_pick">Compare with…</string>
+    <string name="guide_compare_search_hint">Filter sources</string>
+    <string name="guide_compare_open_hint">Tap a source name to open its page</string>
+    <string name="guide_compare_shared">Shared keywords: %1$s</string>
+    <string name="guide_compare_no_shared">No shared keywords</string>
+    <string name="guide_compare_shared_count">shared</string>
+    <string name="guide_compare_row_section">Section</string>
+    <string name="guide_compare_row_price">Price</string>
+    <string name="guide_compare_row_host">Official host</string>
+    <string name="guide_compare_row_editors">Editor\'s choice</string>
+    <string name="guide_compare_row_rating">Your rating</string>
+    <string name="guide_compare_row_bookmark">Bookmarked</string>
+    <string name="guide_compare_change">Choose another source</string>
     <string name="guide_tips_title">Tips &amp; troubleshooting</string>
     <string name="guide_screen_title">WireGuard config sources</string>
     <string name="guide_back_cd">Back</string>
@@ -614,6 +634,13 @@
         <item>Import the provider\'s .conf or scan their QR inside the app.</item>
         <item>Verify the handshake works outside SecureNet.</item>
         <item>Re-import the same .conf into SecureNet for the full feature set: split tunneling, kill switch, multi-hop.</item>
+    </string-array>
+    <!-- v1.8.13: the mesh section tutorial -->
+    <string-array name="guide_steps_mesh">
+        <item>Mesh tools knit many devices into one virtual network — pick a coordination server: Tailscale (hosted, free personal plan) or Headscale / NetBird / Netmaker / Firezone (self-hosted, free software).</item>
+        <item>Install the server (or sign up), then add every device as a peer — each gets its own virtual IP.</item>
+        <item>Export or write a WireGuard .conf per device — mesh peers are ordinary WireGuard peers underneath.</item>
+        <item>Import each profile into SecureNet: Servers → Import — routing, stats and kill switch apply as usual.</item>
     </string-array>
     <string-array name="guide_tips">
         <item>Treat a .conf like a password: it holds keys that identify your device — never share or post it.</item>

@@ -45,6 +45,14 @@ import com.securenet.vpn.guide.WireGuideFilter
  * choice" reliability badge holders breaking ties — the default sort the
  * sections view already applies, available at one tap.
  *
+ * v1.8.13 — a Mesh chip filters the new [GuideCategory.MESH] section, and
+ * a second, independent chip row above the list is the quick price
+ * filter: All / Free / Paid. Free and Paid select every source marked
+ * with that price anywhere in the catalog ([WireGuideFilter.filterByPrice]
+ * over the category plus the curated free/مجاني, paid/مدفوع keyword
+ * markers) — so "مجاني" reaches the free self-hosted, router and mesh
+ * tools without typing anything.
+ *
  * Hosting contract: [MainActivity.openConfigGuide] hides the bottom nav and
  * pushes this fragment on the back stack; this fragment restores the nav in
  * onDestroyView so any pop path (button or system back) re-shows it.
@@ -55,6 +63,9 @@ class GuideFragment : Fragment() {
     private val binding get() = _binding!!
 
     private var selectedCategory: GuideCategory? = null
+
+    /** v1.8.13 — quick price filter above the list (null = All). */
+    private var selectedPrice: WireGuideFilter.Price? = null
     private lateinit var store: GuideStore
     private var _builder: GuideUiBuilder? = null
 
@@ -94,9 +105,19 @@ class GuideFragment : Fragment() {
                 R.id.chipFree -> GuideCategory.FREE
                 R.id.chipPaid -> GuideCategory.PAID
                 R.id.chipSelfHosted -> GuideCategory.SELF_HOSTED
+                R.id.chipMesh -> GuideCategory.MESH
                 R.id.chipRouters -> GuideCategory.ROUTERS
                 R.id.chipApps -> GuideCategory.APPS
                 else -> null   // All chip — and the Favorites chip (handled below)
+            }
+            render(builder)
+        }
+        // v1.8.13 — quick price filter above the list: All / Free / Paid.
+        binding.priceGroup.setOnCheckedChangeListener { _, checkedId ->
+            selectedPrice = when (checkedId) {
+                R.id.chipPriceFree -> WireGuideFilter.Price.FREE
+                R.id.chipPricePaid -> WireGuideFilter.Price.PAID
+                else -> null   // the All button
             }
             render(builder)
         }
@@ -161,9 +182,9 @@ class GuideFragment : Fragment() {
         val entries = WireGuideFilter.filter(
             WireGuideCatalog.entries, query, selectedCategory,
             notes, if (favOnly) store.favoriteIds() else null
-        )
+        ).let { WireGuideFilter.filterByPrice(it, selectedPrice) }
         val filtering = query.isNotBlank() || selectedCategory != null ||
-            favOnly || topRated
+            favOnly || topRated || selectedPrice != null
         if (filtering) {
             binding.tvGuideCount.text =
                 getString(R.string.guide_results_count, entries.size)

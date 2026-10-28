@@ -49,14 +49,17 @@ class WireGuideFilterTest {
         // and now ALSO reach the self-hosted / router entries that carry an
         // explicit price marker in their curated keywords, so "مجاني" and
         // "مدفوع" span sections by design.
+        // v1.8.13 — the five mesh tools join the free-marked set: they are
+        // free software / free personal or community tiers.
         val free = WireGuideFilter.filter(entries, "مجاني")
         val paid = WireGuideFilter.filter(entries, "مدفوع")
         assertTrue(free.isNotEmpty())
         assertTrue(paid.isNotEmpty())
         // every hit is either a native FREE/PAID entry or one of the
-        // v1.8.12 entries that deliberately carry the price marker
+        // v1.8.12/v1.8.13 entries that deliberately carry the price marker
         val freeMarked = setOf(
-            "wgdashboard", "ansible-wireguard", "oracle-alwaysfree", "openbsd-wg"
+            "wgdashboard", "ansible-wireguard", "oracle-alwaysfree", "openbsd-wg",
+            "headscale", "tailscale", "netbird", "netmaker", "firezone"
         )
         val paidMarked = setOf(
             "hetzner-cloud", "firewalla", "netgate-appliance", "keenetic", "turris-omnia"
@@ -77,6 +80,89 @@ class WireGuideFilterTest {
         assertTrue(free.any { it.category == GuideCategory.ROUTERS })
         assertTrue(paid.any { it.category == GuideCategory.SELF_HOSTED })
         assertTrue(paid.any { it.category == GuideCategory.ROUTERS })
+        // v1.8.13 — and they reach the new mesh section too
+        assertTrue(free.any { it.category == GuideCategory.MESH })
+    }
+
+    @Test
+    fun `mesh category terms select the whole mesh section`() {
+        val expected = WireGuideCatalog.byCategory(GuideCategory.MESH).map { it.id }.toSet()
+        assertEquals(
+            setOf("headscale", "tailscale", "netbird", "netmaker", "firezone"),
+            expected
+        )
+        // the EN + AR section words all reach exactly the mesh section
+        listOf("mesh", "شبكات", "ميش").forEach { term ->
+            assertEquals(
+                "term '$term' must select the mesh section",
+                expected,
+                WireGuideFilter.filter(entries, term).map { it.id }.toSet()
+            )
+        }
+        // and the old self-hosted section no longer contains the mesh tools
+        assertTrue(
+            WireGuideCatalog.byCategory(GuideCategory.SELF_HOSTED)
+                .none { it.id in expected }
+        )
+    }
+
+    // ---------------- v1.8.13 — quick price filter ----------------
+
+    @Test
+    fun `priceOf derives free and paid from categories and markers`() {
+        // native sections are self-describing
+        WireGuideCatalog.byCategory(GuideCategory.FREE).forEach {
+            assertEquals(WireGuideFilter.Price.FREE, WireGuideFilter.priceOf(it))
+        }
+        WireGuideCatalog.byCategory(GuideCategory.PAID).forEach {
+            assertEquals(WireGuideFilter.Price.PAID, WireGuideFilter.priceOf(it))
+        }
+        // cross-section markers (v1.8.12 + the v1.8.13 mesh tools)
+        listOf("wgdashboard", "openbsd-wg", "tailscale", "firezone").forEach { id ->
+            assertEquals(
+                "$id must classify as FREE",
+                WireGuideFilter.Price.FREE,
+                WireGuideFilter.priceOf(WireGuideCatalog.byId(id)!!)
+            )
+        }
+        listOf("hetzner-cloud", "firewalla").forEach { id ->
+            assertEquals(
+                "$id must classify as PAID",
+                WireGuideFilter.Price.PAID,
+                WireGuideFilter.priceOf(WireGuideCatalog.byId(id)!!)
+            )
+        }
+        // a neutral app with no price signal stays unclassified
+        assertEquals(null, WireGuideFilter.priceOf(WireGuideCatalog.byId("wg-android")!!))
+    }
+
+    @Test
+    fun `quick price filter keeps one class and All keeps everything`() {
+        val free = WireGuideFilter.filterByPrice(entries, WireGuideFilter.Price.FREE)
+        val paid = WireGuideFilter.filterByPrice(entries, WireGuideFilter.Price.PAID)
+        val all = WireGuideFilter.filterByPrice(entries, null)
+        assertEquals(entries.size, all.size)
+        assertTrue(free.isNotEmpty() && free.size < entries.size)
+        assertTrue(paid.isNotEmpty() && paid.size < entries.size)
+        // disjoint classes: no entry is both free and paid
+        assertEquals(
+            emptySet<String>(),
+            free.map { it.id }.toSet() intersect paid.map { it.id }.toSet()
+        )
+        // every survivor has the right class
+        assertTrue(free.all { WireGuideFilter.priceOf(it) == WireGuideFilter.Price.FREE })
+        assertTrue(paid.all { WireGuideFilter.priceOf(it) == WireGuideFilter.Price.PAID })
+        // order preserved (stable rendering)
+        assertEquals(
+            entries.filter { it.id in free.map { f -> f.id } },
+            free
+        )
+        // composes with the search path exactly like the buttons do
+        val freeMesh = WireGuideFilter.filterByPrice(
+            WireGuideFilter.filter(entries, "mesh"), WireGuideFilter.Price.FREE
+        )
+        assertTrue(freeMesh.all { it.category == GuideCategory.MESH })
+        assertEquals(WireGuideCatalog.byCategory(GuideCategory.MESH).size, freeMesh.size)
     }
 
     @Test

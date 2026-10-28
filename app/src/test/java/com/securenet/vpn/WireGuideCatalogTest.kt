@@ -354,4 +354,51 @@ class WireGuideCatalogTest {
             WireGuideCatalog.entries.map { it.id }.filter { WireGuideCatalog.isEditorsChoice(it) }.toSet()
         )
     }
+
+    // ------------------------------------------------------------------
+    // v1.8.13 — the dedicated mesh section
+    // ------------------------------------------------------------------
+
+    @Test
+    fun `v1_8_13 mesh section carries exactly the mesh coordination tools`() {
+        // literal anchors: the five sources that moved out of self-hosted
+        assertEquals(
+            setOf("headscale", "tailscale", "netbird", "netmaker", "firezone"),
+            WireGuideCatalog.byCategory(GuideCategory.MESH).map { it.id }.toSet()
+        )
+        // every mesh entry is reachable, keyworded, and price-marked free —
+        // all five are free software / free personal or community tiers
+        val freeKeys = setOf("free", "مجاني")
+        listOf("headscale", "tailscale", "netbird", "netmaker", "firezone")
+            .forEach { id ->
+                val entry = WireGuideCatalog.byId(id)
+                    ?: throw AssertionError("missing mesh entry $id")
+                val keywords = WireGuideCatalog.keywordsOf(id)
+                assertTrue("$id must keep search keywords", keywords.isNotEmpty())
+                assertTrue(
+                    "$id must carry a mesh keyword",
+                    keywords.intersect(setOf("mesh", "ميش")).isNotEmpty()
+                )
+                assertTrue(
+                    "$id must carry a free price marker",
+                    keywords.intersect(freeKeys).isNotEmpty()
+                )
+                assertTrue("$id must keep its official URL", entry.url.startsWith("https://"))
+            }
+        // literal URL anchors, verified against the providers at release time
+        assertEquals(
+            "https://github.com/juanfont/headscale",
+            WireGuideCatalog.byId("headscale")?.url
+        )
+        assertEquals(
+            "https://tailscale.com",
+            WireGuideCatalog.byId("tailscale")?.url
+        )
+        assertEquals(
+            "https://www.firezone.dev",
+            WireGuideCatalog.byId("firezone")?.url
+        )
+        // the mesh section has its own steps array and section label
+        assertTrue(WireGuideCatalog.stepsRes(GuideCategory.MESH) != 0)
+    }
 }

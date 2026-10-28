@@ -140,6 +140,14 @@
                 android:layout_height="wrap_content"
                 android:text="@string/guide_section_selfhosted" />
 
+            <!-- v1.8.13: the mesh tools in their own section -->
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipMesh"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/guide_section_mesh" />
+
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipRouters"
                 style="@style/Widget.Material3.Chip.Filter"
@@ -153,6 +161,42 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/guide_section_apps" />
+        </com.google.android.material.chip.ChipGroup>
+
+        <!-- v1.8.13: quick price filter above the list — All / Free / Paid.
+             Independent from the section chips: Free here means every
+             source marked free anywhere in the catalog (the free section,
+             the free self-hosted and router tools, the mesh tier). -->
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/priceGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            app:chipSpacingHorizontal="6dp"
+            app:selectionRequired="true"
+            app:singleSelection="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipPriceAll"
+                style="@style/Widget.Material3.Chip.Assist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:text="@string/guide_filter_all" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipPriceFree"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/guide_price_free" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipPricePaid"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/guide_price_paid" />
         </com.google.android.material.chip.ChipGroup>
 
         <TextView

@@ -415,6 +415,26 @@
     <string name="guide_section_selfhosted">خوادم ذاتية الاستضافة</string>
     <string name="guide_section_apps">تطبيقات وأدوات</string>
     <string name="guide_section_routers">راوترات وجدران نارية</string>
+    <!-- v1.8.13: قسم شبكات Mesh المستقل -->
+    <string name="guide_section_mesh">شبكات Mesh</string>
+    <!-- v1.8.13: مرشّح سريع مجاني/مدفوع فوق القائمة + صفوف المقارنة -->
+    <string name="guide_price_free">مجاني</string>
+    <string name="guide_price_paid">مدفوع</string>
+    <string name="guide_detail_compare">مقارنة جنباً إلى جنب</string>
+    <string name="guide_compare_title">مقارنة جنباً إلى جنب</string>
+    <string name="guide_compare_pick">قارِن مع…</string>
+    <string name="guide_compare_search_hint">تصفية المصادر</string>
+    <string name="guide_compare_open_hint">اضغط على اسم المصدر لفتح صفحته</string>
+    <string name="guide_compare_shared">كلمات مشتركة: %1$s</string>
+    <string name="guide_compare_no_shared">لا كلمات مشتركة بين المصدرين</string>
+    <string name="guide_compare_shared_count">مشتركة</string>
+    <string name="guide_compare_row_section">القسم</string>
+    <string name="guide_compare_row_price">السعر</string>
+    <string name="guide_compare_row_host">الموقع الرسمي</string>
+    <string name="guide_compare_row_editors">اختيار المحرر</string>
+    <string name="guide_compare_row_rating">تقييمك</string>
+    <string name="guide_compare_row_bookmark">مفضّل</string>
+    <string name="guide_compare_change">اختيار مصدر آخر</string>
     <string name="guide_tips_title">نصائح وحلول المشاكل</string>
     <string name="guide_screen_title">مصادر تكوينات WireGuard</string>
     <string name="guide_back_cd">رجوع</string>
@@ -614,6 +634,13 @@
         <item>استورد ملف ‎.conf أو امسح رمز QR داخل التطبيق.</item>
         <item>تأكد أن الاتصال (Handshake) يعمل خارج SecureNet.</item>
         <item>استورد الملف نفسه إلى SecureNet لتحصل على الميزات الكاملة: النفق المنقسم، مفتاح الإيقاف، القفز المزدوج.</item>
+    </string-array>
+    <!-- v1.8.13: خطوات قسم شبكات Mesh -->
+    <string-array name="guide_steps_mesh">
+        <item>أدوات Mesh تربط أجهزة كثيرة في شبكة افتراضية واحدة — اختر خادم تنسيق: Tailscale (مستضاف بخطة شخصية مجانية) أو Headscale / NetBird / Netmaker / Firezone (ذاتية الاستضافة، برمجيات حرة).</item>
+        <item>ثبّت الخادم (أو سجّل حساباً) ثم أضف كل جهاز كنظير — يحصل كل جهاز على عنوان IP افتراضي خاص به.</item>
+        <item>صدّر أو اكتب ملف ‎.conf لكل جهاز — نظائر Mesh هي نظائر WireGuard عادية في الأساس.</item>
+        <item>استورد كل ملف إلى SecureNet: الخوادم → استيراد — التوجيه والإحصاءات ومفتاح الإيقاف تعمل كالمعتاد.</item>
     </string-array>
     <string-array name="guide_tips">
         <item>عامل ملف ‎.conf ككلمة مرور: يحتوي مفاتيح تعرّف جهازك — لا تشاركه ولا تنشره إطلاقاً.</item>

@@ -46,6 +46,11 @@ import com.securenet.vpn.guide.WireGuideCatalog
  *  - "your signals": the big interactive star row, the personal note with
  *    add/edit/remove — the exact same [GuideUiBuilder] widgets the cards
  *    use, so behaviour (tap-to-clear stars, RTL-safe LTR stars) matches;
+ *  - the v1.8.13 "Compare side-by-side" button: opens the comparison
+ *    bottom sheet ([GuideCompareDialogFragment]) grounded in the pure
+ *    [GuideCompare] engine — pick any second source, see section, price,
+ *    host, Editor's-choice badge and your own signals for both in one
+ *    table, with the shared catalog keywords naming why they feel similar;
  *  - "more in this category": up to five sibling sources ranked by the
  *    user's own signals ([GuideDetail.related]); tapping one swaps this
  *    screen's content in place — a natural way to hop through a category.
@@ -96,6 +101,11 @@ class GuideDetailFragment : Fragment() {
         binding.btnShare.setOnClickListener { share(entry) }
         binding.btnNote.setOnClickListener { showNoteDialog(entry) }
         binding.tvUserNote.setOnClickListener { showNoteDialog(entry) }
+        // v1.8.13 — side-by-side comparison against a second source.
+        binding.btnCompare.setOnClickListener {
+            GuideCompareDialogFragment.newInstance(entry.id)
+                .show(childFragmentManager, "guide_compare")
+        }
 
         bind(entry)
     }
@@ -390,6 +400,7 @@ class GuideDetailFragment : Fragment() {
         GuideCategory.SELF_HOSTED -> R.drawable.ic_dns
         GuideCategory.ROUTERS -> R.drawable.ic_wifi
         GuideCategory.APPS -> R.drawable.ic_qr_code
+        GuideCategory.MESH -> R.drawable.ic_mesh
     }
 
     private fun categoryLabel(category: GuideCategory): Int = when (category) {
@@ -398,6 +409,7 @@ class GuideDetailFragment : Fragment() {
         GuideCategory.SELF_HOSTED -> R.string.guide_section_selfhosted
         GuideCategory.ROUTERS -> R.string.guide_section_routers
         GuideCategory.APPS -> R.string.guide_section_apps
+        GuideCategory.MESH -> R.string.guide_section_mesh
     }
 
     private fun resolveColor(attr: Int): Int {
