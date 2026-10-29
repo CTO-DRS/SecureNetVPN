@@ -489,6 +489,11 @@
     <string name="guide_detail_title">تفاصيل المصدر</string>
     <string name="guide_detail_share">مشاركة</string>
     <string name="guide_detail_share_via">مشاركة هذا المصدر عبر</string>
+    <!-- v1.8.15 — مشاركة البطاقات + معالج الإعداد التفاعلي -->
+    <string name="guide_share">مشاركة</string>
+    <string name="guide_progress_caption">أُنجزت %1$d من %2$d خطوات</string>
+    <string name="guide_progress_done">اكتملت كل الخطوات — استورد التكوين متى جهزت</string>
+    <string name="guide_progress_reset">تصفير التقدّم</string>
     <string name="guide_detail_steps_title">كيف تستخدم مصدراً مثل هذا</string>
     <string name="guide_detail_yours_title">إشاراتك</string>
     <string name="guide_detail_yours_hint">قيّم وضَع في المفضلة وأضف ملاحظتك — كل شيء يبقى على جهازك ويسافر داخل نسختك الاحتياطية المشفرة.</string>

@@ -1,6 +1,7 @@
 package com.securenet.vpn.ui.guide
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.view.View
@@ -14,6 +15,7 @@ import com.google.android.material.card.MaterialCardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.securenet.vpn.R
 import com.securenet.vpn.guide.GuideCategory
+import com.securenet.vpn.guide.GuideDetail
 import com.securenet.vpn.guide.GuideDifficulty
 import com.securenet.vpn.guide.GuideEntry
 import com.securenet.vpn.guide.GuideSignalsData
@@ -53,6 +55,11 @@ import com.securenet.vpn.guide.WireGuideFilter
  * (● مبتدئ / ● متوسط / ● متقدم) on the title row, next to the Editor's
  * choice badge — the same colored dot the detail page and the comparison
  * table speak, so scanning the list answers "how much work is this?".
+ *
+ * v1.8.15 — a fourth card button, Share (مشاركة), fires the system share
+ * sheet with [GuideDetail.shareText] ("name — url") — the same one-liner
+ * the detail page has shared since v1.8.7, now reachable from the list
+ * without opening the card.
  */
 class GuideUiBuilder(
     private val context: Context,
@@ -447,6 +454,7 @@ class GuideUiBuilder(
                 addView(button(noteButtonLabel(entry), filled = false) {
                     showNoteDialog(entry, noteRow)
                 })
+                addView(button(R.string.guide_share, filled = false) { share(entry) })
             })
         }
 
@@ -490,6 +498,22 @@ class GuideUiBuilder(
         GuideDifficulty.BEGINNER -> 0xFF2E7D32.toInt()     // green 800
         GuideDifficulty.INTERMEDIATE -> 0xFFB26A00.toInt() // amber 900-ish
         GuideDifficulty.ADVANCED -> 0xFFC62828.toInt()     // red 800
+    }
+
+    /** v1.8.15 — system share sheet with the card's "name — url" line. */
+    private fun share(entry: GuideEntry) {
+        runCatching {
+            val send = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, GuideDetail.shareText(entry))
+            }
+            context.startActivity(
+                Intent.createChooser(
+                    send,
+                    context.getString(R.string.guide_detail_share_via)
+                )
+            )
+        }
     }
 
     private fun button(labelRes: Int, filled: Boolean, onClick: () -> Unit) =

@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,6 +26,8 @@ import com.securenet.vpn.guide.GuideCategory
 import com.securenet.vpn.guide.GuideDetail
 import com.securenet.vpn.guide.GuideDetailQr
 import com.securenet.vpn.guide.GuideEntry
+import com.securenet.vpn.guide.GuideProgress
+import com.securenet.vpn.guide.GuideProgressProvider
 import com.securenet.vpn.guide.GuideSignalsData
 import com.securenet.vpn.guide.GuideSmart
 import com.securenet.vpn.guide.GuideStore
@@ -143,23 +146,117 @@ class GuideDetailFragment : Fragment() {
         binding.llStars.addView(builder!!.starRow(entry))
         refreshUserNote(facts)
 
-        // Category tutorial steps, numbered like the section cards.
+        // v1.8.15 — interactive setup wizard (معالج الإعداد): the section
+        // tutorial becomes a per-source checklist. Tapping a step toggles
+        // it, progress persists per source via [GuideProgress], and the
+        // caption + bar answer "how far along am I?" at a glance.
         binding.llSteps.removeAllViews()
-        context?.resources?.getStringArray(WireGuideCatalog.stepsRes(entry.category))
-            ?.forEachIndexed { index, step ->
+        val steps = context?.resources?.getStringArray(
+            WireGuideCatalog.stepsRes(entry.category)
+        )
+        if (!steps.isNullOrEmpty()) {
+            val progress = GuideProgressProvider.get(requireContext())
+            val total = steps.size
+            fun repaintWizard() {
+                binding.llSteps.removeAllViews()
+                val checked = GuideProgress.normalize(
+                    progress.checked(entry.id), total
+                )
+
+                // caption swaps to a completion line when everything is ticked
                 binding.llSteps.addView(TextView(requireContext()).apply {
-                    text = (index + 1).toString() + " · " + step
-                    setTextColor(resolveColor(android.R.attr.textColorSecondary))
-                    textSize = 12f
-                    setLineSpacing(dp(2).toFloat(), 1f)
-                    if (index > 0) {
-                        layoutParams = LinearLayout.LayoutParams(
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT
-                        ).apply { topMargin = dp(3) }
-                    }
+                    text = if (checked.size == total)
+                        getString(R.string.guide_progress_done)
+                    else
+                        getString(R.string.guide_progress_caption, checked.size, total)
+                    setTextColor(
+                        resolveColor(
+                            if (checked.size == total)
+                                com.google.android.material.R.attr.colorPrimary
+                            else android.R.attr.textColorSecondary
+                        )
+                    )
+                    textSize = 11.5f
+                    setPadding(0, dp(2), 0, dp(4))
                 })
+                binding.llSteps.addView(
+                    com.google.android.material.progressindicator.LinearProgressIndicator(
+                        requireContext()
+                    ).apply {
+                        max = total
+                        setProgress(checked.size)
+                        layoutParams = LinearLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT, dp(4)
+                        ).apply { bottomMargin = dp(6) }
+                    }
+                )
+
+                // one tappable checklist row per step
+                steps.forEachIndexed { index, step ->
+                    val done = index in checked
+                    binding.llSteps.addView(LinearLayout(requireContext()).apply {
+                        orientation = LinearLayout.HORIZONTAL
+                        gravity = Gravity.CENTER_VERTICAL
+                        setPadding(0, dp(4), 0, dp(4))
+                        isClickable = true
+                        isFocusable = true
+                        runCatching {
+                            val tv = android.util.TypedValue()
+                            requireContext().theme.resolveAttribute(
+                                android.R.attr.selectableItemBackground, tv, true
+                            )
+                            setBackgroundResource(tv.resourceId)
+                        }
+                        setOnClickListener {
+                            progress.toggle(entry.id, index, total)
+                            repaintWizard()
+                        }
+                        addView(
+                            com.google.android.material.checkbox.MaterialCheckBox(
+                                requireContext()
+                            ).apply {
+                                isChecked = done
+                                isClickable = false
+                                isFocusable = false
+                            }
+                        )
+                        addView(TextView(requireContext()).apply {
+                            text = (index + 1).toString() + " · " + step
+                            setTextColor(
+                                resolveColor(android.R.attr.textColorSecondary)
+                            )
+                            textSize = 12f
+                            if (done) {
+                                paintFlags = paintFlags or
+                                    android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
+                                alpha = 0.65f
+                            }
+                        })
+                    })
+                }
+
+                // reset link only when there is something to reset
+                if (checked.isNotEmpty()) {
+                    binding.llSteps.addView(TextView(requireContext()).apply {
+                        text = getString(R.string.guide_progress_reset)
+                        setTextColor(
+                            resolveColor(
+                                com.google.android.material.R.attr.colorPrimary
+                            )
+                        )
+                        textSize = 12f
+                        isClickable = true
+                        isFocusable = true
+                        setPadding(0, dp(8), 0, 0)
+                        setOnClickListener {
+                            progress.clear(entry.id)
+                            repaintWizard()
+                        }
+                    })
+                }
             }
+            repaintWizard()
+        }
 
         renderRelated(entry, signals)
     }

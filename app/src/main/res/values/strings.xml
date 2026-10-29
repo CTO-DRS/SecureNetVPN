@@ -489,6 +489,11 @@
     <string name="guide_detail_title">Source details</string>
     <string name="guide_detail_share">Share</string>
     <string name="guide_detail_share_via">Share this source via</string>
+    <!-- v1.8.15 — card-level share + interactive setup wizard -->
+    <string name="guide_share">Share</string>
+    <string name="guide_progress_caption">%1$d of %2$d steps done</string>
+    <string name="guide_progress_done">All steps done — import the profile when ready</string>
+    <string name="guide_progress_reset">Reset progress</string>
     <string name="guide_detail_steps_title">How to use a source like this</string>
     <string name="guide_detail_yours_title">Your signals</string>
     <string name="guide_detail_yours_hint">Rate, bookmark and annotate — everything stays on this device and travels inside your encrypted backup.</string>
