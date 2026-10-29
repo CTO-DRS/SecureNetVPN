@@ -179,4 +179,29 @@ class GuideCompareTest {
         assertEquals(3, GuideCompare.candidates(base, store, limit = 3).size)
         assertTrue(GuideCompare.candidates(base, store, limit = 0).isEmpty())
     }
+
+    @Test
+    fun `v1_8_14 comparison carries each side's setup difficulty`() {
+        // the flagship contrast: a one-app mesh tool vs a router OS
+        val cmp = GuideCompare.compare(
+            byId("tailscale"), byId("openwrt")
+        )
+        assertEquals(
+            com.securenet.vpn.guide.GuideDifficulty.BEGINNER,
+            cmp.leftDifficulty
+        )
+        assertEquals(
+            com.securenet.vpn.guide.GuideDifficulty.ADVANCED,
+            cmp.rightDifficulty
+        )
+        // same-section pair keeps both classes visible for apples-to-apples
+        val paid = GuideCompare.compare(byId("mullvad"), byId("ovpn"))
+        assertEquals(paid.leftDifficulty, paid.rightDifficulty)
+        // every frozen comparison resolves the localized labels
+        WireGuideCatalog.entries.take(6).forEach { entry ->
+            assertTrue(
+                WireGuideCatalog.difficultyLabelRes(entry.difficulty) != 0
+            )
+        }
+    }
 }

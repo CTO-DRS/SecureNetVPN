@@ -31,6 +31,20 @@ import com.securenet.vpn.R
  * personal or community tier, so they carry the free/مجاني price markers
  * and surface in the new quick free/paid filter alongside the sections.
  *
+ * v1.8.14 — every source declares a [GuideDifficulty] (beginner /
+ * intermediate / advanced): how much setup effort stands between the
+ * user and a working profile, from "install the app, sign in, done"
+ * (Tailscale, Mullvad, GL.iNet) through guided scripts and docker
+ * one-liners (PiVPN, WG-Easy, WGDashboard) to full server planning
+ * (OpenBSD wg(4), VyOS, Headscale). The class is curated data — the
+ * category sets the default (config generators and official clients are
+ * beginner, self-hosted software and router firmware are advanced) with
+ * explicit overrides where reality disagrees (Amnezia deploys a server
+ * from one desktop app, GL.iNet runs WireGuard from the firmware UI,
+ * Headscale is a real ops project). Difficulty terms are searchable in
+ * the filter (easy/سهل … advanced/متقدم) and the badge is visible on
+ * every card, the detail page and the comparison table.
+ *
  * The catalog is pure data so it can be unit-tested (URL shape, uniqueness,
  * category completeness) without any Android dependency beyond @StringRes.
  * Descriptions live in strings.xml (EN) and values-ar/strings.xml (AR).
@@ -50,11 +64,33 @@ enum class GuideCategory {
     MESH
 }
 
+/**
+ * v1.8.14 — how much setup effort a source demands, from "install and
+ * sign in" to "plan your network topology". Curated per entry:
+ * [GuideCategory] only sets the default (see the catalog header) — the
+ * explicit value is what the list badge, the detail page and the
+ * comparison table all speak.
+ */
+enum class GuideDifficulty {
+
+    /** Install an app or a firmware plugin, sign in, done. */
+    BEGINNER,
+
+    /** A guided script, a docker one-liner or a web wizard — some
+     *  thinking, no server planning. */
+    INTERMEDIATE,
+
+    /** Full server/network work: OS-level config, topology, firewalls. */
+    ADVANCED
+}
+
 data class GuideEntry(
     val id: String,
     val name: String,
     val url: String,
     val category: GuideCategory,
+    /** v1.8.14 — curated setup-effort class, shown as a colored badge. */
+    val difficulty: GuideDifficulty,
     @StringRes val descriptionRes: Int,
     /** Optional small-print note shown under the description. */
     @StringRes val noteRes: Int? = null
@@ -71,6 +107,7 @@ object WireGuideCatalog {
             name = "Cloudflare WARP + wgcf",
             url = "https://github.com/ViRb3/wgcf",
             category = GuideCategory.FREE,
+            difficulty = GuideDifficulty.INTERMEDIATE,
             descriptionRes = R.string.guide_desc_warp_wgcf
         ),
         GuideEntry(
@@ -78,6 +115,7 @@ object WireGuideCatalog {
             name = "Proton VPN",
             url = "https://account.protonvpn.com/downloads",
             category = GuideCategory.FREE,
+            difficulty = GuideDifficulty.BEGINNER,
             descriptionRes = R.string.guide_desc_proton_free
         ),
         GuideEntry(
@@ -85,6 +123,7 @@ object WireGuideCatalog {
             name = "RiseupVPN (community configs)",
             url = "https://github.com/kmille/riseup-vpn-configurator",
             category = GuideCategory.FREE,
+            difficulty = GuideDifficulty.INTERMEDIATE,
             descriptionRes = R.string.guide_desc_riseup,
             noteRes = R.string.guide_note_riseup
         ),
@@ -93,6 +132,7 @@ object WireGuideCatalog {
             name = "VPNBook (free public configs)",
             url = "https://www.vpnbook.com/freevpn/wireguard-vpn",
             category = GuideCategory.FREE,
+            difficulty = GuideDifficulty.BEGINNER,
             descriptionRes = R.string.guide_desc_vpnbook,
             noteRes = R.string.guide_note_vpnbook
         ),
@@ -105,6 +145,7 @@ object WireGuideCatalog {
             name = "Mullvad VPN",
             url = "https://mullvad.net/en/account/wireguard-config",
             category = GuideCategory.PAID,
+            difficulty = GuideDifficulty.BEGINNER,
             descriptionRes = R.string.guide_desc_mullvad
         ),
         GuideEntry(
@@ -112,6 +153,7 @@ object WireGuideCatalog {
             name = "Windscribe",
             url = "https://windscribe.com/getconfig/wireguard",
             category = GuideCategory.PAID,
+            difficulty = GuideDifficulty.BEGINNER,
             descriptionRes = R.string.guide_desc_windscribe,
             noteRes = R.string.guide_note_paid_only
         ),
@@ -120,6 +162,7 @@ object WireGuideCatalog {
             name = "IVPN",
             url = "https://www.ivpn.net/clientarea/",
             category = GuideCategory.PAID,
+            difficulty = GuideDifficulty.BEGINNER,
             descriptionRes = R.string.guide_desc_ivpn
         ),
         GuideEntry(
@@ -127,6 +170,7 @@ object WireGuideCatalog {
             name = "AzireVPN",
             url = "https://www.azirevpn.com",
             category = GuideCategory.PAID,
+            difficulty = GuideDifficulty.BEGINNER,
             descriptionRes = R.string.guide_desc_azirevpn
         ),
         GuideEntry(
@@ -134,6 +178,7 @@ object WireGuideCatalog {
             name = "OVPN",
             url = "https://www.ovpn.com",
             category = GuideCategory.PAID,
+            difficulty = GuideDifficulty.BEGINNER,
             descriptionRes = R.string.guide_desc_ovpn
         ),
         GuideEntry(
@@ -141,6 +186,7 @@ object WireGuideCatalog {
             name = "AirVPN",
             url = "https://airvpn.org",
             category = GuideCategory.PAID,
+            difficulty = GuideDifficulty.BEGINNER,
             descriptionRes = R.string.guide_desc_airvpn
         ),
         GuideEntry(
@@ -148,6 +194,7 @@ object WireGuideCatalog {
             name = "Astrill",
             url = "https://www.astrill.com/member-zone/tools/wireguard-configuration",
             category = GuideCategory.PAID,
+            difficulty = GuideDifficulty.BEGINNER,
             descriptionRes = R.string.guide_desc_astrill
         ),
         GuideEntry(
@@ -155,6 +202,7 @@ object WireGuideCatalog {
             name = "hide.me VPN",
             url = "https://hide.me",
             category = GuideCategory.PAID,
+            difficulty = GuideDifficulty.BEGINNER,
             descriptionRes = R.string.guide_desc_hideme
         ),
         GuideEntry(
@@ -162,6 +210,7 @@ object WireGuideCatalog {
             name = "IPVanish",
             url = "https://www.ipvanish.com",
             category = GuideCategory.PAID,
+            difficulty = GuideDifficulty.BEGINNER,
             descriptionRes = R.string.guide_desc_ipvanish
         ),
         GuideEntry(
@@ -169,6 +218,7 @@ object WireGuideCatalog {
             name = "Surfshark",
             url = "https://surfshark.com",
             category = GuideCategory.PAID,
+            difficulty = GuideDifficulty.BEGINNER,
             descriptionRes = R.string.guide_desc_surfshark
         ),
         GuideEntry(
@@ -176,6 +226,7 @@ object WireGuideCatalog {
             name = "PrivateVPN",
             url = "https://privatevpn.com",
             category = GuideCategory.PAID,
+            difficulty = GuideDifficulty.BEGINNER,
             descriptionRes = R.string.guide_desc_privatevpn
         ),
         GuideEntry(
@@ -183,6 +234,7 @@ object WireGuideCatalog {
             name = "PrivadoVPN",
             url = "https://privadovpn.com",
             category = GuideCategory.PAID,
+            difficulty = GuideDifficulty.BEGINNER,
             descriptionRes = R.string.guide_desc_privadovpn
         ),
         GuideEntry(
@@ -190,6 +242,7 @@ object WireGuideCatalog {
             name = "StrongVPN",
             url = "https://strongvpn.com",
             category = GuideCategory.PAID,
+            difficulty = GuideDifficulty.BEGINNER,
             descriptionRes = R.string.guide_desc_strongvpn
         ),
         GuideEntry(
@@ -197,6 +250,7 @@ object WireGuideCatalog {
             name = "TorGuard",
             url = "https://torguard.net",
             category = GuideCategory.PAID,
+            difficulty = GuideDifficulty.BEGINNER,
             descriptionRes = R.string.guide_desc_torguard
         ),
         GuideEntry(
@@ -204,6 +258,7 @@ object WireGuideCatalog {
             name = "Private Internet Access (PIA)",
             url = "https://github.com/kylegrantlucas/pia-wg-config",
             category = GuideCategory.PAID,
+            difficulty = GuideDifficulty.BEGINNER,
             descriptionRes = R.string.guide_desc_pia,
             noteRes = R.string.guide_note_pia
         ),
@@ -212,6 +267,7 @@ object WireGuideCatalog {
             name = "NordVPN",
             url = "https://nordvpn.com",
             category = GuideCategory.PAID,
+            difficulty = GuideDifficulty.BEGINNER,
             descriptionRes = R.string.guide_desc_nordvpn,
             noteRes = R.string.guide_note_nordvpn
         ),
@@ -220,6 +276,7 @@ object WireGuideCatalog {
             name = "PureVPN",
             url = "https://support.purevpn.com/en_US/account/how-to-add-wireguard-via-member-area",
             category = GuideCategory.PAID,
+            difficulty = GuideDifficulty.BEGINNER,
             descriptionRes = R.string.guide_desc_purevpn,
             noteRes = R.string.guide_note_purevpn
         ),
@@ -228,6 +285,7 @@ object WireGuideCatalog {
             name = "12VPX",
             url = "https://12vpx.com",
             category = GuideCategory.PAID,
+            difficulty = GuideDifficulty.BEGINNER,
             descriptionRes = R.string.guide_desc_12vpx
         ),
         GuideEntry(
@@ -235,6 +293,7 @@ object WireGuideCatalog {
             name = "Njalla",
             url = "https://njal.la/vpn",
             category = GuideCategory.PAID,
+            difficulty = GuideDifficulty.BEGINNER,
             descriptionRes = R.string.guide_desc_njalla,
             noteRes = R.string.guide_note_njalla
         ),
@@ -243,6 +302,7 @@ object WireGuideCatalog {
             name = "Cryptostorm",
             url = "https://cryptostorm.is/wireguard",
             category = GuideCategory.PAID,
+            difficulty = GuideDifficulty.BEGINNER,
             descriptionRes = R.string.guide_desc_cryptostorm
         ),
 
@@ -254,6 +314,7 @@ object WireGuideCatalog {
             name = "wg-easy",
             url = "https://github.com/wg-easy/wg-easy",
             category = GuideCategory.SELF_HOSTED,
+            difficulty = GuideDifficulty.INTERMEDIATE,
             descriptionRes = R.string.guide_desc_wg_easy
         ),
         GuideEntry(
@@ -261,6 +322,7 @@ object WireGuideCatalog {
             name = "PiVPN",
             url = "https://github.com/pivpn/pivpn",
             category = GuideCategory.SELF_HOSTED,
+            difficulty = GuideDifficulty.INTERMEDIATE,
             descriptionRes = R.string.guide_desc_pivpn
         ),
         GuideEntry(
@@ -268,6 +330,7 @@ object WireGuideCatalog {
             name = "Algo VPN",
             url = "https://github.com/trailofbits/algo",
             category = GuideCategory.SELF_HOSTED,
+            difficulty = GuideDifficulty.INTERMEDIATE,
             descriptionRes = R.string.guide_desc_algo
         ),
         GuideEntry(
@@ -275,6 +338,7 @@ object WireGuideCatalog {
             name = "wireguard-install (one-command script)",
             url = "https://github.com/angristan/wireguard-install",
             category = GuideCategory.SELF_HOSTED,
+            difficulty = GuideDifficulty.INTERMEDIATE,
             descriptionRes = R.string.guide_desc_angristan
         ),
         GuideEntry(
@@ -282,6 +346,7 @@ object WireGuideCatalog {
             name = "WireGuard Portal",
             url = "https://github.com/h44z/wg-portal",
             category = GuideCategory.SELF_HOSTED,
+            difficulty = GuideDifficulty.ADVANCED,
             descriptionRes = R.string.guide_desc_wg_portal
         ),
         GuideEntry(
@@ -289,6 +354,7 @@ object WireGuideCatalog {
             name = "innernet",
             url = "https://github.com/tonarino/innernet",
             category = GuideCategory.SELF_HOSTED,
+            difficulty = GuideDifficulty.ADVANCED,
             descriptionRes = R.string.guide_desc_innernet
         ),
         GuideEntry(
@@ -296,6 +362,7 @@ object WireGuideCatalog {
             name = "defguard",
             url = "https://defguard.net",
             category = GuideCategory.SELF_HOSTED,
+            difficulty = GuideDifficulty.ADVANCED,
             descriptionRes = R.string.guide_desc_defguard
         ),
         GuideEntry(
@@ -303,6 +370,7 @@ object WireGuideCatalog {
             name = "Amnezia (self-hosted)",
             url = "https://amnezia.org/self-hosted",
             category = GuideCategory.SELF_HOSTED,
+            difficulty = GuideDifficulty.BEGINNER,
             descriptionRes = R.string.guide_desc_amnezia
         ),
         GuideEntry(
@@ -310,6 +378,7 @@ object WireGuideCatalog {
             name = "Pro Custodibus",
             url = "https://www.procustodibus.com",
             category = GuideCategory.SELF_HOSTED,
+            difficulty = GuideDifficulty.ADVANCED,
             descriptionRes = R.string.guide_desc_procustodibus
         ),
         GuideEntry(
@@ -317,6 +386,7 @@ object WireGuideCatalog {
             name = "linuxserver/wireguard (Docker)",
             url = "https://docs.linuxserver.io/images/docker-wireguard/",
             category = GuideCategory.SELF_HOSTED,
+            difficulty = GuideDifficulty.INTERMEDIATE,
             descriptionRes = R.string.guide_desc_lsio_wireguard
         ),
         GuideEntry(
@@ -324,6 +394,7 @@ object WireGuideCatalog {
             name = "WireHole (WireGuard + Pi-hole + Unbound)",
             url = "https://github.com/IAmStoxe/wirehole",
             category = GuideCategory.SELF_HOSTED,
+            difficulty = GuideDifficulty.INTERMEDIATE,
             descriptionRes = R.string.guide_desc_wirehole
         ),
         GuideEntry(
@@ -331,6 +402,7 @@ object WireGuideCatalog {
             name = "Pritunl",
             url = "https://docs.pritunl.com/kb/vpn/getting-started/wireguard",
             category = GuideCategory.SELF_HOSTED,
+            difficulty = GuideDifficulty.ADVANCED,
             descriptionRes = R.string.guide_desc_pritunl,
             noteRes = R.string.guide_note_pritunl
         ),
@@ -340,6 +412,7 @@ object WireGuideCatalog {
             name = "WGDashboard",
             url = "https://github.com/donaldzou/WGDashboard",
             category = GuideCategory.SELF_HOSTED,
+            difficulty = GuideDifficulty.INTERMEDIATE,
             descriptionRes = R.string.guide_desc_wgdashboard
         ),
         GuideEntry(
@@ -347,6 +420,7 @@ object WireGuideCatalog {
             name = "Ansible WireGuard role (githubixx)",
             url = "https://github.com/githubixx/ansible-role-wireguard",
             category = GuideCategory.SELF_HOSTED,
+            difficulty = GuideDifficulty.ADVANCED,
             descriptionRes = R.string.guide_desc_ansible_wg
         ),
         // v1.8.12 — self-hosted, the hosting bill: free tier vs paid VPS
@@ -355,6 +429,7 @@ object WireGuideCatalog {
             name = "Oracle Cloud (Always Free VPS)",
             url = "https://www.oracle.com/cloud/free/",
             category = GuideCategory.SELF_HOSTED,
+            difficulty = GuideDifficulty.ADVANCED,
             descriptionRes = R.string.guide_desc_oracle_free,
             noteRes = R.string.guide_note_oracle_free
         ),
@@ -363,6 +438,7 @@ object WireGuideCatalog {
             name = "Hetzner Cloud VPS",
             url = "https://www.hetzner.com/cloud",
             category = GuideCategory.SELF_HOSTED,
+            difficulty = GuideDifficulty.ADVANCED,
             descriptionRes = R.string.guide_desc_hetzner,
             noteRes = R.string.guide_note_hetzner
         ),
@@ -377,6 +453,7 @@ object WireGuideCatalog {
             name = "Headscale",
             url = "https://github.com/juanfont/headscale",
             category = GuideCategory.MESH,
+            difficulty = GuideDifficulty.ADVANCED,
             descriptionRes = R.string.guide_desc_headscale
         ),
         GuideEntry(
@@ -384,6 +461,7 @@ object WireGuideCatalog {
             name = "Tailscale (free personal plan)",
             url = "https://tailscale.com",
             category = GuideCategory.MESH,
+            difficulty = GuideDifficulty.BEGINNER,
             descriptionRes = R.string.guide_desc_tailscale
         ),
         GuideEntry(
@@ -391,6 +469,7 @@ object WireGuideCatalog {
             name = "NetBird",
             url = "https://netbird.io",
             category = GuideCategory.MESH,
+            difficulty = GuideDifficulty.BEGINNER,
             descriptionRes = R.string.guide_desc_netbird
         ),
         GuideEntry(
@@ -398,6 +477,7 @@ object WireGuideCatalog {
             name = "Netmaker",
             url = "https://netmaker.io",
             category = GuideCategory.MESH,
+            difficulty = GuideDifficulty.ADVANCED,
             descriptionRes = R.string.guide_desc_netmaker
         ),
         GuideEntry(
@@ -405,6 +485,7 @@ object WireGuideCatalog {
             name = "Firezone",
             url = "https://www.firezone.dev",
             category = GuideCategory.MESH,
+            difficulty = GuideDifficulty.INTERMEDIATE,
             descriptionRes = R.string.guide_desc_firezone
         ),
 
@@ -416,6 +497,7 @@ object WireGuideCatalog {
             name = "GL.iNet routers",
             url = "https://www.gl-inet.com",
             category = GuideCategory.ROUTERS,
+            difficulty = GuideDifficulty.BEGINNER,
             descriptionRes = R.string.guide_desc_glinet
         ),
         GuideEntry(
@@ -423,6 +505,7 @@ object WireGuideCatalog {
             name = "OpenWrt",
             url = "https://openwrt.org",
             category = GuideCategory.ROUTERS,
+            difficulty = GuideDifficulty.ADVANCED,
             descriptionRes = R.string.guide_desc_openwrt
         ),
         GuideEntry(
@@ -430,6 +513,7 @@ object WireGuideCatalog {
             name = "pfSense & OPNsense",
             url = "https://opnsense.org",
             category = GuideCategory.ROUTERS,
+            difficulty = GuideDifficulty.ADVANCED,
             descriptionRes = R.string.guide_desc_opnsense
         ),
         GuideEntry(
@@ -437,6 +521,7 @@ object WireGuideCatalog {
             name = "MikroTik (RouterOS 7+)",
             url = "https://mikrotik.com",
             category = GuideCategory.ROUTERS,
+            difficulty = GuideDifficulty.ADVANCED,
             descriptionRes = R.string.guide_desc_mikrotik
         ),
         GuideEntry(
@@ -444,6 +529,7 @@ object WireGuideCatalog {
             name = "Asuswrt-Merlin",
             url = "https://www.asuswrt-merlin.net",
             category = GuideCategory.ROUTERS,
+            difficulty = GuideDifficulty.ADVANCED,
             descriptionRes = R.string.guide_desc_asuswrt_merlin,
             noteRes = R.string.guide_note_asuswrt_merlin
         ),
@@ -452,6 +538,7 @@ object WireGuideCatalog {
             name = "DD-WRT",
             url = "https://dd-wrt.com",
             category = GuideCategory.ROUTERS,
+            difficulty = GuideDifficulty.ADVANCED,
             descriptionRes = R.string.guide_desc_ddwrt
         ),
         GuideEntry(
@@ -459,6 +546,7 @@ object WireGuideCatalog {
             name = "VyOS",
             url = "https://vyos.io",
             category = GuideCategory.ROUTERS,
+            difficulty = GuideDifficulty.ADVANCED,
             descriptionRes = R.string.guide_desc_vyos
         ),
         GuideEntry(
@@ -466,6 +554,7 @@ object WireGuideCatalog {
             name = "Ubiquiti UniFi gateways",
             url = "https://help.ui.com/hc/en-us/articles/115005445768-UniFi-Gateway-WireGuard-VPN-Server",
             category = GuideCategory.ROUTERS,
+            difficulty = GuideDifficulty.ADVANCED,
             descriptionRes = R.string.guide_desc_unifi
         ),
         GuideEntry(
@@ -473,6 +562,7 @@ object WireGuideCatalog {
             name = "FreshTomato",
             url = "https://wiki.freshtomato.org/doku.php/vpn-wireguard",
             category = GuideCategory.ROUTERS,
+            difficulty = GuideDifficulty.ADVANCED,
             descriptionRes = R.string.guide_desc_freshtomato,
             noteRes = R.string.guide_note_freshtomato
         ),
@@ -481,6 +571,7 @@ object WireGuideCatalog {
             name = "pfSense",
             url = "https://docs.netgate.com/pfsense/en/latest/vpn/wireguard/index.html",
             category = GuideCategory.ROUTERS,
+            difficulty = GuideDifficulty.ADVANCED,
             descriptionRes = R.string.guide_desc_pfsense
         ),
         GuideEntry(
@@ -488,6 +579,7 @@ object WireGuideCatalog {
             name = "IPFire",
             url = "https://www.ipfire.org/docs/configuration/services/wireguard",
             category = GuideCategory.ROUTERS,
+            difficulty = GuideDifficulty.ADVANCED,
             descriptionRes = R.string.guide_desc_ipfire
         ),
         GuideEntry(
@@ -495,6 +587,7 @@ object WireGuideCatalog {
             name = "ASUS routers (stock firmware)",
             url = "https://www.asus.com/support/faq/1048280",
             category = GuideCategory.ROUTERS,
+            difficulty = GuideDifficulty.ADVANCED,
             descriptionRes = R.string.guide_desc_asus_stock,
             noteRes = R.string.guide_note_asus_stock
         ),
@@ -504,6 +597,7 @@ object WireGuideCatalog {
             name = "OpenBSD (wg(4) firewall)",
             url = "https://man.openbsd.org/wg",
             category = GuideCategory.ROUTERS,
+            difficulty = GuideDifficulty.ADVANCED,
             descriptionRes = R.string.guide_desc_openbsd
         ),
         // v1.8.12 — paid firewall appliances & routers
@@ -512,6 +606,7 @@ object WireGuideCatalog {
             name = "Firewalla (Gold / Purple)",
             url = "https://firewalla.com",
             category = GuideCategory.ROUTERS,
+            difficulty = GuideDifficulty.BEGINNER,
             descriptionRes = R.string.guide_desc_firewalla,
             noteRes = R.string.guide_note_firewalla
         ),
@@ -520,6 +615,7 @@ object WireGuideCatalog {
             name = "Netgate pfSense+ appliances",
             url = "https://www.netgate.com/appliances",
             category = GuideCategory.ROUTERS,
+            difficulty = GuideDifficulty.INTERMEDIATE,
             descriptionRes = R.string.guide_desc_netgate_appliance,
             noteRes = R.string.guide_note_netgate
         ),
@@ -528,6 +624,7 @@ object WireGuideCatalog {
             name = "Keenetic routers",
             url = "https://keenetic.com",
             category = GuideCategory.ROUTERS,
+            difficulty = GuideDifficulty.INTERMEDIATE,
             descriptionRes = R.string.guide_desc_keenetic,
             noteRes = R.string.guide_note_keenetic
         ),
@@ -536,6 +633,7 @@ object WireGuideCatalog {
             name = "Turris Omnia",
             url = "https://omnia.turris.cz/en/",
             category = GuideCategory.ROUTERS,
+            difficulty = GuideDifficulty.ADVANCED,
             descriptionRes = R.string.guide_desc_turris
         ),
 
@@ -547,6 +645,7 @@ object WireGuideCatalog {
             name = "WireGuard for Android (Google Play)",
             url = "https://play.google.com/store/apps/details?id=com.wireguard.android",
             category = GuideCategory.APPS,
+            difficulty = GuideDifficulty.BEGINNER,
             descriptionRes = R.string.guide_desc_wg_android
         ),
         GuideEntry(
@@ -554,6 +653,7 @@ object WireGuideCatalog {
             name = "WireGuard for Android (F-Droid)",
             url = "https://f-droid.org/packages/com.wireguard.android/",
             category = GuideCategory.APPS,
+            difficulty = GuideDifficulty.BEGINNER,
             descriptionRes = R.string.guide_desc_wg_fdroid
         ),
         GuideEntry(
@@ -561,6 +661,7 @@ object WireGuideCatalog {
             name = "WireGuard for desktop (official)",
             url = "https://www.wireguard.com/install/",
             category = GuideCategory.APPS,
+            difficulty = GuideDifficulty.BEGINNER,
             descriptionRes = R.string.guide_desc_wg_desktop
         ),
         GuideEntry(
@@ -568,6 +669,7 @@ object WireGuideCatalog {
             name = "WireGuard for iOS (App Store)",
             url = "https://apps.apple.com/app/wireguard/id1441195209",
             category = GuideCategory.APPS,
+            difficulty = GuideDifficulty.BEGINNER,
             descriptionRes = R.string.guide_desc_wg_ios
         ),
         GuideEntry(
@@ -575,6 +677,7 @@ object WireGuideCatalog {
             name = "WireGuard for macOS (App Store)",
             url = "https://apps.apple.com/app/wireguard/id1451685025",
             category = GuideCategory.APPS,
+            difficulty = GuideDifficulty.BEGINNER,
             descriptionRes = R.string.guide_desc_wg_macos
         ),
         GuideEntry(
@@ -582,6 +685,7 @@ object WireGuideCatalog {
             name = "WireSock Secure Connect (Windows)",
             url = "https://wiresock.net",
             category = GuideCategory.APPS,
+            difficulty = GuideDifficulty.BEGINNER,
             descriptionRes = R.string.guide_desc_wiresock,
             noteRes = R.string.guide_note_wiresock
         ),
@@ -590,6 +694,7 @@ object WireGuideCatalog {
             name = "NetworkManager (Linux built-in)",
             url = "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/configuring_and_managing_networking/assembly_setting-up-a-wireguard-vpn_configuring-and-managing-networking",
             category = GuideCategory.APPS,
+            difficulty = GuideDifficulty.BEGINNER,
             descriptionRes = R.string.guide_desc_networkmanager
         )
     )
@@ -711,6 +816,19 @@ object WireGuideCatalog {
 
     /** True when [id] carries the "Editor's choice" reliability badge. */
     fun isEditorsChoice(id: String): Boolean = id in editorsChoice
+
+    /**
+     * v1.8.14 — localized label for a setup-difficulty class. Lives in the
+     * pure catalog (like the descriptions) so every surface — list badge,
+     * detail page, comparison row — speaks the same three words, and the
+     * mapping itself is JVM-testable.
+     */
+    @StringRes
+    fun difficultyLabelRes(difficulty: GuideDifficulty): Int = when (difficulty) {
+        GuideDifficulty.BEGINNER -> R.string.guide_difficulty_beginner
+        GuideDifficulty.INTERMEDIATE -> R.string.guide_difficulty_intermediate
+        GuideDifficulty.ADVANCED -> R.string.guide_difficulty_advanced
+    }
 
     /** Entries of one category, in catalog order. */
     fun byCategory(category: GuideCategory): List<GuideEntry> =

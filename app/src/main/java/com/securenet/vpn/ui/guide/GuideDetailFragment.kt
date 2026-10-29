@@ -119,7 +119,10 @@ class GuideDetailFragment : Fragment() {
 
         binding.ivDetailIcon.setImageResource(iconFor(entry.category))
         binding.tvDetailName.text = entry.name
-        binding.tvDetailCategory.setText(categoryLabel(entry.category))
+        // v1.8.14 — section + setup difficulty in one identity line.
+        binding.tvDetailCategory.text =
+            getString(categoryLabel(entry.category)) + "  ·  " +
+            getString(WireGuideCatalog.difficultyLabelRes(entry.difficulty))
         binding.tvDetailBadge.visibility =
             if (facts.editorsChoice) View.VISIBLE else View.GONE
         binding.tvDetailUrl.text = entry.url

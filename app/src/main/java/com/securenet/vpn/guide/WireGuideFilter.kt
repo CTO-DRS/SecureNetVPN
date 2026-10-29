@@ -23,6 +23,11 @@ package com.securenet.vpn.guide
  * keyword markers, and [filterByPrice] keeps one class only — the pure
  * counterpart of the new Free/Paid buttons in [GuideFragment].
  *
+ * v1.8.14 — the setup difficulty ([GuideEntry.difficulty]) is searchable
+ * in EN + AR (easy/سهل, advanced/متقدم, …), so typing "سهل" from the
+ * Arabic list reaches every beginner source across all sections the same
+ * way price words already do.
+ *
  * Pure Kotlin (no Android imports) so the whole behaviour is unit-testable.
  */
 object WireGuideFilter {
@@ -94,6 +99,15 @@ object WireGuideFilter {
         if (WireGuideCatalog.isEditorsChoice(entry.id)) {
             append(" editor's choice editors ")
             append("اختيار المحرر موثوق موثوقة")
+        }
+        // v1.8.14 — the setup difficulty is searchable (EN + AR).
+        when (entry.difficulty) {
+            GuideDifficulty.BEGINNER ->
+                append(" beginner easy simple quick مبتدئ سهل بسيط سريع")
+            GuideDifficulty.INTERMEDIATE ->
+                append(" intermediate medium guided متوسط")
+            GuideDifficulty.ADVANCED ->
+                append(" advanced expert hard difficult متقدم صعب خبير")
         }
         if (!note.isNullOrBlank()) {
             append(' ')

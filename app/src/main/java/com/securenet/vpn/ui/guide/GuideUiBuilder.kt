@@ -14,6 +14,7 @@ import com.google.android.material.card.MaterialCardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.securenet.vpn.R
 import com.securenet.vpn.guide.GuideCategory
+import com.securenet.vpn.guide.GuideDifficulty
 import com.securenet.vpn.guide.GuideEntry
 import com.securenet.vpn.guide.GuideSignalsData
 import com.securenet.vpn.guide.GuideSmart
@@ -47,6 +48,11 @@ import com.securenet.vpn.guide.WireGuideFilter
  * ranking ([GuideStats]) plus a bulk-delete action that wipes every signal
  * after a count-spelling confirmation dialog; the host is notified through
  * [onSignalsCleared] so it can re-render and toast.
+ *
+ * v1.8.14 — every source card carries a colored setup-difficulty badge
+ * (● مبتدئ / ● متوسط / ● متقدم) on the title row, next to the Editor's
+ * choice badge — the same colored dot the detail page and the comparison
+ * table speak, so scanning the list answers "how much work is this?".
  */
 class GuideUiBuilder(
     private val context: Context,
@@ -384,6 +390,22 @@ class GuideUiBuilder(
                     ).apply { marginEnd = dp(2) }
                 })
             }
+            // v1.8.14 — setup-difficulty badge on every card.
+            addView(TextView(context).apply {
+                text = "● " + getString(
+                    WireGuideCatalog.difficultyLabelRes(entry.difficulty)
+                )
+                setTextColor(difficultyColor(entry.difficulty))
+                textSize = 9f
+                maxLines = 1
+                setBackgroundResource(R.drawable.bg_editors_badge)
+                setPadding(dp(7), dp(3), dp(7), dp(3))
+                contentDescription = getString(R.string.guide_difficulty_cd)
+                layoutParams = LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply { marginEnd = dp(2) }
+            })
             addView(favoriteToggle(entry))
         }
 
@@ -460,6 +482,14 @@ class GuideUiBuilder(
                 setOnClickListener { open(entry) }
             }
         }
+    }
+
+    /** v1.8.14 — badge color per difficulty class (theme-independent:
+     *  the traffic-light reading is the point). */
+    private fun difficultyColor(difficulty: GuideDifficulty): Int = when (difficulty) {
+        GuideDifficulty.BEGINNER -> 0xFF2E7D32.toInt()     // green 800
+        GuideDifficulty.INTERMEDIATE -> 0xFFB26A00.toInt() // amber 900-ish
+        GuideDifficulty.ADVANCED -> 0xFFC62828.toInt()     // red 800
     }
 
     private fun button(labelRes: Int, filled: Boolean, onClick: () -> Unit) =
