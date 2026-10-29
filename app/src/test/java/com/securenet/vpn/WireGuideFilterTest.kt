@@ -1,6 +1,7 @@
 package com.securenet.vpn
 
 import com.securenet.vpn.guide.GuideCategory
+import com.securenet.vpn.guide.GuideDifficulty
 import com.securenet.vpn.guide.InMemoryGuideStore
 import com.securenet.vpn.guide.WireGuideCatalog
 import com.securenet.vpn.guide.WireGuideFilter
@@ -349,5 +350,35 @@ class WireGuideFilterTest {
             WireGuideFilter.filter(entries, "editor")
                 .any { !WireGuideCatalog.isEditorsChoice(it.id) }
         )
+    }
+
+    @Test
+    fun `v1_8_14 difficulty terms are searchable in english and arabic`() {
+        // Arabic: "سهل" (easy) reaches every beginner source only,
+        // "متقدم" (advanced) every advanced source only,
+        // "متوسط" (intermediate) every intermediate source only
+        fun idsOf(query: String) =
+            WireGuideFilter.filter(entries, query).map { it.id }.toSet()
+        fun classIds(difficulty: GuideDifficulty) =
+            entries.filter { it.difficulty == difficulty }.map { it.id }.toSet()
+
+        assertEquals(classIds(GuideDifficulty.BEGINNER), idsOf("سهل"))
+        assertEquals(classIds(GuideDifficulty.ADVANCED), idsOf("متقدم"))
+        assertEquals(classIds(GuideDifficulty.INTERMEDIATE), idsOf("متوسط"))
+        // English mirrors the same classes ("beginner"/"advanced" are
+        // collision-free; note "easy" also reaches wg-easy — by its own
+        // name — which is honest search behaviour, so it is not asserted
+        // as an exact class match)
+        assertEquals(classIds(GuideDifficulty.BEGINNER), idsOf("beginner"))
+        assertEquals(classIds(GuideDifficulty.ADVANCED), idsOf("advanced"))
+        // literal anchors across sections: the hosted mesh pair is easy,
+        // the router firmware grind is advanced
+        assertTrue(idsOf("سهل").containsAll(listOf("tailscale", "netbird", "mullvad", "glinet")))
+        assertTrue(idsOf("متقدم").containsAll(listOf("headscale", "netmaker", "openwrt", "vyos")))
+        assertTrue(idsOf("متوسط").containsAll(listOf("firezone", "netgate-appliance", "keenetic")))
+        // no beginner source is reachable through the advanced term
+        assertFalse(idsOf("متقدم").any { id ->
+            WireGuideCatalog.byId(id)?.difficulty == GuideDifficulty.BEGINNER
+        })
     }
 }

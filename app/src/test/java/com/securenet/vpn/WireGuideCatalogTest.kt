@@ -1,6 +1,7 @@
 package com.securenet.vpn
 
 import com.securenet.vpn.guide.GuideCategory
+import com.securenet.vpn.guide.GuideDifficulty
 import com.securenet.vpn.guide.WireGuideCatalog
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -400,5 +401,77 @@ class WireGuideCatalogTest {
         )
         // the mesh section has its own steps array and section label
         assertTrue(WireGuideCatalog.stepsRes(GuideCategory.MESH) != 0)
+    }
+
+    @Test
+    fun `v1_8_14 every source declares a curated setup difficulty`() {
+        // literal anchors — the classes the release notes and the detail
+        // pages promise: hosted coordination is beginner, ops projects are
+        // advanced, docker/script helpers are intermediate
+        val expected = mapOf(
+            "tailscale" to GuideDifficulty.BEGINNER,
+            "netbird" to GuideDifficulty.BEGINNER,
+            "mullvad" to GuideDifficulty.BEGINNER,
+            "vpnbook" to GuideDifficulty.BEGINNER,
+            "wg-android" to GuideDifficulty.BEGINNER,
+            "amnezia" to GuideDifficulty.BEGINNER,
+            "glinet" to GuideDifficulty.BEGINNER,
+            "firewalla" to GuideDifficulty.BEGINNER,
+            "cloudflare-warp-wgcf" to GuideDifficulty.INTERMEDIATE,
+            "riseup" to GuideDifficulty.INTERMEDIATE,
+            "wg-easy" to GuideDifficulty.INTERMEDIATE,
+            "pivpn" to GuideDifficulty.INTERMEDIATE,
+            "wgdashboard" to GuideDifficulty.INTERMEDIATE,
+            "firezone" to GuideDifficulty.INTERMEDIATE,
+            "netgate-appliance" to GuideDifficulty.INTERMEDIATE,
+            "keenetic" to GuideDifficulty.INTERMEDIATE,
+            "headscale" to GuideDifficulty.ADVANCED,
+            "netmaker" to GuideDifficulty.ADVANCED,
+            "openwrt" to GuideDifficulty.ADVANCED,
+            "oracle-alwaysfree" to GuideDifficulty.ADVANCED
+        )
+        expected.forEach { (id, difficulty) ->
+            val entry = WireGuideCatalog.byId(id)
+                ?: throw AssertionError("missing entry $id")
+            assertEquals("wrong difficulty for $id", difficulty, entry.difficulty)
+            // the localized-label mapping resolves for every class
+            assertTrue(
+                "difficultyLabelRes must resolve for $id",
+                WireGuideCatalog.difficultyLabelRes(entry.difficulty) != 0
+            )
+        }
+
+        // distribution rules: generator/client sections never say advanced,
+        // self-hosted/router sections are never beginner except the three
+        // genuinely one-app installs
+        listOf(GuideCategory.FREE, GuideCategory.PAID, GuideCategory.APPS)
+            .forEach { category ->
+                WireGuideCatalog.byCategory(category).forEach { entry ->
+                    assertTrue(
+                        "${entry.id}: $category must not be ADVANCED",
+                        entry.difficulty != GuideDifficulty.ADVANCED
+                    )
+                }
+            }
+        assertEquals(
+            setOf("amnezia"),
+            WireGuideCatalog.byCategory(GuideCategory.SELF_HOSTED)
+                .filter { it.difficulty == GuideDifficulty.BEGINNER }
+                .map { it.id }.toSet()
+        )
+        assertEquals(
+            setOf("glinet", "firewalla"),
+            WireGuideCatalog.byCategory(GuideCategory.ROUTERS)
+                .filter { it.difficulty == GuideDifficulty.BEGINNER }
+                .map { it.id }.toSet()
+        )
+        // every one of the 69 sources carries a class and a resolvable label
+        assertEquals(69, WireGuideCatalog.entries.size)
+        WireGuideCatalog.entries.forEach { entry ->
+            assertTrue(
+                "${entry.id} must declare a difficulty",
+                WireGuideCatalog.difficultyLabelRes(entry.difficulty) != 0
+            )
+        }
     }
 }

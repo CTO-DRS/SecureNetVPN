@@ -9,11 +9,12 @@ package com.securenet.vpn.guide
  * [candidates] ranks the sensible second sources to compare against.
  *
  * Everything is computed from catalog data ([GuideEntry], Editor's-choice
- * badge, curated keywords) and the user's own signals ([GuideStore]) —
- * no invented scores, no network. The shared-keyword row reuses
- * [GuideSmart.sharedKeywords] so "why do these two feel similar" is
- * answered with the same vocabulary the smart layer already uses
- * (Sweden links Mullvad/AzireVPN/OVPN, mesh links Tailscale/NetBird/…).
+ * badge, curated keywords, the v1.8.14 setup difficulty) and the user's
+ * own signals ([GuideStore]) — no invented scores, no network. The
+ * shared-keyword row reuses [GuideSmart.sharedKeywords] so "why do these
+ * two feel similar" is answered with the same vocabulary the smart layer
+ * already uses (Sweden links Mullvad/AzireVPN/OVPN, mesh links
+ * Tailscale/NetBird/…).
  *
  * Pure Kotlin over the JVM-testable catalog, so the whole behaviour is
  * unit-tested without any Android dependency.
@@ -39,7 +40,10 @@ object GuideCompare {
         val leftEditorsChoice: Boolean,
         val rightEditorsChoice: Boolean,
         val leftPrice: WireGuideFilter.Price?,
-        val rightPrice: WireGuideFilter.Price?
+        val rightPrice: WireGuideFilter.Price?,
+        /** v1.8.14 — curated setup-effort class of each side. */
+        val leftDifficulty: GuideDifficulty,
+        val rightDifficulty: GuideDifficulty
     ) {
         /** User's star ratings (0 when unrated) at comparison time. */
         fun ratingOf(entry: GuideEntry, store: GuideStore): Int =
@@ -65,7 +69,9 @@ object GuideCompare {
         leftEditorsChoice = WireGuideCatalog.isEditorsChoice(a.id),
         rightEditorsChoice = WireGuideCatalog.isEditorsChoice(b.id),
         leftPrice = WireGuideFilter.priceOf(a),
-        rightPrice = WireGuideFilter.priceOf(b)
+        rightPrice = WireGuideFilter.priceOf(b),
+        leftDifficulty = a.difficulty,
+        rightDifficulty = b.difficulty
     )
 
     /**

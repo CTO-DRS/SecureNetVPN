@@ -35,9 +35,10 @@ import com.securenet.vpn.guide.WireGuideFilter
  *  2. table — the comparison itself: both source names as tappable
  *     headers (open the full detail page), then one row per comparable
  *     fact — section, price (the quick filter's free/paid language),
- *     official host, Editor's choice badge, the user's own rating and
- *     bookmark — and a shared-keywords footer explaining in the smart
- *     layer's vocabulary why the two feel similar (or that they don't).
+ *     setup difficulty (v1.8.14), official host, Editor's choice badge,
+ *     the user's own rating and bookmark — and a shared-keywords footer
+ *     explaining in the smart layer's vocabulary why the two feel
+ *     similar (or that they don't).
  *
  * Every value comes from [GuideCompare.compare] over catalog data and the
  * user's own signals — nothing invented. Rows build programmatically so
@@ -228,6 +229,11 @@ class GuideCompareDialogFragment : BottomSheetDialogFragment() {
             R.string.guide_compare_row_price,
             priceText(cmp.leftPrice),
             priceText(cmp.rightPrice)
+        )
+        labelRow(
+            R.string.guide_compare_row_difficulty,
+            getString(WireGuideCatalog.difficultyLabelRes(cmp.leftDifficulty)),
+            getString(WireGuideCatalog.difficultyLabelRes(cmp.rightDifficulty))
         )
         labelRow(
             R.string.guide_compare_row_host,

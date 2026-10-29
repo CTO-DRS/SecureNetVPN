@@ -434,7 +434,12 @@
     <string name="guide_compare_row_editors">Editor\'s choice</string>
     <string name="guide_compare_row_rating">Your rating</string>
     <string name="guide_compare_row_bookmark">Bookmarked</string>
+    <string name="guide_compare_row_difficulty">Setup difficulty</string>
     <string name="guide_compare_change">Choose another source</string>
+    <string name="guide_difficulty_beginner">Beginner</string>
+    <string name="guide_difficulty_intermediate">Intermediate</string>
+    <string name="guide_difficulty_advanced">Advanced</string>
+    <string name="guide_difficulty_cd">Setup difficulty badge</string>
     <string name="guide_tips_title">Tips &amp; troubleshooting</string>
     <string name="guide_screen_title">WireGuard config sources</string>
     <string name="guide_back_cd">Back</string>

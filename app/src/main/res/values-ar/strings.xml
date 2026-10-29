@@ -434,7 +434,12 @@
     <string name="guide_compare_row_editors">اختيار المحرر</string>
     <string name="guide_compare_row_rating">تقييمك</string>
     <string name="guide_compare_row_bookmark">مفضّل</string>
+    <string name="guide_compare_row_difficulty">صعوبة الإعداد</string>
     <string name="guide_compare_change">اختيار مصدر آخر</string>
+    <string name="guide_difficulty_beginner">مبتدئ</string>
+    <string name="guide_difficulty_intermediate">متوسط</string>
+    <string name="guide_difficulty_advanced">متقدم</string>
+    <string name="guide_difficulty_cd">شارة صعوبة الإعداد</string>
     <string name="guide_tips_title">نصائح وحلول المشاكل</string>
     <string name="guide_screen_title">مصادر تكوينات WireGuard</string>
     <string name="guide_back_cd">رجوع</string>
