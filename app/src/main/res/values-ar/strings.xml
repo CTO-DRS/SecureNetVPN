@@ -746,4 +746,30 @@
     <string name="privacy_updated">آخر تحديث: v%1$s</string>
     <string name="privacy_contact_hint">لديك سؤال؟ تواصل مع المطوّر عبر الإعدادات ← الدعم والتواصل.</string>
     <string name="privacy_body">يعمل SecureNet VPN بالكامل على جهازك:\n\n• لا نجمع ولا نخزّن ولا نرسل أي بيانات شخصية — التطبيق بلا تحليلات ولا إعلانات ولا أي شكل من أشكال التتبّع.\n\n• إعدادات WireGuard التي تلصقها أو تستوردها في فاحص الإعدادات تُفحص محلياً في الذاكرة ولا تغادر هاتفك أبداً.\n\n• تفضيلاتك والمفضلة والتقييمات وسجل الاتصال والإصدارات التي قرأتها تُحفظ في التخزين المحلي لجهازك فقط، ولا تُرفع إلى أي مكان إلا إذا صدّرتها بنفسك.\n\n• فتح أي مصدر من الدليل يشغّل موقعه الرسمي في متصفحك — التطبيق لا يرسل شيئاً إلى تلك المواقع.\n\n• الأذونات تخدم ميزتها فقط: الكاميرا لمسح رموز QR، وخدمة VPN للنفق، والوصول إلى الملفات فقط عند استيراد أو تصدير إعدادات.</string>
+
+    <!-- v1.8.19: مساعد الإعداد + مشاركة تقرير الفحص -->
+    <string name="recommend_open">🧭 اختر لي</string>
+    <string name="recommend_title">🧭 مساعد الإعداد</string>
+    <string name="recommend_cd">توصيات مصادر مرتبة</string>
+    <string name="recommend_caption">ثلاث إجابات سريعة — ويلخّص لك الدليل المصادر الأنسب لك.</string>
+    <string name="recommend_level_q">ما مستواك التقني؟</string>
+    <string name="recommend_budget_q">ما ميزانيتك؟</string>
+    <string name="recommend_section_q">أي نوع إعداد يهمّك؟</string>
+    <string name="recommend_budget_free">مجاني فقط</string>
+    <string name="recommend_budget_any">مجاني أو مدفوع</string>
+    <string name="recommend_section_all">كل الأقسام</string>
+    <string name="recommend_run">اقترح لي مصادر</string>
+    <string name="recommend_pick_level">اختر مستواك أولاً</string>
+    <string name="recommend_result_caption">قائمتك المختصرة — انقر مصدراً لفتح دليله الكامل.</string>
+    <string name="recommend_none">لا مطابق لهذا المزيج — جرّب «كل الأقسام» أو اسمح بالمصادر المدفوعة.</string>
+    <string name="recommend_again">أجب من جديد</string>
+    <string name="recommend_reason_level">مناسب لمستواك تماماً</string>
+    <string name="recommend_reason_easier">أسهل من مستواك</string>
+    <string name="recommend_reason_free">مجاني</string>
+    <string name="recommend_reason_editors">خيار المحرّر</string>
+    <string name="wgcheck_share">مشاركة التقرير</string>
+    <string name="wgcheck_share_chooser">مشاركة تقرير الفحص عبر</string>
+    <string name="whatsnew_1819_1">مساعد إعداد 🧭: ثلاث إجابات سريعة (المستوى والميزانية والقسم) تحوّل دليل 69 مصدراً إلى قائمة مختصرة من خمسة مصادر مرتبة بأسباب ظاهرة — «مناسب لمستواك · مجاني · خيار المحرّر».</string>
+    <string name="whatsnew_1819_2">حصل الفاحص على زر «مشاركة التقرير» — أرسل التشخيص لصديق أو لمدير أنظمة أكثر خبرة؛ لا يُرفق ملف الإعدادات نفسه أبداً.</string>
+    <string name="whatsnew_1819_3">صف أدوات الدليل أصبح ثلاثي الأزرار: الفاحص و«ما الجديد» ومساعد الإعداد الجديد.</string>
 </resources>

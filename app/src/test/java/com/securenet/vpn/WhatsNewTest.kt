@@ -24,7 +24,7 @@ class WhatsNewTest {
     @Test
     fun `feed is not empty and starts at the current version`() {
         assertTrue(WhatsNew.releases.isNotEmpty())
-        assertEquals("1.8.18", WhatsNew.CURRENT_VERSION)
+        assertEquals("1.8.19", WhatsNew.CURRENT_VERSION)
         assertEquals(WhatsNew.CURRENT_VERSION, WhatsNew.releases.first().version)
     }
 
@@ -44,10 +44,10 @@ class WhatsNewTest {
 
     @Test
     fun `shipped releases are anchored by literal version`() {
-        // v1.8.12 … v1.8.18 — the releases with user-facing changelog lines.
+        // v1.8.12 … v1.8.19 — the releases with user-facing changelog lines.
         assertEquals(
             listOf(
-                "1.8.18", "1.8.17", "1.8.16",
+                "1.8.19", "1.8.18", "1.8.17", "1.8.16",
                 "1.8.15", "1.8.14", "1.8.13", "1.8.12"
             ),
             WhatsNew.releases.map { it.version }
@@ -67,7 +67,7 @@ class WhatsNewTest {
             WhatsNew.CURRENT_VERSION,
             listOf("first headline", "second headline")
         )
-        assertTrue(text.startsWith("SecureNet VPN v1.8.18 — What's new:"))
+        assertTrue(text.startsWith("SecureNet VPN v1.8.19 — What's new:"))
         assertTrue(text.contains("• first headline"))
         assertTrue(text.contains("• second headline"))
         assertTrue(text.contains(WhatsNew.RELEASES_URL))

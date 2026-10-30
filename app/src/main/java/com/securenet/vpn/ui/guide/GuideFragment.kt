@@ -266,6 +266,22 @@ class GuideFragment : Fragment() {
                     .show(parentFragmentManager, "whats_new")
             }
         })
+        // v1.8.19 — 🧭 the setup assistant joins the tools row: three plain
+        // answers in, a ranked five-source shortlist out (pure recommender).
+        row.addView(MaterialButton(
+            requireContext(), null,
+            com.google.android.material.R.attr.materialButtonOutlinedStyle
+        ).apply {
+            text = getString(R.string.recommend_open)
+            setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 12.5f)
+            layoutParams = LinearLayout.LayoutParams(
+                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f
+            ).apply { marginStart = dp(3); marginEnd = dp(3) }
+            setOnClickListener {
+                RecommendDialogFragment()
+                    .show(parentFragmentManager, "guide_recommender")
+            }
+        })
         return row
     }
 

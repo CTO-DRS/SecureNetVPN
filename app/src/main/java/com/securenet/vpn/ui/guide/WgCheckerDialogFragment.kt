@@ -1,5 +1,6 @@
 package com.securenet.vpn.ui.guide
 
+import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.Gravity
@@ -15,6 +16,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.button.MaterialButton
 import com.securenet.vpn.R
+import com.securenet.vpn.guide.WhatsNew
+import com.securenet.vpn.util.WireCheckShare
 import com.securenet.vpn.util.WireGuardConfigChecker
 
 /**
@@ -133,11 +136,12 @@ class WgCheckerDialogFragment : BottomSheetDialogFragment() {
             report.warningCount > 0 -> WARN_AMBER
             else -> OK_GREEN
         }
+        val resultText = if (report.hasErrors || report.warningCount > 0)
+            getString(R.string.wgcheck_result, report.errorCount, report.warningCount)
+        else
+            getString(R.string.wgcheck_ok)
         results.addView(TextView(requireContext()).apply {
-            text = if (report.hasErrors || report.warningCount > 0)
-                getString(R.string.wgcheck_result, report.errorCount, report.warningCount)
-            else
-                getString(R.string.wgcheck_ok)
+            text = resultText
             setTextColor(tone)
             textSize = 13.5f
             setTypeface(typeface, Typeface.BOLD)
@@ -146,23 +150,42 @@ class WgCheckerDialogFragment : BottomSheetDialogFragment() {
                 ViewGroup.LayoutParams.WRAP_CONTENT
             ).apply { topMargin = dp(14) }
         })
+        val shapeText = getString(R.string.wgcheck_shape, report.interfaceCount, report.peerCount)
         results.addView(TextView(requireContext()).apply {
-            text = getString(R.string.wgcheck_shape, report.interfaceCount, report.peerCount)
+            text = shapeText
             setTextColor(resolveColor(android.R.attr.textColorSecondary))
             textSize = 11.5f
             setPadding(0, dp(2), 0, dp(4))
         })
 
-        report.issues.forEach { results.addView(issueRow(it)) }
+        val issueLines = mutableListOf<String>()
+        report.issues.forEach {
+            results.addView(issueRow(it))
+            issueLines += sevIcon(it.severity).first + " " +
+                getString(R.string.wgcheck_line, it.line) + " — " + messageFor(it)
+        }
+
+        // v1.8.19 — 📤 share the report as plain text (the exact lines the
+        // sheet already showed): send the diagnosis to a friend or a more
+        // experienced admin without re-typing anything; the config itself
+        // is never attached and nothing was uploaded anywhere.
+        results.addView(button(R.string.wgcheck_share, filled = false) {
+            val text = WireCheckShare.shareText(
+                WhatsNew.CURRENT_VERSION, resultText, shapeText, issueLines
+            )
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, text)
+            }
+            startActivity(
+                Intent.createChooser(intent, getString(R.string.wgcheck_share_chooser))
+            )
+        })
     }
 
     /** One row: severity icon + "line N — message". */
     private fun issueRow(issue: WireGuardConfigChecker.Issue): View {
-        val (icon, tint) = when (issue.severity) {
-            WireGuardConfigChecker.Severity.ERROR -> "❌" to ERROR_RED
-            WireGuardConfigChecker.Severity.WARNING -> "⚠️" to WARN_AMBER
-            WireGuardConfigChecker.Severity.INFO -> "ℹ️" to INFO_BLUE
-        }
+        val (icon, tint) = sevIcon(issue.severity)
         return LinearLayout(requireContext()).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.TOP
@@ -184,6 +207,15 @@ class WgCheckerDialogFragment : BottomSheetDialogFragment() {
                 )
             })
         }
+    }
+
+    /** Severity → its display icon + tint, shared by rows and the share text. */
+    private fun sevIcon(
+        severity: WireGuardConfigChecker.Severity
+    ): Pair<String, Int> = when (severity) {
+        WireGuardConfigChecker.Severity.ERROR -> "❌" to ERROR_RED
+        WireGuardConfigChecker.Severity.WARNING -> "⚠️" to WARN_AMBER
+        WireGuardConfigChecker.Severity.INFO -> "ℹ️" to INFO_BLUE
     }
 
     /** Maps a stable checker code to its localized message. */
