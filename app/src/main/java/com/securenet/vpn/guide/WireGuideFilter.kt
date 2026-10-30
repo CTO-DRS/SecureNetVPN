@@ -28,6 +28,11 @@ package com.securenet.vpn.guide
  * Arabic list reaches every beginner source across all sections the same
  * way price words already do.
  *
+ * v1.8.17 — the difficulty becomes a one-tap filter beside the price
+ * row: [filterByDifficulty] keeps a single class (the chips carry the
+ * same labels as the cards' difficulty badges, so the button and the
+ * badge always agree).
+ *
  * Pure Kotlin (no Android imports) so the whole behaviour is unit-testable.
  */
 object WireGuideFilter {
@@ -85,6 +90,20 @@ object WireGuideFilter {
 
     /** v1.8.13 — price class used by the quick filter buttons. */
     enum class Price { FREE, PAID }
+
+    /**
+     * v1.8.17 — quick difficulty filter, the pure counterpart of the
+     * difficulty chips row: null keeps everything (the All state),
+     * otherwise only sources whose [GuideEntry.difficulty] matches
+     * survive. Composes with the section chips, the price row and the
+     * search query; order is preserved for stable rendering.
+     */
+    fun filterByDifficulty(
+        entries: List<GuideEntry>,
+        difficulty: GuideDifficulty?
+    ): List<GuideEntry> =
+        if (difficulty == null) entries
+        else entries.filter { it.difficulty == difficulty }
 
     /** Lowercased haystack for one entry: name + URL + keywords + category terms (+ personal note when supplied). */
     private fun haystack(entry: GuideEntry, note: String? = null): String = buildString {

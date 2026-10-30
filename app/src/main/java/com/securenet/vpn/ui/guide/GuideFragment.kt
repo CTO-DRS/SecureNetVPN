@@ -20,6 +20,7 @@ import com.securenet.vpn.MainActivity
 import com.securenet.vpn.R
 import com.securenet.vpn.databinding.FragmentGuideBinding
 import com.securenet.vpn.guide.GuideCategory
+import com.securenet.vpn.guide.GuideDifficulty
 import com.securenet.vpn.guide.GuideSeenCatalog
 import com.securenet.vpn.guide.GuideSeenCatalogProvider
 import com.securenet.vpn.guide.GuideSmart
@@ -27,6 +28,7 @@ import com.securenet.vpn.guide.GuideStore
 import com.securenet.vpn.guide.GuideStoreProvider
 import com.securenet.vpn.guide.WireGuideCatalog
 import com.securenet.vpn.guide.WireGuideFilter
+import com.securenet.vpn.guide.WhatsNew
 
 /**
  * v1.8 — full-screen "Where to get WireGuard configs" guide, reachable from
@@ -64,6 +66,12 @@ import com.securenet.vpn.guide.WireGuideFilter
  * one-tap entry to the offline WireGuard config checker
  * ([WgCheckerDialogFragment]).
  *
+ * v1.8.17 — the filter bar gains a third independent row of setup-
+ * difficulty chips ([WireGuideFilter.filterByDifficulty]), and the tools
+ * row pairs the checker with the 📊 What's-new sheet
+ * ([WhatsNewDialogFragment]) — which also auto-opens once per version so
+ * every update introduces itself.
+ *
  * Hosting contract: [MainActivity.openConfigGuide] hides the bottom nav and
  * pushes this fragment on the back stack; this fragment restores the nav in
  * onDestroyView so any pop path (button or system back) re-shows it.
@@ -77,6 +85,9 @@ class GuideFragment : Fragment() {
 
     /** v1.8.13 — quick price filter above the list (null = All). */
     private var selectedPrice: WireGuideFilter.Price? = null
+
+    /** v1.8.17 — quick setup-difficulty filter (null = All). */
+    private var selectedDifficulty: GuideDifficulty? = null
 
     /** v1.8.16 — ids the fresh-sources alert currently highlights. */
     private var newAlertIds: Set<String> = emptySet()
@@ -123,10 +134,15 @@ class GuideFragment : Fragment() {
         _builder = builder
         builder.highlightNewIds = newAlertIds
         binding.flowHost.addView(buildFlowStrip(builder))
-        binding.flowHost.addView(buildCheckerRow())
+        binding.flowHost.addView(buildToolsRow())
         binding.flowHost.addView(buildNewSourcesBanner(builder, seenCatalog))
 
         render(builder)
+
+        // v1.8.17 — the 📊 What's-new sheet greets every fresh install and
+        // every update exactly once (a stored marker remembers the last
+        // version acknowledged), and stays reachable from the tools row.
+        maybeShowWhatsNew()
 
         binding.etGuideSearch.doAfterTextChanged {
             render(builder)
@@ -148,6 +164,17 @@ class GuideFragment : Fragment() {
             selectedPrice = when (checkedId) {
                 R.id.chipPriceFree -> WireGuideFilter.Price.FREE
                 R.id.chipPricePaid -> WireGuideFilter.Price.PAID
+                else -> null   // the All button
+            }
+            render(builder)
+        }
+        // v1.8.17 — quick setup-difficulty filter: All / Beginner /
+        // Intermediate / Advanced (same labels as the cards' badges).
+        binding.difficultyGroup.setOnCheckedChangeListener { _, checkedId ->
+            selectedDifficulty = when (checkedId) {
+                R.id.chipDifficultyBeginner -> GuideDifficulty.BEGINNER
+                R.id.chipDifficultyIntermediate -> GuideDifficulty.INTERMEDIATE
+                R.id.chipDifficultyAdvanced -> GuideDifficulty.ADVANCED
                 else -> null   // the All button
             }
             render(builder)
@@ -202,23 +229,62 @@ class GuideFragment : Fragment() {
         return strip
     }
 
-    /** v1.8.16 — one-tap entry to the offline WireGuard config checker. */
-    private fun buildCheckerRow(): View =
-        MaterialButton(
-            requireContext(), null,
-            com.google.android.material.R.attr.materialButtonOutlinedStyle
-        ).apply {
-            text = getString(R.string.wgcheck_open)
-            setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 13f)
+    /** v1.8.16+17 — guide tools: the offline config checker and the 📊 What's-new sheet. */
+    private fun buildToolsRow(): View {
+        val row = LinearLayout(requireContext()).apply {
+            orientation = LinearLayout.HORIZONTAL
             layoutParams = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             ).apply { topMargin = dp(10) }
+        }
+        row.addView(MaterialButton(
+            requireContext(), null,
+            com.google.android.material.R.attr.materialButtonOutlinedStyle
+        ).apply {
+            text = getString(R.string.wgcheck_open)
+            setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 12.5f)
+            layoutParams = LinearLayout.LayoutParams(
+                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f
+            ).apply { marginStart = dp(3); marginEnd = dp(3) }
             setOnClickListener {
                 WgCheckerDialogFragment()
                     .show(parentFragmentManager, "wg_config_checker")
             }
+        })
+        row.addView(MaterialButton(
+            requireContext(), null,
+            com.google.android.material.R.attr.materialButtonOutlinedStyle
+        ).apply {
+            text = getString(R.string.whatsnew_open)
+            setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 12.5f)
+            layoutParams = LinearLayout.LayoutParams(
+                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f
+            ).apply { marginStart = dp(3); marginEnd = dp(3) }
+            setOnClickListener {
+                WhatsNewDialogFragment()
+                    .show(parentFragmentManager, "whats_new")
+            }
+        })
+        return row
+    }
+
+    /**
+     * v1.8.17 — auto-open the 📊 What's-new sheet once per version: the
+     * stored marker only ever records versions of this very app, and the
+     * dialog shows the shipped releases (newest first) — so a fresh
+     * install gets the tour and an update announces exactly what changed.
+     */
+    private fun maybeShowWhatsNew() {
+        val prefs = requireContext()
+            .getSharedPreferences("guide_whats_new", Context.MODE_PRIVATE)
+        if (prefs.getString("last_seen_version", null) != WhatsNew.CURRENT_VERSION) {
+            prefs.edit()
+                .putString("last_seen_version", WhatsNew.CURRENT_VERSION)
+                .apply()
+            WhatsNewDialogFragment().show(parentFragmentManager, "whats_new")
         }
+    }
 
     /**
      * v1.8.16 — the dismissible "new sources added" banner: names the
@@ -296,8 +362,10 @@ class GuideFragment : Fragment() {
             WireGuideCatalog.entries, query, selectedCategory,
             notes, if (favOnly) store.favoriteIds() else null
         ).let { WireGuideFilter.filterByPrice(it, selectedPrice) }
+            .let { WireGuideFilter.filterByDifficulty(it, selectedDifficulty) }
         val filtering = query.isNotBlank() || selectedCategory != null ||
-            favOnly || topRated || selectedPrice != null
+            favOnly || topRated || selectedPrice != null ||
+            selectedDifficulty != null
         if (filtering) {
             binding.tvGuideCount.text =
                 getString(R.string.guide_results_count, entries.size)

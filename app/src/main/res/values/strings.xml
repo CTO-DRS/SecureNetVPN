@@ -702,4 +702,25 @@
     <string name="wgcheck_msg_unparsed_line">Line is not key = value and not a comment.</string>
     <string name="wgcheck_msg_stray_line">Key/value outside any [Interface]/[Peer] section.</string>
     <string name="wgcheck_msg_full_tunnel">AllowedIPs = %1$s — full tunnel: ALL traffic goes through the VPN.</string>
+
+    <!-- v1.8.17 — 📊 in-app "What's new" release feed -->
+    <string name="whatsnew_title">📊 What\'s new</string>
+    <string name="whatsnew_cd">In-app release feed</string>
+    <string name="whatsnew_open">📊 What\'s new</string>
+    <string name="whatsnew_version_current">v%1$s — this release</string>
+    <string name="whatsnew_version">v%1$s</string>
+    <string name="whatsnew_1817_1">A setup-difficulty filter row above the list — tap Beginner / Intermediate / Advanced to keep one class; it composes with search, sections and the free/paid chips.</string>
+    <string name="whatsnew_1817_2">A 📊 «What\'s new» page inside the app — every release\'s headline features, newest first; it opens itself after each update and lives beside the config checker.</string>
+    <string name="whatsnew_1817_3">The WireGuard config checker now speaks 6 more languages — French, Spanish, German, Turkish, Russian and Urdu.</string>
+    <string name="whatsnew_1816_1">A fresh-sources alert: the guide announces newly added sources with a dismissible banner and 🆕 NEW badges.</string>
+    <string name="whatsnew_1816_2">An offline WireGuard config checker — paste or import a .conf and get a line-anchored diagnosis, entirely on-device.</string>
+    <string name="whatsnew_1815_1">A Share button on every catalog card — send a source to a friend straight from the list.</string>
+    <string name="whatsnew_1815_2">An interactive setup wizard: per-source step checklists with progress that persists.</string>
+    <string name="whatsnew_1814_1">A setup-difficulty badge on every source — Beginner / Intermediate / Advanced at a glance.</string>
+    <string name="whatsnew_1814_2">Difficulty words (easy / سهل, advanced / متقدم, …) are searchable.</string>
+    <string name="whatsnew_1813_1">A dedicated Mesh networks section for the coordination tools.</string>
+    <string name="whatsnew_1813_2">A quick free/paid filter above the list.</string>
+    <string name="whatsnew_1813_3">Side-by-side comparison of any two sources.</string>
+    <string name="whatsnew_1812_1">The catalog grew to 69 sources with explicit free/paid markers.</string>
+    <string name="guide_difficulty_filter_cd">Filter by setup difficulty</string>
 </resources>

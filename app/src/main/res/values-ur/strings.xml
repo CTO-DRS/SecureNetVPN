@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  SecureNet VPN — Urdu (v1.8.17) — checker UI subset.
+  Only the WireGuard config checker's strings are localized here;
+  every other key falls back to values/strings.xml (EN) through the
+  standard Android resource resolution. Keep the key set in sync
+  with the wgcheck_* block of values/strings.xml.
+-->
+<resources>
+
+    <string name="wgcheck_open">🛡️ WireGuard کنفیگریشن چیکر</string>
+    <string name="wgcheck_title">WireGuard کنفیگریشن چیکر</string>
+    <string name="wgcheck_privacy">جانچ پوری طرح آپ کے آلات پر ہوتی ہے — کچھ بھی کہیں اپ لوڈ نہیں ہوتا۔</string>
+    <string name="wgcheck_hint">یہاں wg0.conf پیسٹ کریں، یا فائل درآمد کریں…</string>
+    <string name="wgcheck_import">فائل درآمد کریں</string>
+    <string name="wgcheck_run">کنفیگریشن جانچیں</string>
+    <string name="wgcheck_empty_input">پہلے کنفیگریشن پیسٹ کریں یا فائل درآمد کریں۔</string>
+    <string name="wgcheck_import_failed">وہ فائل پڑھی نہیں جا سکی۔</string>
+    <string name="wgcheck_ok">✓ کنفیگریشن درست معلوم ہوتی ہے — کوئی خرابی نہیں ملی۔</string>
+    <string name="wgcheck_result">نتیجہ: %1$d خرابیاں · %2$d تنبیہات</string>
+    <string name="wgcheck_shape">پڑھا گیا: %1$d × [Interface] · %2$d × [Peer]</string>
+    <string name="wgcheck_line">سطر %1$d</string>
+    <string name="wgcheck_msg_empty_config">کنفیگریشن خالی ہے۔</string>
+    <string name="wgcheck_msg_missing_interface">کوئی [Interface] سیکشن نہیں ملا۔</string>
+    <string name="wgcheck_msg_multiple_interface">ایک سے زیادہ [Interface] سیکشن۔</string>
+    <string name="wgcheck_msg_missing_private_key">[Interface] میں PrivateKey موجود نہیں۔</string>
+    <string name="wgcheck_msg_missing_address">[Interface] میں Address موجود نہیں — اس کے بغیر wg-quick ٹنل نہیں بنا سکتا۔</string>
+    <string name="wgcheck_msg_missing_public_key">[Peer] میں PublicKey موجود نہیں۔</string>
+    <string name="wgcheck_msg_missing_allowed_ips">[Peer] میں AllowedIPs نہیں — کوئی ٹریفک روٹ نہ ہوتا۔</string>
+    <string name="wgcheck_msg_missing_endpoint">[Peer] میں Endpoint نہیں — کلائنٹ اس سے رابطہ نہیں کر سکتا۔</string>
+    <string name="wgcheck_msg_no_peer">کوئی [Peer] سیکشن نہیں — اکیلا انٹرفیس کوئی ٹنل نہیں رکھتا۔</string>
+    <string name="wgcheck_msg_invalid_key">%1$s درست WireGuard کلید نہیں (44 حروف base64، 32 بائٹ متوقع)۔</string>
+    <string name="wgcheck_msg_invalid_cidr">غلط ایڈریس یا نیٹ ورک: %1$s</string>
+    <string name="wgcheck_msg_invalid_dns">غیر تسلیم شدہ DNS اندراج: %1$s</string>
+    <string name="wgcheck_msg_invalid_mtu">غلط MTU: %1$s (مجاز 576–65535)۔</string>
+    <string name="wgcheck_msg_low_mtu">MTU %1$s، 1280 سے کم — کچھ نیٹ ورکس پر کنکشنز ٹوٹ سکتے ہیں۔</string>
+    <string name="wgcheck_msg_invalid_listen_port">غلط ListenPort: %1$s۔</string>
+    <string name="wgcheck_msg_invalid_keepalive">غلط PersistentKeepalive: %1$s (سیکنڈ)۔</string>
+    <string name="wgcheck_msg_invalid_endpoint">غلط Endpoint: %1$s (متوقع صورت host:port یا [ipv6]:port)۔</string>
+    <string name="wgcheck_msg_unknown_section">نامعلوم سیکشن: %1$s۔</string>
+    <string name="wgcheck_msg_unknown_key">نامعلوم کلید: %1$s — املا کی غلطی، یا wg / wg-quick کا حصہ نہیں۔</string>
+    <string name="wgcheck_msg_duplicate_key">دہرائی گئی کلید: %1$s ایک ہی سیکشن میں ایک سے زیادہ بار آتی ہے۔</string>
+    <string name="wgcheck_msg_unparsed_line">سطر نہ «کلید = قدر» ہے نہ تبصرہ۔</string>
+    <string name="wgcheck_msg_stray_line">کلید/قدر کسی [Interface]/[Peer] سیکشن کے باہر ہے۔</string>
+    <string name="wgcheck_msg_full_tunnel">AllowedIPs = %1$s — مکمل ٹنل: سارا ٹریفک VPN سے گزرتا ہے۔</string>
+
+</resources>

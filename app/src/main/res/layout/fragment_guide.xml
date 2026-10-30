@@ -199,6 +199,50 @@
                 android:text="@string/guide_price_paid" />
         </com.google.android.material.chip.ChipGroup>
 
+        <!-- v1.8.17: setup-difficulty filter — All / Beginner / Intermediate /
+             Advanced. A third independent row that composes with the section
+             chips and the price row; the chips reuse the exact strings of the
+             difficulty badge every card has carried since v1.8.14, so the
+             filter and the badges always speak the same language. -->
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/difficultyGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            app:chipSpacingHorizontal="6dp"
+            app:selectionRequired="true"
+            app:singleSelection="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipDifficultyAll"
+                style="@style/Widget.Material3.Chip.Assist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:text="@string/guide_filter_all" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipDifficultyBeginner"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/guide_difficulty_beginner" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipDifficultyIntermediate"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/guide_difficulty_intermediate" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipDifficultyAdvanced"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/guide_difficulty_advanced" />
+        </com.google.android.material.chip.ChipGroup>
+
         <TextView
             android:id="@+id/tvGuideEmpty"
             android:layout_width="match_parent"

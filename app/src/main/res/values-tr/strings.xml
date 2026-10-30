@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  SecureNet VPN — Turkish (v1.8.17) — checker UI subset.
+  Only the WireGuard config checker's strings are localized here;
+  every other key falls back to values/strings.xml (EN) through the
+  standard Android resource resolution. Keep the key set in sync
+  with the wgcheck_* block of values/strings.xml.
+-->
+<resources>
+
+    <string name="wgcheck_open">🛡️ WireGuard yapılandırma denetleyicisi</string>
+    <string name="wgcheck_title">WireGuard yapılandırma denetleyicisi</string>
+    <string name="wgcheck_privacy">Denetim tamamen cihazınızda çalışır — hiçbir şey yüklenmez.</string>
+    <string name="wgcheck_hint">Buraya bir wg0.conf yapıştırın ya da dosya içe aktarın…</string>
+    <string name="wgcheck_import">Dosyayı içe aktar</string>
+    <string name="wgcheck_run">Yapılandırmayı denetle</string>
+    <string name="wgcheck_empty_input">Önce bir yapılandırma yapıştırın veya dosya içe aktarın.</string>
+    <string name="wgcheck_import_failed">Bu dosya okunamadı.</string>
+    <string name="wgcheck_ok">✓ Yapılandırma geçerli görünüyor — hata bulunamadı.</string>
+    <string name="wgcheck_result">Sonuç: %1$d hata · %2$d uyarı</string>
+    <string name="wgcheck_shape">Okunan: %1$d × [Interface] · %2$d × [Peer]</string>
+    <string name="wgcheck_line">Satır %1$d</string>
+    <string name="wgcheck_msg_empty_config">Yapılandırma boş.</string>
+    <string name="wgcheck_msg_missing_interface">[Interface] bölümü bulunamadı.</string>
+    <string name="wgcheck_msg_multiple_interface">Birden fazla [Interface] bölümü var.</string>
+    <string name="wgcheck_msg_missing_private_key">[Interface] bölümünde PrivateKey eksik.</string>
+    <string name="wgcheck_msg_missing_address">[Interface] bölümünde Address eksik — wg-quick bunun olmadan tünel kuramaz.</string>
+    <string name="wgcheck_msg_missing_public_key">[Peer] bölümünde PublicKey eksik.</string>
+    <string name="wgcheck_msg_missing_allowed_ips">[Peer] bölümünde AllowedIPs yok — hiçbir trafiği yönlendirmezdi.</string>
+    <string name="wgcheck_msg_missing_endpoint">[Peer] bölümünde Endpoint yok — bir istemci ona bağlanamaz.</string>
+    <string name="wgcheck_msg_no_peer">[Peer] bölümü yok — tek başına arayüz tünel taşımaz.</string>
+    <string name="wgcheck_msg_invalid_key">%1$s geçerli bir WireGuard anahtarı değil (44 karakter base64, 32 bayt bekleniyor).</string>
+    <string name="wgcheck_msg_invalid_cidr">Geçersiz adres veya ağ: %1$s</string>
+    <string name="wgcheck_msg_invalid_dns">Tanınmayan DNS girişi: %1$s</string>
+    <string name="wgcheck_msg_invalid_mtu">Geçersiz MTU: %1$s (izin verilen 576–65535).</string>
+    <string name="wgcheck_msg_low_mtu">MTU %1$s, 1280\'nin altında — bazı ağlarda bağlantıları bozabilir.</string>
+    <string name="wgcheck_msg_invalid_listen_port">Geçersiz ListenPort: %1$s.</string>
+    <string name="wgcheck_msg_invalid_keepalive">Geçersiz PersistentKeepalive: %1$s (saniye).</string>
+    <string name="wgcheck_msg_invalid_endpoint">Geçersiz Endpoint: %1$s (beklenen biçim sunucu:port veya [ipv6]:port).</string>
+    <string name="wgcheck_msg_unknown_section">Bilinmeyen bölüm: %1$s.</string>
+    <string name="wgcheck_msg_unknown_key">Bilinmeyen anahtar: %1$s — bir yazım hatası ya da wg / wg-quick\'in parçası değil.</string>
+    <string name="wgcheck_msg_duplicate_key">Yinelenen anahtar: %1$s aynı bölümde birden fazla kez geçiyor.</string>
+    <string name="wgcheck_msg_unparsed_line">Satır ne «anahtar = değer» ne de bir yorum.</string>
+    <string name="wgcheck_msg_stray_line">Anahtar/değer herhangi bir [Interface]/[Peer] bölümünün dışında.</string>
+    <string name="wgcheck_msg_full_tunnel">AllowedIPs = %1$s — tam tünel: TÜM trafik VPN\'den geçer.</string>
+
+</resources>

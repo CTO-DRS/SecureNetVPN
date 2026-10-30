@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  SecureNet VPN — Spanish (v1.8.17) — checker UI subset.
+  Only the WireGuard config checker's strings are localized here;
+  every other key falls back to values/strings.xml (EN) through the
+  standard Android resource resolution. Keep the key set in sync
+  with the wgcheck_* block of values/strings.xml.
+-->
+<resources>
+
+    <string name="wgcheck_open">🛡️ Verificador de config WireGuard</string>
+    <string name="wgcheck_title">Verificador de config WireGuard</string>
+    <string name="wgcheck_privacy">La comprobación se ejecuta por completo en tu dispositivo: no se sube nada a ningún sitio.</string>
+    <string name="wgcheck_hint">Pega aquí un wg0.conf o importa un archivo…</string>
+    <string name="wgcheck_import">Importar archivo</string>
+    <string name="wgcheck_run">Comprobar config</string>
+    <string name="wgcheck_empty_input">Pega primero una config o importa un archivo.</string>
+    <string name="wgcheck_import_failed">No se pudo leer ese archivo.</string>
+    <string name="wgcheck_ok">✓ La config parece válida: no se encontraron errores.</string>
+    <string name="wgcheck_result">Resultado: %1$d error(es) · %2$d aviso(s)</string>
+    <string name="wgcheck_shape">Analizado: %1$d × [Interface] · %2$d × [Peer]</string>
+    <string name="wgcheck_line">Línea %1$d</string>
+    <string name="wgcheck_msg_empty_config">La configuración está vacía.</string>
+    <string name="wgcheck_msg_missing_interface">No se encontró ninguna sección [Interface].</string>
+    <string name="wgcheck_msg_multiple_interface">Hay más de una sección [Interface].</string>
+    <string name="wgcheck_msg_missing_private_key">A [Interface] le falta PrivateKey.</string>
+    <string name="wgcheck_msg_missing_address">A [Interface] le falta Address: wg-quick no puede construir el túnel sin ella.</string>
+    <string name="wgcheck_msg_missing_public_key">A [Peer] le falta PublicKey.</string>
+    <string name="wgcheck_msg_missing_allowed_ips">[Peer] no tiene AllowedIPs: no enrutaría ningún tráfico.</string>
+    <string name="wgcheck_msg_missing_endpoint">[Peer] no tiene Endpoint: un cliente no puede conectarse a él.</string>
+    <string name="wgcheck_msg_no_peer">No hay sección [Peer]: una interfaz sola no lleva ningún túnel.</string>
+    <string name="wgcheck_msg_invalid_key">%1$s no es una clave WireGuard válida (se esperaban 44 caracteres base64, 32 bytes).</string>
+    <string name="wgcheck_msg_invalid_cidr">Dirección o red no válida: %1$s</string>
+    <string name="wgcheck_msg_invalid_dns">Entrada DNS no reconocida: %1$s</string>
+    <string name="wgcheck_msg_invalid_mtu">MTU no válido: %1$s (permitido 576–65535).</string>
+    <string name="wgcheck_msg_low_mtu">MTU %1$s por debajo de 1280: puede romper conexiones en algunas redes.</string>
+    <string name="wgcheck_msg_invalid_listen_port">ListenPort no válido: %1$s.</string>
+    <string name="wgcheck_msg_invalid_keepalive">PersistentKeepalive no válido: %1$s (segundos).</string>
+    <string name="wgcheck_msg_invalid_endpoint">Endpoint no válido: %1$s (se espera host:puerto o [ipv6]:puerto).</string>
+    <string name="wgcheck_msg_unknown_section">Sección desconocida: %1$s.</string>
+    <string name="wgcheck_msg_unknown_key">Clave desconocida: %1$s — una errata, o no forma parte de wg / wg-quick.</string>
+    <string name="wgcheck_msg_duplicate_key">Clave duplicada: %1$s aparece más de una vez en la misma sección.</string>
+    <string name="wgcheck_msg_unparsed_line">La línea no es «clave = valor» ni un comentario.</string>
+    <string name="wgcheck_msg_stray_line">Clave/valor fuera de cualquier sección [Interface]/[Peer].</string>
+    <string name="wgcheck_msg_full_tunnel">AllowedIPs = %1$s — túnel completo: TODO el tráfico pasa por la VPN.</string>
+
+</resources>
