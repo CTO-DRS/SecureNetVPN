@@ -125,6 +125,13 @@ class SettingsFragment : Fragment(), BackupDialogFragment.Host {
             (activity as? MainActivity)?.openConfigGuide()
         }
 
+        // v1.8.20 — the 🧭 setup assistant also opens straight from Settings:
+        // same sheet the guide's tools row launches (no arguments needed).
+        binding.rowRecommender.setOnClickListener {
+            com.securenet.vpn.ui.guide.RecommendDialogFragment()
+                .show(parentFragmentManager, "settings_recommender")
+        }
+
         // v1.8.18: support & developer — contact channels + privacy policy
         binding.rowContactDev.setOnClickListener {
             ContactDialogFragment().show(parentFragmentManager, "contact_dialog")

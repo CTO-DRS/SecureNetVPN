@@ -86,6 +86,15 @@
                 android:textSize="13sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- v1.8.20: recent-search chips (سجل البحث الحديث), built
+             programmatically into this host — hidden entirely while the
+             history is empty. -->
+        <LinearLayout
+            android:id="@+id/historyHost"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
         <!-- v1.8: category filter chips (v1.8.1 adds Favorites) -->
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/chipGroup"

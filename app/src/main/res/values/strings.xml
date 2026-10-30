@@ -772,4 +772,11 @@
     <string name="whatsnew_1819_1">A 🧭 setup assistant: three quick answers (level, budget, section) turn the 69-source guide into a ranked five-source shortlist with visible reasons — “fits your level · free · Editor\'s choice”.</string>
     <string name="whatsnew_1819_2">The config checker gained a “Share report” button — send the diagnosis to a friend or a more experienced admin; the config itself is never attached.</string>
     <string name="whatsnew_1819_3">The guide\'s tools row is now three buttons wide: the checker, “What\'s new”, and the new setup assistant.</string>
+
+    <!-- v1.8.20: setup assistant opens from Settings + recent-search history -->
+    <string name="row_recommender_title">🧭 Setup assistant</string>
+    <string name="row_recommender_sub">Answer three quick questions — get the sources that fit you</string>
+    <string name="guide_history_clear">Clear</string>
+    <string name="whatsnew_1820_1">The 🧭 setup assistant now opens straight from Settings — no guide detour needed; the same three questions in, the same ranked five-source shortlist out.</string>
+    <string name="whatsnew_1820_2">Recent searches in the guide are remembered: every confirmed search becomes a tappable chip under the search field (newest first, up to 8), so “مجاني” or “mesh” is one tap away — plus a Clear chip that wipes the list.</string>
 </resources>
