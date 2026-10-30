@@ -229,7 +229,11 @@ class SecureNetVpnService : VpnService() {
         orchestrateTorMode()
         guardHotspotClients()
 
-        notificationManager.updateState(ConnectionState.CONNECTED, server.name)
+        // v1.8.21 — the first connected paint already carries the live stats
+        // (session clock, data counters) instead of a bare title.
+        notificationManager.updateLive(
+            ConnectionState.CONNECTED, server.name, statsFlow.value
+        )
         startStatsSampler()
         startNetworkWatcher()
     }
@@ -568,6 +572,9 @@ class SecureNetVpnService : VpnService() {
 
     private fun publishStats(stats: ConnectionStats) {
         statsFlow.value = stats
+        // v1.8.21 — feed the richer notification shade presentation: the
+        // manager throttles and ignores everything but CONNECTED.
+        notificationManager.updateLive(stateFlow.value, activeServer?.name, stats)
     }
 
     private fun parseConfig(configJson: String): VpnServer? =
