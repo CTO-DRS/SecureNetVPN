@@ -9,23 +9,29 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
+import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
 import com.securenet.vpn.MainActivity
 import com.securenet.vpn.R
 import com.securenet.vpn.databinding.FragmentGuideBinding
 import com.securenet.vpn.guide.GuideCategory
 import com.securenet.vpn.guide.GuideDifficulty
+import com.securenet.vpn.guide.GuideSearchHistoryProvider
 import com.securenet.vpn.guide.GuideSeenCatalog
 import com.securenet.vpn.guide.GuideSeenCatalogProvider
 import com.securenet.vpn.guide.GuideSmart
 import com.securenet.vpn.guide.GuideStore
 import com.securenet.vpn.guide.GuideStoreProvider
+import com.securenet.vpn.guide.SharedPrefsGuideSearchHistory
 import com.securenet.vpn.guide.WireGuideCatalog
 import com.securenet.vpn.guide.WireGuideFilter
 import com.securenet.vpn.guide.WhatsNew
@@ -95,6 +101,13 @@ class GuideFragment : Fragment() {
     private lateinit var store: GuideStore
     private var _builder: GuideUiBuilder? = null
 
+    // v1.8.20 — recent-search history (سجل البحث الحديث): confirmed
+    // searches (keyboard action or a history chip) are remembered
+    // most-recent-first and re-runnable at one tap.
+    private lateinit var searchHistory: SharedPrefsGuideSearchHistory
+    private var _historyScroll: HorizontalScrollView? = null
+    private var _historyRow: LinearLayout? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -110,6 +123,7 @@ class GuideFragment : Fragment() {
         binding.btnBack.setOnClickListener { parentFragmentManager.popBackStack() }
 
         store = GuideStoreProvider.get(requireContext())
+        searchHistory = GuideSearchHistoryProvider.get(requireContext())
 
         // v1.8.16 — fresh-sources alert: the very first visit records the
         // snapshot silently (baseline); later visits announce what arrived
@@ -137,7 +151,26 @@ class GuideFragment : Fragment() {
         binding.flowHost.addView(buildToolsRow())
         binding.flowHost.addView(buildNewSourcesBanner(builder, seenCatalog))
 
+        // v1.8.20 — the recent-search chips row lives under the search field.
+        binding.historyHost.addView(buildHistoryRow())
+
         render(builder)
+
+        // v1.8.20 — a search confirmed with the keyboard's search action is
+        // recorded into the history (and the keyboard is dismissed).
+        binding.etGuideSearch.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                val query = binding.etGuideSearch.text?.toString().orEmpty()
+                if (query.isNotBlank()) {
+                    searchHistory.record(query)
+                    refreshHistoryRow()
+                }
+                hideKeyboard()
+                true
+            } else {
+                false
+            }
+        }
 
         // v1.8.17 — the 📊 What's-new sheet greets every fresh install and
         // every update exactly once (a stored marker remembers the last
@@ -363,6 +396,83 @@ class GuideFragment : Fragment() {
         return value.data
     }
 
+    /**
+     * v1.8.20 — builds the recent-search chips row: a horizontal scroll of
+     * one chip per recorded query plus a trailing "Clear" chip. Hidden
+     * entirely while the history is empty; [refreshHistoryRow] re-fills it.
+     */
+    private fun buildHistoryRow(): View {
+        val scroll = HorizontalScrollView(requireContext()).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply { topMargin = dp(2) }
+            isHorizontalScrollBarEnabled = false
+        }
+        val row = LinearLayout(requireContext()).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = android.view.Gravity.CENTER_VERTICAL
+        }
+        scroll.addView(row)
+        _historyScroll = scroll
+        _historyRow = row
+        refreshHistoryRow()
+        return scroll
+    }
+
+    /** v1.8.20 — re-renders the history chips from the persisted store. */
+    private fun refreshHistoryRow() {
+        val scroll = _historyScroll ?: return
+        val row = _historyRow ?: return
+        row.removeAllViews()
+        val items = searchHistory.history()
+        if (items.isEmpty()) {
+            scroll.visibility = View.GONE
+            return
+        }
+        scroll.visibility = View.VISIBLE
+        items.forEach { item ->
+            row.addView(Chip(
+                requireContext(), null,
+                com.google.android.material.R.attr.chipStyle
+            ).apply {
+                text = item
+                textSize = 12f
+                isCloseIconVisible = false
+                isCheckable = false
+                setOnClickListener {
+                    binding.etGuideSearch.setText(item)
+                    binding.etGuideSearch.setSelection(item.length)
+                    searchHistory.record(item)
+                    refreshHistoryRow()
+                    hideKeyboard()
+                }
+            })
+        }
+        row.addView(Chip(
+            requireContext(), null,
+            com.google.android.material.R.attr.chipStyle
+        ).apply {
+            text = getString(R.string.guide_history_clear)
+            textSize = 12f
+            isCloseIconVisible = false
+            isCheckable = false
+            setTextColor(resolveColorAttr(com.google.android.material.R.attr.colorPrimary))
+            setTypeface(typeface, android.graphics.Typeface.BOLD)
+            setOnClickListener {
+                searchHistory.clear()
+                refreshHistoryRow()
+            }
+        })
+    }
+
+    /** v1.8.20 — dismisses the keyboard after confirming or re-running a search. */
+    private fun hideKeyboard() {
+        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE)
+            as? InputMethodManager ?: return
+        imm.hideSoftInputFromWindow(binding.etGuideSearch.windowToken, 0)
+    }
+
     private fun dp(value: Int): Int =
         (value * requireContext().resources.displayMetrics.density).toInt()
 
@@ -441,6 +551,8 @@ class GuideFragment : Fragment() {
         (activity as? MainActivity)?.setBottomNavVisible(true)
         _binding = null
         _builder = null
+        _historyScroll = null
+        _historyRow = null
         super.onDestroyView()
     }
 }
