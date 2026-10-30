@@ -22,3 +22,4 @@ go/libwg/go.sum
 *.jks
 *.keystore
 keystore.properties
+jdk17dl/

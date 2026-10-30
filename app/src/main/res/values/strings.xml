@@ -136,6 +136,8 @@
     <string name="notif_expanded_down">Download:</string>
     <string name="notif_expanded_up">Upload:</string>
     <string name="notif_expanded_since">Session started</string>
+    <string name="whatsnew_1822_1">The guide now speaks six more languages: all 195 of its strings — titles, steps, sections, filters, the compare table, stats, smart picks and every one of the 69 source descriptions — ship in German, Spanish, French, Russian, Turkish and Urdu, following the device\'s system language.</string>
+    <string name="whatsnew_1822_2">A new translation-parity test locks every language to the exact English key set and format placeholders and parses each file as real XML, so a future source or feature can never ship half-translated.</string>
     <string name="whatsnew_1821_1">The status notification grew a live face: a session timer counts up right in the notification shade, the expanded view shows download/upload totals with live rates and the session start time, connecting shows a progress pulse, a Connect button appears when you are down, and the icon wears the brand color — always silent, throttled to never buzz.</string>
 
     <!-- Misc -->
