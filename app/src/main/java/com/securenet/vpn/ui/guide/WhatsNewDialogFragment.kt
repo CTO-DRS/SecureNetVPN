@@ -1,15 +1,19 @@
 package com.securenet.vpn.ui.guide
 
+import android.content.Intent
 import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.button.MaterialButton
 import com.securenet.vpn.R
 import com.securenet.vpn.guide.WhatsNew
 
@@ -58,9 +62,79 @@ class WhatsNewDialogFragment : BottomSheetDialogFragment() {
         WhatsNew.releases.forEachIndexed { index, release ->
             if (index > 0) content.addView(divider())
             content.addView(versionHeader(release.version, index == 0))
+            if (index == 0) content.addView(badgesRow())
             release.items.forEach { itemRes ->
                 content.addView(bullet(getString(itemRes)))
             }
+        }
+
+        content.addView(shareButton())
+    }
+
+    /**
+     * v1.8.18 — capability badges under the current release: a difficulty
+     * chip row (what the filter covers) and the checker's languages, so a
+     * reader sees the sheet's own feature surface at a glance.
+     */
+    private fun badgesRow(): View = HorizontalScrollView(requireContext()).apply {
+        isHorizontalScrollBarEnabled = false
+        layoutParams = LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        ).apply { setMargins(0, dp(4), 0, dp(2)) }
+        addView(LinearLayout(requireContext()).apply {
+            orientation = LinearLayout.HORIZONTAL
+            setPadding(0, dp(2), dp(2), dp(2))
+            WhatsNew.currentBadges.forEach { badgeRes ->
+                addView(badge(getString(badgeRes)))
+            }
+        })
+    }
+
+    /** One rounded, primary-tinted pill. */
+    private fun badge(text: String): View = TextView(requireContext()).apply {
+        this.text = text
+        setTextColor(resolveColor(com.google.android.material.R.attr.colorPrimary))
+        textSize = 11f
+        val padH = dp(10)
+        setPadding(padH, dp(5), padH, dp(5))
+        background = GradientDrawable().apply {
+            cornerRadius = dp(14).toFloat()
+            setColor(
+                resolveColor(com.google.android.material.R.attr.colorPrimary) and 0x18FFFFFF
+            )
+            setStroke(
+                dp(1),
+                resolveColor(com.google.android.material.R.attr.colorPrimary) and 0x55FFFFFF
+            )
+        }
+        layoutParams = LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        ).apply { marginEnd = dp(8) }
+    }
+
+    /** v1.8.18 — "share this release": version bullets + releases link via the system chooser. */
+    private fun shareButton(): View = MaterialButton(requireContext()).apply {
+        text = getString(R.string.whatsnew_share)
+        textSize = 13f
+        layoutParams = LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        ).apply { setMargins(0, dp(14), 0, 0) }
+        setOnClickListener {
+            val current = WhatsNew.releases.first()
+            val text = WhatsNew.shareText(
+                current.version,
+                current.items.map { getString(it) }
+            )
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, text)
+            }
+            startActivity(
+                Intent.createChooser(intent, getString(R.string.whatsnew_share_chooser))
+            )
         }
     }
 

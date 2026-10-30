@@ -24,7 +24,10 @@ import com.securenet.vpn.R
 object WhatsNew {
 
     /** The version this build ships; differs from the stored marker ⇒ auto-open once. */
-    const val CURRENT_VERSION = "1.8.17"
+    const val CURRENT_VERSION = "1.8.18"
+
+    /** Where every shipped release lives (GitHub Releases), used by the share button. */
+    const val RELEASES_URL = "https://github.com/CTO-DRS/SecureNetVPN/releases"
 
     /** One shipped release: its public version name and headline bullets. */
     data class Release(
@@ -32,8 +35,39 @@ object WhatsNew {
         @StringRes val items: List<Int>
     )
 
+    /**
+     * v1.8.18 — capability badges rendered under the current release in the
+     * what's-new sheet: what the difficulty filter covers and which languages
+     * the checker UI now speaks (8 total: the built-in AR/EN plus the six
+     * v1.8.17 translations). Pure string ids, JVM-pinned via [WhatsNewTest].
+     */
+    @StringRes
+    val currentBadges: List<Int> = listOf(
+        R.string.badge_difficulty,
+        R.string.badge_checker_langs
+    )
+
+    /**
+     * v1.8.18 — the text the "share this release" button sends: a neutral
+     * EN header (shares go anywhere), the version's own bullets and the
+     * releases link. Pure so [WhatsNewTest] pins the exact shape.
+     */
+    fun shareText(version: String, bullets: List<String>): String = buildString {
+        append("SecureNet VPN v").append(version).append(" — What's new:\n")
+        bullets.forEach { append("• ").append(it).append('\n') }
+        append("\nDownload & source: ").append(RELEASES_URL)
+    }
+
     /** Shipped releases, newest first (only versions that added user-facing features). */
     val releases: List<Release> = listOf(
+        Release(
+            "1.8.18",
+            listOf(
+                R.string.whatsnew_1818_1,
+                R.string.whatsnew_1818_2,
+                R.string.whatsnew_1818_3
+            )
+        ),
         Release(
             "1.8.17",
             listOf(

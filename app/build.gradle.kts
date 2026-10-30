@@ -15,8 +15,8 @@ android {
         applicationId = "com.securenet.vpn"
         minSdk = 30
         targetSdk = 35
-        versionCode = 30
-        versionName = "1.8.17"
+        versionCode = 31
+        versionName = "1.8.18"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         ndk {

@@ -6,12 +6,13 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * v1.8.17 — the 📊 in-app "What's new" feed. The sheet is only as honest
+ * v1.8.17/18 — the 📊 in-app "What's new" feed. The sheet is only as honest
  * as this data: versions must read newest-first, [WhatsNew.CURRENT_VERSION]
  * must sit at the top (the auto-open fires when the stored marker differs
  * from it), and every release must actually carry bullets — an empty feed
  * or a mid-list current version would make updates announce themselves
- * wrongly.
+ * wrongly. v1.8.18 adds the capability badges (difficulty filter + checker
+ * languages) and the share-text builder rendered by the sheet.
  */
 class WhatsNewTest {
 
@@ -23,7 +24,7 @@ class WhatsNewTest {
     @Test
     fun `feed is not empty and starts at the current version`() {
         assertTrue(WhatsNew.releases.isNotEmpty())
-        assertEquals("1.8.17", WhatsNew.CURRENT_VERSION)
+        assertEquals("1.8.18", WhatsNew.CURRENT_VERSION)
         assertEquals(WhatsNew.CURRENT_VERSION, WhatsNew.releases.first().version)
     }
 
@@ -43,10 +44,36 @@ class WhatsNewTest {
 
     @Test
     fun `shipped releases are anchored by literal version`() {
-        // v1.8.12 … v1.8.17 — the releases with user-facing changelog lines.
+        // v1.8.12 … v1.8.18 — the releases with user-facing changelog lines.
         assertEquals(
-            listOf("1.8.17", "1.8.16", "1.8.15", "1.8.14", "1.8.13", "1.8.12"),
+            listOf(
+                "1.8.18", "1.8.17", "1.8.16",
+                "1.8.15", "1.8.14", "1.8.13", "1.8.12"
+            ),
             WhatsNew.releases.map { it.version }
+        )
+    }
+
+    @Test
+    fun `current release carries the capability badges`() {
+        // v1.8.18 — the difficulty-coverage chip and the checker-languages chip.
+        assertEquals(2, WhatsNew.currentBadges.size)
+        assertTrue(WhatsNew.currentBadges.distinct().size == WhatsNew.currentBadges.size)
+    }
+
+    @Test
+    fun `share text names the version, every bullet and the releases link`() {
+        val text = WhatsNew.shareText(
+            WhatsNew.CURRENT_VERSION,
+            listOf("first headline", "second headline")
+        )
+        assertTrue(text.startsWith("SecureNet VPN v1.8.18 — What's new:"))
+        assertTrue(text.contains("• first headline"))
+        assertTrue(text.contains("• second headline"))
+        assertTrue(text.contains(WhatsNew.RELEASES_URL))
+        assertEquals(
+            "https://github.com/CTO-DRS/SecureNetVPN/releases",
+            WhatsNew.RELEASES_URL
         )
     }
 }

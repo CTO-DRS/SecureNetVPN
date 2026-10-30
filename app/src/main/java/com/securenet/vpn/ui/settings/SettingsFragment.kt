@@ -125,6 +125,14 @@ class SettingsFragment : Fragment(), BackupDialogFragment.Host {
             (activity as? MainActivity)?.openConfigGuide()
         }
 
+        // v1.8.18: support & developer — contact channels + privacy policy
+        binding.rowContactDev.setOnClickListener {
+            ContactDialogFragment().show(parentFragmentManager, "contact_dialog")
+        }
+        binding.rowPrivacyPolicy.setOnClickListener {
+            PrivacyDialogFragment().show(parentFragmentManager, "privacy_dialog")
+        }
+
         // v1.4: multi-hop + hotspot sharing
         binding.rowMultiHop.setOnClickListener {
             MultiHopDialogFragment().show(parentFragmentManager, "multihop_dialog")
