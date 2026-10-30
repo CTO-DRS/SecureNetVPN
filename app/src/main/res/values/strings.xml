@@ -660,4 +660,46 @@
         <item>Slow or unstable on mobile data? Lower MTU to 1280–1380; the optimizer screen can suggest a value.</item>
         <item>One profile per device keeps keys unique — and a PresharedKey (when offered) adds another strong layer.</item>
     </string-array>
+    <!-- v1.8.16: fresh-sources alert -->
+    <string name="guide_badge_new">NEW</string>
+    <string name="guide_new_badge_cd">Newly added source</string>
+    <string name="guide_new_banner">🆕 New guide sources in this update (%1$d): %2$s</string>
+    <string name="guide_new_banner_cd">Alert: newly added guide sources</string>
+    <string name="guide_new_dismiss">Got it</string>
+    <!-- v1.8.16: offline WireGuard config checker -->
+    <string name="wgcheck_open">🛡️ WireGuard config checker</string>
+    <string name="wgcheck_title">WireGuard config checker</string>
+    <string name="wgcheck_privacy">Checking runs entirely on your device — nothing is uploaded anywhere.</string>
+    <string name="wgcheck_hint">Paste a wg0.conf here, or import a file…</string>
+    <string name="wgcheck_import">Import file</string>
+    <string name="wgcheck_run">Check config</string>
+    <string name="wgcheck_empty_input">Paste a config or import a file first.</string>
+    <string name="wgcheck_import_failed">Could not read that file.</string>
+    <string name="wgcheck_ok">✓ Config looks valid — no errors found.</string>
+    <string name="wgcheck_result">Result: %1$d error(s) · %2$d warning(s)</string>
+    <string name="wgcheck_shape">Parsed: %1$d × [Interface] · %2$d × [Peer]</string>
+    <string name="wgcheck_line">Line %1$d</string>
+    <string name="wgcheck_msg_empty_config">The config is empty.</string>
+    <string name="wgcheck_msg_missing_interface">No [Interface] section found.</string>
+    <string name="wgcheck_msg_multiple_interface">More than one [Interface] section.</string>
+    <string name="wgcheck_msg_missing_private_key">[Interface] is missing PrivateKey.</string>
+    <string name="wgcheck_msg_missing_address">[Interface] is missing Address — wg-quick cannot build the tunnel without it.</string>
+    <string name="wgcheck_msg_missing_public_key">[Peer] is missing PublicKey.</string>
+    <string name="wgcheck_msg_missing_allowed_ips">[Peer] has no AllowedIPs — it would never route traffic.</string>
+    <string name="wgcheck_msg_missing_endpoint">[Peer] has no Endpoint — a client cannot connect to it.</string>
+    <string name="wgcheck_msg_no_peer">No [Peer] section — an interface alone carries no tunnel.</string>
+    <string name="wgcheck_msg_invalid_key">%1$s is not a valid WireGuard key (expecting 44-char base64, 32 bytes).</string>
+    <string name="wgcheck_msg_invalid_cidr">Invalid address or network: %1$s</string>
+    <string name="wgcheck_msg_invalid_dns">Unrecognized DNS entry: %1$s</string>
+    <string name="wgcheck_msg_invalid_mtu">Invalid MTU: %1$s (allowed 576–65535).</string>
+    <string name="wgcheck_msg_low_mtu">MTU %1$s is below 1280 — may break connections on some networks.</string>
+    <string name="wgcheck_msg_invalid_listen_port">Invalid ListenPort: %1$s.</string>
+    <string name="wgcheck_msg_invalid_keepalive">Invalid PersistentKeepalive: %1$s (seconds).</string>
+    <string name="wgcheck_msg_invalid_endpoint">Invalid Endpoint: %1$s (expect host:port or [ipv6]:port).</string>
+    <string name="wgcheck_msg_unknown_section">Unknown section: %1$s.</string>
+    <string name="wgcheck_msg_unknown_key">Unknown key: %1$s — a typo, or not part of wg / wg-quick.</string>
+    <string name="wgcheck_msg_duplicate_key">Duplicate key: %1$s appears more than once in the same section.</string>
+    <string name="wgcheck_msg_unparsed_line">Line is not key = value and not a comment.</string>
+    <string name="wgcheck_msg_stray_line">Key/value outside any [Interface]/[Peer] section.</string>
+    <string name="wgcheck_msg_full_tunnel">AllowedIPs = %1$s — full tunnel: ALL traffic goes through the VPN.</string>
 </resources>

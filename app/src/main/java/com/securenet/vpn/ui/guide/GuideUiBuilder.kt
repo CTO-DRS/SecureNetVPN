@@ -72,6 +72,14 @@ class GuideUiBuilder(
     private val onOpenDetail: ((GuideEntry) -> Unit)? = null
 ) {
 
+    /**
+     * v1.8.16 — ids to mark with the 🆕 NEW badge while the fresh-sources
+     * alert is active (see [com.securenet.vpn.guide.GuideSeenCatalog]).
+     * The full-screen guide screen sets this before rendering; the quick
+     * sheet leaves it empty, so its cards stay exactly as before.
+     */
+    var highlightNewIds: Set<String> = emptySet()
+
     /** Category icon (also used as the leading illustration on every card). */
     fun iconFor(category: GuideCategory): Int = when (category) {
         GuideCategory.FREE -> R.drawable.ic_globe
@@ -413,6 +421,22 @@ class GuideUiBuilder(
                     ViewGroup.LayoutParams.WRAP_CONTENT
                 ).apply { marginEnd = dp(2) }
             })
+            // v1.8.16 — 🆕 NEW badge while the fresh-sources alert is up.
+            if (entry.id in highlightNewIds) {
+                addView(TextView(context).apply {
+                    text = "🆕 " + getString(R.string.guide_badge_new)
+                    setTextColor(resolveColor(com.google.android.material.R.attr.colorPrimary))
+                    textSize = 9f
+                    maxLines = 1
+                    setBackgroundResource(R.drawable.bg_editors_badge)
+                    setPadding(dp(7), dp(3), dp(7), dp(3))
+                    contentDescription = getString(R.string.guide_new_badge_cd)
+                    layoutParams = LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                    ).apply { marginEnd = dp(2) }
+                })
+            }
             addView(favoriteToggle(entry))
         }
 
