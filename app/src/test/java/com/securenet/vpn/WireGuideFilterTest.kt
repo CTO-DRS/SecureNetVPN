@@ -381,4 +381,49 @@ class WireGuideFilterTest {
             WireGuideCatalog.byId(id)?.difficulty == GuideDifficulty.BEGINNER
         })
     }
+
+    @Test
+    fun `v1_8_17 filterByDifficulty null keeps everything`() {
+        assertEquals(
+            entries,
+            WireGuideFilter.filterByDifficulty(entries, null)
+        )
+    }
+
+    @Test
+    fun `v1_8_17 difficulty chip selects exactly its class`() {
+        fun idsOf(difficulty: GuideDifficulty) =
+            WireGuideFilter.filterByDifficulty(entries, difficulty).map { it.id }
+
+        assertEquals(
+            entries.filter { it.difficulty == GuideDifficulty.BEGINNER }.map { it.id },
+            idsOf(GuideDifficulty.BEGINNER)
+        )
+        // literal anchors: the beginner chip reaches the easy hosted pair,
+        // the advanced chip the router firmware grind
+        assertTrue(idsOf(GuideDifficulty.BEGINNER).containsAll(listOf("tailscale", "mullvad")))
+        assertTrue(idsOf(GuideDifficulty.ADVANCED).containsAll(listOf("openwrt", "headscale")))
+        assertTrue(idsOf(GuideDifficulty.INTERMEDIATE).containsAll(listOf("firezone", "keenetic")))
+    }
+
+    @Test
+    fun `v1_8_17 difficulty classes partition the catalog and compose with price`() {
+        val beginner = WireGuideFilter.filterByDifficulty(entries, GuideDifficulty.BEGINNER)
+        val intermediate =
+            WireGuideFilter.filterByDifficulty(entries, GuideDifficulty.INTERMEDIATE)
+        val advanced = WireGuideFilter.filterByDifficulty(entries, GuideDifficulty.ADVANCED)
+
+        // the three classes are disjoint and together cover the whole catalog
+        assertEquals(entries.size, beginner.size + intermediate.size + advanced.size)
+
+        // composing with the price filter matches the screen's chained lets:
+        // the free beginner class is exactly the beginner sources that are
+        // also price-marked free
+        val freeBeginner = WireGuideFilter.filterByPrice(beginner, WireGuideFilter.Price.FREE)
+        assertTrue(freeBeginner.all {
+            it.difficulty == GuideDifficulty.BEGINNER &&
+                WireGuideFilter.priceOf(it) == WireGuideFilter.Price.FREE
+        })
+        assertTrue(freeBeginner.contains(entries.first { it.id == "tailscale" }))
+    }
 }

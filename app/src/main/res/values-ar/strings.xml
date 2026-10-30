@@ -702,4 +702,25 @@
     <string name="wgcheck_msg_unparsed_line">سطر ليس key = value وليس تعليقاً.</string>
     <string name="wgcheck_msg_stray_line">مفتاح/قيمة خارج أي قسم [Interface]/[Peer].</string>
     <string name="wgcheck_msg_full_tunnel">‏AllowedIPs = %1$s — نفق كامل: كل الترافيك يمر عبر الـ VPN.</string>
+
+    <!-- v1.8.17 — 📊 سجل الإصدارات «ما الجديد» داخل التطبيق -->
+    <string name="whatsnew_title">📊 ما الجديد</string>
+    <string name="whatsnew_cd">سجل الإصدارات داخل التطبيق</string>
+    <string name="whatsnew_open">📊 ما الجديد</string>
+    <string name="whatsnew_version_current">v%1$s — هذا الإصدار</string>
+    <string name="whatsnew_version">v%1$s</string>
+    <string name="whatsnew_1817_1">صف فلترة حسب صعوبة الإعداد أعلى القائمة — انقر «مبتدئ / متوسط / متقدم» لعرض فئة واحدة؛ ويتمازج مع البحث والأقسام وشيبس المجاني/المدفوع.</string>
+    <string name="whatsnew_1817_2">صفحة 📊 «ما الجديد» داخل التطبيق — أبرز ميزات كل إصدار، الأحدث أولاً؛ تُفتح تلقائياً بعد كل تحديث وتجاور زر فاحص الإعدادات.</string>
+    <string name="whatsnew_1817_3">فاحص إعدادات WireGuard أصبح يتحدث بست لغات إضافية — الفرنسية والإسبانية والألمانية والتركية والروسية والأردية.</string>
+    <string name="whatsnew_1816_1">تنبيه عند إضافة مصادر جديدة: يعلن الدليل عن المصادر المستجدة بإعلان قابل للإخفاء وشارات 🆕 جديد.</string>
+    <string name="whatsnew_1816_2">فاحص إعدادات WireGuard يعمل دون اتصال — الصق أو استورد ملف ‎.conf واحصل على تشخيص مفصّل بالأسطر، كله داخل جهازك.</string>
+    <string name="whatsnew_1815_1">زر مشاركة على كل بطاقة في الدليل — أرسل المصدر لصديق مباشرة من القائمة.</string>
+    <string name="whatsnew_1815_2">معالج إعداد تفاعلي: قائمة خطوات قابلة للتأشير لكل مصدر مع حفظ التقدم.</string>
+    <string name="whatsnew_1814_1">شارة صعوبة الإعداد على كل مصدر — مبتدئ / متوسط / متقدم بنظرة واحدة.</string>
+    <string name="whatsnew_1814_2">كلمات الصعوبة (سهل / easy، متقدم / advanced…) أصبحت قابلة للبحث.</string>
+    <string name="whatsnew_1813_1">قسم مستقل لشبكات Mesh يجمع أدوات التنسيق.</string>
+    <string name="whatsnew_1813_2">مرشّح سريع مجاني/مدفوع أعلى القائمة.</string>
+    <string name="whatsnew_1813_3">مقارنة أي مصدرين جنباً إلى جنب.</string>
+    <string name="whatsnew_1812_1">توسعة الدليل إلى 69 مصدراً مع وسوم مجاني/مدفوع صريحة.</string>
+    <string name="guide_difficulty_filter_cd">تصفية حسب صعوبة الإعداد</string>
 </resources>
