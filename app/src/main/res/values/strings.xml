@@ -746,4 +746,30 @@
     <string name="privacy_updated">Last updated: v%1$s</string>
     <string name="privacy_contact_hint">Questions? Reach the developer via Settings → Support &amp; developer.</string>
     <string name="privacy_body">SecureNet VPN works entirely on your device:\n\n• We collect, store and transmit no personal data — the app contains no analytics, no advertising and no tracking of any kind.\n\n• WireGuard configurations you paste or import into the config checker are parsed locally in memory and never leave your phone.\n\n• Your preferences, bookmarks, ratings, connection history and acknowledged updates are saved only in your device\'s local storage; nothing is uploaded unless you export it yourself.\n\n• Opening a guide source launches its official website in your browser — the app sends nothing to those sites.\n\n• Permissions serve their feature only: the camera for QR scanning, the VPN service for the tunnel, file access only when you import or export a configuration.</string>
+
+    <!-- v1.8.19: setup assistant + checker report sharing -->
+    <string name="recommend_open">🧭 Pick for me</string>
+    <string name="recommend_title">🧭 Setup assistant</string>
+    <string name="recommend_cd">Ranked source recommendations</string>
+    <string name="recommend_caption">Three quick answers — and the guide shortlists the sources that fit you best.</string>
+    <string name="recommend_level_q">How technical are you?</string>
+    <string name="recommend_budget_q">What\'s your budget?</string>
+    <string name="recommend_section_q">Which setup interests you?</string>
+    <string name="recommend_budget_free">Free only</string>
+    <string name="recommend_budget_any">Free or paid</string>
+    <string name="recommend_section_all">All sections</string>
+    <string name="recommend_run">Recommend sources</string>
+    <string name="recommend_pick_level">Pick your comfort level first</string>
+    <string name="recommend_result_caption">Your shortlist — tap one to open its full guide.</string>
+    <string name="recommend_none">No match for this combination — try “All sections” or allow paid sources.</string>
+    <string name="recommend_again">Answer again</string>
+    <string name="recommend_reason_level">fits your level</string>
+    <string name="recommend_reason_easier">easier than your level</string>
+    <string name="recommend_reason_free">free</string>
+    <string name="recommend_reason_editors">Editor\'s choice</string>
+    <string name="wgcheck_share">Share report</string>
+    <string name="wgcheck_share_chooser">Share check report via</string>
+    <string name="whatsnew_1819_1">A 🧭 setup assistant: three quick answers (level, budget, section) turn the 69-source guide into a ranked five-source shortlist with visible reasons — “fits your level · free · Editor\'s choice”.</string>
+    <string name="whatsnew_1819_2">The config checker gained a “Share report” button — send the diagnosis to a friend or a more experienced admin; the config itself is never attached.</string>
+    <string name="whatsnew_1819_3">The guide\'s tools row is now three buttons wide: the checker, “What\'s new”, and the new setup assistant.</string>
 </resources>
