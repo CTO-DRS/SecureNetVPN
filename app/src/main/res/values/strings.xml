@@ -130,6 +130,14 @@
     <string name="notif_action_disconnect">Disconnect</string>
     <string name="notif_action_connect">Connect</string>
 
+    <!-- v1.8.21: richer notification-shade presentation -->
+    <string name="notif_connecting_body">Choosing a route and raising the tunnel</string>
+    <string name="notif_disconnected_body">Your traffic is not protected — tap to reconnect</string>
+    <string name="notif_expanded_down">Download:</string>
+    <string name="notif_expanded_up">Upload:</string>
+    <string name="notif_expanded_since">Session started</string>
+    <string name="whatsnew_1821_1">The status notification grew a live face: a session timer counts up right in the notification shade, the expanded view shows download/upload totals with live rates and the session start time, connecting shows a progress pulse, a Connect button appears when you are down, and the icon wears the brand color — always silent, throttled to never buzz.</string>
+
     <!-- Misc -->
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>

@@ -130,6 +130,14 @@
     <string name="notif_action_disconnect">قطع الاتصال</string>
     <string name="notif_action_connect">اتصال</string>
 
+    <!-- v1.8.21: عرض أغنى في لوحة الإشعارات -->
+    <string name="notif_connecting_body">نختار المسار ونبني النفق</string>
+    <string name="notif_disconnected_body">حركتك غير محمية — انقر لإعادة الاتصال</string>
+    <string name="notif_expanded_down">التنزيل:</string>
+    <string name="notif_expanded_up">الرفع:</string>
+    <string name="notif_expanded_since">بدأت الجلسة</string>
+    <string name="whatsnew_1821_1">أصبح إشعار الحالة حياً: مؤقّت جلسة يعدّ صعوداً داخل لوحة الإشعارات، والعرض الموسّع يُظهر إجماليات التنزيل والرفع مع السرعات الحيّة ووقت بدء الجلسة، ونبض تقدّم أثناء الاتصال، وزر «اتصال» عند الانقطاع، ولمسة لون العلامة على الأيقونة — صامت دائماً ومقنّن، بلا إزعاج.</string>
+
     <!-- Misc -->
     <string name="ok">حسناً</string>
     <string name="cancel">إلغاء</string>
