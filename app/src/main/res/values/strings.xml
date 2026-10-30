@@ -723,4 +723,27 @@
     <string name="whatsnew_1813_3">Side-by-side comparison of any two sources.</string>
     <string name="whatsnew_1812_1">The catalog grew to 69 sources with explicit free/paid markers.</string>
     <string name="guide_difficulty_filter_cd">Filter by setup difficulty</string>
+
+    <!-- v1.8.18: what's-new capability badges + share button -->
+    <string name="badge_difficulty">Difficulty filter: Beginner · Intermediate · Advanced</string>
+    <string name="badge_checker_langs">Checker UI: AR · EN · FR · ES · DE · TR · RU · UR</string>
+    <string name="whatsnew_share">Share this release</string>
+    <string name="whatsnew_share_chooser">Share SecureNet release via</string>
+    <string name="whatsnew_1818_1">Badges in «What\'s new» — the difficulty filter\'s coverage and the checker\'s 8 languages at a glance, plus a share button that sends the release notes anywhere.</string>
+    <string name="whatsnew_1818_2">Settings → Support &amp; developer: every official channel of CTO.DRS — WhatsApp, Telegram, Instagram, TikTok, X, YouTube, GitHub and the website.</string>
+    <string name="whatsnew_1818_3">A privacy policy in plain words: everything runs on your device, nothing is collected, nothing leaves it.</string>
+
+    <!-- v1.8.18: settings support & privacy section -->
+    <string name="settings_section_support">Support &amp; developer</string>
+    <string name="row_contact_title">Contact the developer</string>
+    <string name="row_contact_sub">CTO.DRS — WhatsApp · Telegram · Instagram · TikTok · X · YouTube · GitHub</string>
+    <string name="row_privacy_title">Privacy policy</string>
+    <string name="row_privacy_sub">No data collection — everything stays on your device</string>
+    <string name="contact_title">Contact the developer</string>
+    <string name="contact_dev_name">%1$s — business account on WhatsApp</string>
+    <string name="contact_open_failed">No app can open this link</string>
+    <string name="privacy_title">Privacy policy</string>
+    <string name="privacy_updated">Last updated: v%1$s</string>
+    <string name="privacy_contact_hint">Questions? Reach the developer via Settings → Support &amp; developer.</string>
+    <string name="privacy_body">SecureNet VPN works entirely on your device:\n\n• We collect, store and transmit no personal data — the app contains no analytics, no advertising and no tracking of any kind.\n\n• WireGuard configurations you paste or import into the config checker are parsed locally in memory and never leave your phone.\n\n• Your preferences, bookmarks, ratings, connection history and acknowledged updates are saved only in your device\'s local storage; nothing is uploaded unless you export it yourself.\n\n• Opening a guide source launches its official website in your browser — the app sends nothing to those sites.\n\n• Permissions serve their feature only: the camera for QR scanning, the VPN service for the tunnel, file access only when you import or export a configuration.</string>
 </resources>

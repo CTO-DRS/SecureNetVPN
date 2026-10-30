@@ -723,4 +723,27 @@
     <string name="whatsnew_1813_3">مقارنة أي مصدرين جنباً إلى جنب.</string>
     <string name="whatsnew_1812_1">توسعة الدليل إلى 69 مصدراً مع وسوم مجاني/مدفوع صريحة.</string>
     <string name="guide_difficulty_filter_cd">تصفية حسب صعوبة الإعداد</string>
+
+    <!-- v1.8.18: شارات ما الجديد + زر المشاركة -->
+    <string name="badge_difficulty">فلترة بالصعوبة: مبتدئ · متوسط · متقدم</string>
+    <string name="badge_checker_langs">واجهة الفاحص: العربية · EN · FR · ES · DE · TR · RU · UR</string>
+    <string name="whatsnew_share">مشاركة الإصدار</string>
+    <string name="whatsnew_share_chooser">مشاركة إصدار SecureNet عبر</string>
+    <string name="whatsnew_1818_1">شارات في صفحة «ما الجديد» — تغطية فلترة الصعوبة ولغات الفاحص الثماني بنظرة واحدة، وزر مشاركة يرسل ملاحظات الإصدار إلى أي مكان.</string>
+    <string name="whatsnew_1818_2">الإعدادات ← الدعم والتواصل: كل قنوات CTO.DRS الرسمية — واتساب وتيليجرام وإنستغرام وتيك توك وإكس ويوتيوب وGitHub والموقع.</string>
+    <string name="whatsnew_1818_3">سياسة خصوصية بلغة واضحة: كل شيء يعمل على جهازك، لا يُجمَع شيء، ولا يغادر جهازك شيء.</string>
+
+    <!-- v1.8.18: قسم الدعم والخصوصية في الإعدادات -->
+    <string name="settings_section_support">الدعم والتواصل</string>
+    <string name="row_contact_title">تواصل مع المطوّر</string>
+    <string name="row_contact_sub">CTO.DRS — واتساب · تيليجرام · إنستغرام · تيك توك · إكس · يوتيوب · GitHub</string>
+    <string name="row_privacy_title">سياسة الخصوصية</string>
+    <string name="row_privacy_sub">لا جمع بيانات — كل شيء يبقى على جهازك</string>
+    <string name="contact_title">تواصل مع المطوّر</string>
+    <string name="contact_dev_name">%1$s — حساب تجاري على واتساب</string>
+    <string name="contact_open_failed">لا يوجد تطبيق يمكنه فتح هذا الرابط</string>
+    <string name="privacy_title">سياسة الخصوصية</string>
+    <string name="privacy_updated">آخر تحديث: v%1$s</string>
+    <string name="privacy_contact_hint">لديك سؤال؟ تواصل مع المطوّر عبر الإعدادات ← الدعم والتواصل.</string>
+    <string name="privacy_body">يعمل SecureNet VPN بالكامل على جهازك:\n\n• لا نجمع ولا نخزّن ولا نرسل أي بيانات شخصية — التطبيق بلا تحليلات ولا إعلانات ولا أي شكل من أشكال التتبّع.\n\n• إعدادات WireGuard التي تلصقها أو تستوردها في فاحص الإعدادات تُفحص محلياً في الذاكرة ولا تغادر هاتفك أبداً.\n\n• تفضيلاتك والمفضلة والتقييمات وسجل الاتصال والإصدارات التي قرأتها تُحفظ في التخزين المحلي لجهازك فقط، ولا تُرفع إلى أي مكان إلا إذا صدّرتها بنفسك.\n\n• فتح أي مصدر من الدليل يشغّل موقعه الرسمي في متصفحك — التطبيق لا يرسل شيئاً إلى تلك المواقع.\n\n• الأذونات تخدم ميزتها فقط: الكاميرا لمسح رموز QR، وخدمة VPN للنفق، والوصول إلى الملفات فقط عند استيراد أو تصدير إعدادات.</string>
 </resources>
