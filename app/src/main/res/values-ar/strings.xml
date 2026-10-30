@@ -660,4 +660,46 @@
         <item>بطء أو انقطاع على بيانات الهاتف؟ خفّض MTU إلى 1280–1380؛ وشاشة المُحسّن تقترح قيمة مناسبة.</item>
         <item>ملف لكل جهاز يُبقي المفاتيح فريدة — وPresharedKey (عند توفيره) يضيف طبقة قوية إضافية.</item>
     </string-array>
+    <!-- v1.8.16: تنبيه المصادر الجديدة -->
+    <string name="guide_badge_new">جديد</string>
+    <string name="guide_new_badge_cd">مصدر أُضيف حديثاً</string>
+    <string name="guide_new_banner">🆕 مصادر جديدة في هذا التحديث (%1$d): %2$s</string>
+    <string name="guide_new_banner_cd">تنبيه: مصادر جديدة أُضيفت للدليل</string>
+    <string name="guide_new_dismiss">حسناً</string>
+    <!-- v1.8.16: فاحص إعدادات WireGuard المحلي -->
+    <string name="wgcheck_open">🛡️ فاحص إعدادات WireGuard</string>
+    <string name="wgcheck_title">فاحص إعدادات WireGuard</string>
+    <string name="wgcheck_privacy">الفحص يتم محلياً بالكامل داخل جهازك — لا يُرسل أي شيء إلى الإنترنت.</string>
+    <string name="wgcheck_hint">الصق محتوى wg0.conf هنا، أو استورد ملفاً…</string>
+    <string name="wgcheck_import">استيراد ملف</string>
+    <string name="wgcheck_run">فحص الإعدادات</string>
+    <string name="wgcheck_empty_input">الصق الإعدادات أو استورد ملفاً أولاً.</string>
+    <string name="wgcheck_import_failed">تعذّر قراءة الملف.</string>
+    <string name="wgcheck_ok">✓ الإعدادات سليمة — لا أخطاء.</string>
+    <string name="wgcheck_result">النتيجة: %1$d خطأ · %2$d تحذير</string>
+    <string name="wgcheck_shape">تم تحليل: %1$d × [Interface] · %2$d × [Peer]</string>
+    <string name="wgcheck_line">سطر %1$d</string>
+    <string name="wgcheck_msg_empty_config">الملف فارغ.</string>
+    <string name="wgcheck_msg_missing_interface">لا يوجد قسم [Interface].</string>
+    <string name="wgcheck_msg_multiple_interface">أكثر من قسم [Interface] واحد.</string>
+    <string name="wgcheck_msg_missing_private_key">[Interface] بلا PrivateKey.</string>
+    <string name="wgcheck_msg_missing_address">[Interface] بلا Address — wg-quick لا يستطيع بناء النفق بدونه.</string>
+    <string name="wgcheck_msg_missing_public_key">[Peer] بلا PublicKey.</string>
+    <string name="wgcheck_msg_missing_allowed_ips">[Peer] بلا AllowedIPs — لن يمر أي ترافيك عبره.</string>
+    <string name="wgcheck_msg_missing_endpoint">[Peer] بلا Endpoint — العميل لا يستطيع الاتصال به.</string>
+    <string name="wgcheck_msg_no_peer">لا يوجد قسم [Peer] — واجهة بلا قرين لا تحمل نفقاً.</string>
+    <string name="wgcheck_msg_invalid_key">%1$s ليس مفتاح WireGuard صالحاً (المتوقع base64 بطول 44 حرفاً، 32 بايت).</string>
+    <string name="wgcheck_msg_invalid_cidr">عنوان أو شبكة غير صالحة: %1$s</string>
+    <string name="wgcheck_msg_invalid_dns">قيمة DNS غير مفهومة: %1$s</string>
+    <string name="wgcheck_msg_invalid_mtu">MTU غير صالح: %1$s (المسموح 576–65535).</string>
+    <string name="wgcheck_msg_low_mtu">MTU ‏%1$s أقل من 1280 — قد يكسر الاتصال على بعض الشبكات.</string>
+    <string name="wgcheck_msg_invalid_listen_port">ListenPort غير صالح: %1$s.</string>
+    <string name="wgcheck_msg_invalid_keepalive">PersistentKeepalive غير صالح: %1$s (بالثواني).</string>
+    <string name="wgcheck_msg_invalid_endpoint">Endpoint غير صالح: %1$s (المتوقع host:port أو [ipv6]:port).</string>
+    <string name="wgcheck_msg_unknown_section">قسم غير معروف: %1$s.</string>
+    <string name="wgcheck_msg_unknown_key">مفتاح غير معروف: %1$s — خطأ إملائي، أو ليس من wg / wg-quick.</string>
+    <string name="wgcheck_msg_duplicate_key">مفتاح مكرر: %1$s ظهر أكثر من مرة في القسم نفسه.</string>
+    <string name="wgcheck_msg_unparsed_line">سطر ليس key = value وليس تعليقاً.</string>
+    <string name="wgcheck_msg_stray_line">مفتاح/قيمة خارج أي قسم [Interface]/[Peer].</string>
+    <string name="wgcheck_msg_full_tunnel">‏AllowedIPs = %1$s — نفق كامل: كل الترافيك يمر عبر الـ VPN.</string>
 </resources>

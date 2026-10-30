@@ -10,14 +10,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.securenet.vpn.MainActivity
 import com.securenet.vpn.R
 import com.securenet.vpn.databinding.FragmentGuideBinding
 import com.securenet.vpn.guide.GuideCategory
+import com.securenet.vpn.guide.GuideSeenCatalog
+import com.securenet.vpn.guide.GuideSeenCatalogProvider
 import com.securenet.vpn.guide.GuideSmart
 import com.securenet.vpn.guide.GuideStore
 import com.securenet.vpn.guide.GuideStoreProvider
@@ -53,6 +57,13 @@ import com.securenet.vpn.guide.WireGuideFilter
  * markers) — so "مجاني" reaches the free self-hosted, router and mesh
  * tools without typing anything.
  *
+ * v1.8.16 — two additions: ① the fresh-sources alert (تنبيه عند إضافة
+ * مصادر جديدة): the screen remembers which sources the user was already
+ * shown ([GuideSeenCatalog]) and greets catalog updates with a
+ * dismissible banner plus 🆕 NEW badges on the affected cards; ② a
+ * one-tap entry to the offline WireGuard config checker
+ * ([WgCheckerDialogFragment]).
+ *
  * Hosting contract: [MainActivity.openConfigGuide] hides the bottom nav and
  * pushes this fragment on the back stack; this fragment restores the nav in
  * onDestroyView so any pop path (button or system back) re-shows it.
@@ -66,6 +77,10 @@ class GuideFragment : Fragment() {
 
     /** v1.8.13 — quick price filter above the list (null = All). */
     private var selectedPrice: WireGuideFilter.Price? = null
+
+    /** v1.8.16 — ids the fresh-sources alert currently highlights. */
+    private var newAlertIds: Set<String> = emptySet()
+
     private lateinit var store: GuideStore
     private var _builder: GuideUiBuilder? = null
 
@@ -84,6 +99,19 @@ class GuideFragment : Fragment() {
         binding.btnBack.setOnClickListener { parentFragmentManager.popBackStack() }
 
         store = GuideStoreProvider.get(requireContext())
+
+        // v1.8.16 — fresh-sources alert: the very first visit records the
+        // snapshot silently (baseline); later visits announce what arrived
+        // since the last acknowledgement.
+        val seenCatalog = GuideSeenCatalogProvider.get(requireContext())
+        if (seenCatalog.seenIds().isEmpty()) {
+            seenCatalog.markAllSeen(WireGuideCatalog.entries.map { it.id })
+        } else {
+            newAlertIds = GuideSeenCatalog.unseen(
+                WireGuideCatalog.entries.map { it.id }, seenCatalog.seenIds()
+            ).toSet()
+        }
+
         val builder = GuideUiBuilder(
             requireContext(), store, ::openUrl, ::copyUrl,
             onSignalsChanged = { onFavoritesMembershipChanged() },
@@ -93,7 +121,10 @@ class GuideFragment : Fragment() {
             }
         )
         _builder = builder
+        builder.highlightNewIds = newAlertIds
         binding.flowHost.addView(buildFlowStrip(builder))
+        binding.flowHost.addView(buildCheckerRow())
+        binding.flowHost.addView(buildNewSourcesBanner(builder, seenCatalog))
 
         render(builder)
 
@@ -170,6 +201,88 @@ class GuideFragment : Fragment() {
         }
         return strip
     }
+
+    /** v1.8.16 — one-tap entry to the offline WireGuard config checker. */
+    private fun buildCheckerRow(): View =
+        MaterialButton(
+            requireContext(), null,
+            com.google.android.material.R.attr.materialButtonOutlinedStyle
+        ).apply {
+            text = getString(R.string.wgcheck_open)
+            setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 13f)
+            layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply { topMargin = dp(10) }
+            setOnClickListener {
+                WgCheckerDialogFragment()
+                    .show(parentFragmentManager, "wg_config_checker")
+            }
+        }
+
+    /**
+     * v1.8.16 — the dismissible "new sources added" banner: names the
+     * arrivals and acknowledges them (banner + 🆕 badges) in one tap.
+     * Sits inside the flow card, above the search field, until dismissed.
+     */
+    private fun buildNewSourcesBanner(
+        builder: GuideUiBuilder,
+        seenCatalog: GuideSeenCatalog
+    ): View {
+        val banner = com.google.android.material.card.MaterialCardView(requireContext()).apply {
+            radius = dp(10).toFloat()
+            visibility = if (newAlertIds.isEmpty()) View.GONE else View.VISIBLE
+            layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply { topMargin = dp(10) }
+        }
+        val row = LinearLayout(requireContext()).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = android.view.Gravity.CENTER_VERTICAL
+            setPadding(dp(10), dp(8), dp(10), dp(8))
+        }
+        row.addView(TextView(requireContext()).apply {
+            val names = GuideSeenCatalog.namesOf(WireGuideCatalog.entries, newAlertIds)
+            val shown = names.take(3).joinToString(" · ") +
+                if (names.size > 3) " …" else ""
+            text = getString(R.string.guide_new_banner, newAlertIds.size, shown)
+            setTextColor(resolveColorAttr(com.google.android.material.R.attr.colorOnSurface))
+            textSize = 12f
+            setLineSpacing(dp(2).toFloat(), 1f)
+            contentDescription = getString(R.string.guide_new_banner_cd)
+            layoutParams = LinearLayout.LayoutParams(
+                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f
+            )
+        })
+        row.addView(TextView(requireContext()).apply {
+            text = getString(R.string.guide_new_dismiss)
+            setTextColor(resolveColorAttr(com.google.android.material.R.attr.colorPrimary))
+            textSize = 12.5f
+            setTypeface(typeface, android.graphics.Typeface.BOLD)
+            setPadding(dp(8), dp(4), dp(2), dp(4))
+            isClickable = true
+            isFocusable = true
+            setOnClickListener {
+                seenCatalog.markAllSeen(WireGuideCatalog.entries.map { it.id })
+                newAlertIds = emptySet()
+                builder.highlightNewIds = emptySet()
+                banner.visibility = View.GONE
+                _builder?.let { render(it) }
+            }
+        })
+        banner.addView(row)
+        return banner
+    }
+
+    private fun resolveColorAttr(attr: Int): Int {
+        val value = android.util.TypedValue()
+        requireContext().theme.resolveAttribute(attr, value, true)
+        return value.data
+    }
+
+    private fun dp(value: Int): Int =
+        (value * requireContext().resources.displayMetrics.density).toInt()
 
     private fun render(builder: GuideUiBuilder) {
         val query = binding.etGuideSearch.text?.toString().orEmpty()
