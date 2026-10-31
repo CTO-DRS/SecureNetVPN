@@ -140,6 +140,12 @@ class SettingsFragment : Fragment(), BackupDialogFragment.Host {
             PrivacyDialogFragment().show(parentFragmentManager, "privacy_dialog")
         }
 
+        // v1.8.23: notification style + lockscreen privacy sheet.
+        binding.rowNotifStyle.setOnClickListener {
+            NotifStyleDialogFragment().show(parentFragmentManager, "notif_style")
+        }
+        renderNotifSummary()
+
         // v1.4: multi-hop + hotspot sharing
         binding.rowMultiHop.setOnClickListener {
             MultiHopDialogFragment().show(parentFragmentManager, "multihop_dialog")
@@ -254,6 +260,16 @@ class SettingsFragment : Fragment(), BackupDialogFragment.Host {
         binding.tvSplitTunnelState.text = summary
     }
 
+    /** v1.8.23: current notification style + lockscreen choice as one summary line. */
+    private fun renderNotifSummary() {
+        val prefs = appContainer().securePrefs
+        binding.tvNotifState.text = getString(
+            R.string.settings_notif_summary,
+            getString(com.securenet.vpn.service.NotifStyle.styleLabelRes(prefs.notifStyle)),
+            getString(com.securenet.vpn.service.NotifStyle.lockscreenLabelRes(prefs.notifLockscreen))
+        )
+    }
+
     override fun onResume() {
         super.onResume()
         // Refresh the split-tunnel summary in case the dialog changed it.
@@ -265,6 +281,8 @@ class SettingsFragment : Fragment(), BackupDialogFragment.Host {
         // v1.4: refresh multi-hop summary after the editor dialog saved.
         viewModel.refreshMultiHopSummary()
         binding.tvMultiHopState.text = viewModel.ui.value.multiHopSummary
+        // v1.8.23: refresh the notification-style summary after the sheet saved.
+        renderNotifSummary()
         refreshHotspotState()
  }
 

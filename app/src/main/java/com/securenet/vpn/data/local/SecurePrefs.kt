@@ -138,6 +138,37 @@ class SecurePrefs(context: Context) {
         set(value) = prefs.edit().putBoolean(KEY_ESSENTIAL_PERMS, value).apply()
 
     // ------------------------------------------------------------------
+    // v1.8.23: notification style + lockscreen privacy + last session
+    // ------------------------------------------------------------------
+
+    /** NotifStyle.Style.stored — 0 detailed (default), 1 compact, 2 minimal. */
+    var notifStyle: Int
+        get() = prefs.getInt(KEY_NOTIF_STYLE, 0)
+        set(value) = prefs.edit().putInt(KEY_NOTIF_STYLE, value).apply()
+
+    /** NotifStyle.Lockscreen.stored — 0 hide data (default), 1 show all, 2 hide all. */
+    var notifLockscreen: Int
+        get() = prefs.getInt(KEY_NOTIF_LOCKSCREEN, 0)
+        set(value) = prefs.edit().putInt(KEY_NOTIF_LOCKSCREEN, value).apply()
+
+    /** v1.8.23 last-session snapshot — shown when a tunnel is down. */
+    var lastSessionEndedAt: Long
+        get() = prefs.getLong(KEY_LAST_SESSION_AT, 0L)
+        set(value) = prefs.edit().putLong(KEY_LAST_SESSION_AT, value).apply()
+
+    var lastSessionDurationMs: Long
+        get() = prefs.getLong(KEY_LAST_SESSION_MS, 0L)
+        set(value) = prefs.edit().putLong(KEY_LAST_SESSION_MS, value).apply()
+
+    var lastSessionRx: Long
+        get() = prefs.getLong(KEY_LAST_SESSION_RX, 0L)
+        set(value) = prefs.edit().putLong(KEY_LAST_SESSION_RX, value).apply()
+
+    var lastSessionTx: Long
+        get() = prefs.getLong(KEY_LAST_SESSION_TX, 0L)
+        set(value) = prefs.edit().putLong(KEY_LAST_SESSION_TX, value).apply()
+
+    // ------------------------------------------------------------------
     // v1.1: local intelligence + new features
     // ------------------------------------------------------------------
 
@@ -294,6 +325,12 @@ class SecurePrefs(context: Context) {
         private const val KEY_REMOTE_CONFIG_AT = "remote_config_fetched_at"
         private const val KEY_WAS_CONNECTED = "was_connected_before_shutdown"
         private const val KEY_ESSENTIAL_PERMS = "essential_permissions_granted"
+        private const val KEY_NOTIF_STYLE = "notif_style"
+        private const val KEY_NOTIF_LOCKSCREEN = "notif_lockscreen"
+        private const val KEY_LAST_SESSION_AT = "last_session_ended_at"
+        private const val KEY_LAST_SESSION_MS = "last_session_duration_ms"
+        private const val KEY_LAST_SESSION_RX = "last_session_rx"
+        private const val KEY_LAST_SESSION_TX = "last_session_tx"
         private const val KEY_LAST_SCAN = "last_scan_at"
         private const val KEY_LAST_SCAN_SUMMARY = "last_scan_summary"
         private const val KEY_LAST_SCAN_JSON = "last_scan_json"

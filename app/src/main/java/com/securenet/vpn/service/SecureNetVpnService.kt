@@ -76,6 +76,12 @@ class SecureNetVpnService : VpnService() {
     private var usageAccumTx = 0L
     private var usageLastFlushAt = 0L
 
+    // v1.8.23 — device-wide TrafficStats baselines captured at tunnel-up,
+    // so the notification reports THIS session's totals, not the device's
+    // since-boot numbers.
+    private var sessionBaseRx = 0L
+    private var sessionBaseTx = 0L
+
     override fun onCreate() {
         super.onCreate()
         val provider = application as AppProvider
@@ -95,6 +101,12 @@ class SecureNetVpnService : VpnService() {
             VpnNotificationManager.ACTION_CONNECT -> {
                 // Reconnect path from the notification: cached config in prefs.
                 connectFromCachedConfig()
+                return START_STICKY
+            }
+            // v1.8.23: Settings sheet changed the notification style —
+            // repaint immediately. Only sent while a session is live.
+            VpnNotificationManager.ACTION_REFRESH -> {
+                refreshNotification()
                 return START_STICKY
             }
             // v1.3: connection-schedule executor actions.
@@ -162,7 +174,7 @@ class SecureNetVpnService : VpnService() {
         val settings = activeSettings ?: return publishState(ConnectionState.FAILED, "no_settings")
 
         publishState(ConnectionState.CONNECTING, null)
-        notificationManager.postConnecting(this)
+        notificationManager.postConnecting(this, activeServer?.name)
 
         // 1. System VPN consent.
         val consentIntent = VpnService.prepare(this)
@@ -229,8 +241,10 @@ class SecureNetVpnService : VpnService() {
         orchestrateTorMode()
         guardHotspotClients()
 
-        // v1.8.21 — the first connected paint already carries the live stats
-        // (session clock, data counters) instead of a bare title.
+        // v1.8.23 — the first connected paint carries an honest fresh
+        // session (zeroed counters, clock anchored now) instead of the
+        // previous session's stale stats.
+        statsFlow.value = ConnectionStats(startedAtMillis = System.currentTimeMillis())
         notificationManager.updateLive(
             ConnectionState.CONNECTED, server.name, statsFlow.value
         )
@@ -303,13 +317,17 @@ class SecureNetVpnService : VpnService() {
             val startTx = totalTx()
             lastRx.value = startRx
             lastTx.value = startTx
+            // v1.8.23 — session-true counters: everything the notification
+            // shows is measured from this moment, not from device boot.
+            sessionBaseRx = startRx
+            sessionBaseTx = startTx
             usageAccumRx = 0L
             usageAccumTx = 0L
             usageLastFlushAt = System.currentTimeMillis()
             publishStats(
                 ConnectionStats(
-                    rxBytes = startRx,
-                    txBytes = startTx,
+                    rxBytes = 0L,
+                    txBytes = 0L,
                     startedAtMillis = System.currentTimeMillis()
                 )
             )
@@ -331,8 +349,8 @@ class SecureNetVpnService : VpnService() {
                 val current = statsFlow.value
                 publishStats(
                     current.copy(
-                        rxBytes = rx,
-                        txBytes = tx,
+                        rxBytes = (rx - sessionBaseRx).coerceAtLeast(0L),
+                        txBytes = (tx - sessionBaseTx).coerceAtLeast(0L),
                         rxSpeedBytesPerSec = rxSpeed / (intervalMillis() / 1000L),
                         txSpeedBytesPerSec = txSpeed / (intervalMillis() / 1000L)
                     )
@@ -429,6 +447,9 @@ class SecureNetVpnService : VpnService() {
     }
 
     private fun tearDownTunnelOnly() {
+        // v1.8.23 — bank what this session achieved so a down notification
+        // can honestly report it (duration + totals).
+        captureLastSession()
         // v1.5: land the accumulated usage before the sampler dies so short
         // sessions and reconnect cycles still reach the dashboard.
         flushUsage()
@@ -562,7 +583,7 @@ class SecureNetVpnService : VpnService() {
         stateFlow.value = state
         detail?.let { logger.appendEvent(state, activeServer?.id, it) }
         if (state != ConnectionState.CONNECTED && state != ConnectionState.CONNECTING) {
-            notificationManager.updateState(state, activeServer?.name)
+            notificationManager.updateState(state, activeServer?.name, lastSessionSnapshot())
         }
         // v1.2: keep the home-screen widget in sync with the tunnel state.
         runCatching {
@@ -575,6 +596,56 @@ class SecureNetVpnService : VpnService() {
         // v1.8.21 — feed the richer notification shade presentation: the
         // manager throttles and ignores everything but CONNECTED.
         notificationManager.updateLive(stateFlow.value, activeServer?.name, stats)
+    }
+
+    /**
+     * v1.8.23 — persist the session snapshot at tunnel teardown so the
+     * down notification can report what the last session achieved.
+     * Only fires when the state is genuinely CONNECTED at teardown —
+     * kill-switch recovery cycles (RECONNECTING) leave the previous
+     * snapshot untouched so durations never inflate.
+     */
+    private fun captureLastSession() {
+        // Only a genuinely connected session is worth reporting — during
+        // kill-switch recovery cycles the state is RECONNECTING and the
+        // previous snapshot must stay untouched (no inflated durations).
+        if (stateFlow.value != ConnectionState.CONNECTED) return
+        val stats = statsFlow.value
+        if (stats.startedAtMillis <= 0L) return
+        val prefs = (application as AppProvider).provideContainer().securePrefs
+        val now = System.currentTimeMillis()
+        prefs.lastSessionEndedAt = now
+        prefs.lastSessionDurationMs = (now - stats.startedAtMillis).coerceAtLeast(0L)
+        prefs.lastSessionRx = stats.rxBytes.coerceAtLeast(0L)
+        prefs.lastSessionTx = stats.txBytes.coerceAtLeast(0L)
+    }
+
+    /** v1.8.23 — the stored snapshot, or null when no session ever ended. */
+    private fun lastSessionSnapshot(): VpnNotificationManager.LastSession? {
+        val prefs = (application as AppProvider).provideContainer().securePrefs
+        if (prefs.lastSessionEndedAt == 0L) return null
+        return VpnNotificationManager.LastSession(
+            durationMillis = prefs.lastSessionDurationMs,
+            rxBytes = prefs.lastSessionRx,
+            txBytes = prefs.lastSessionTx
+        )
+    }
+
+    /**
+     * v1.8.23 — repaint the notification right now after a Settings-side
+     * style/lockscreen change. CONNECTED goes through the unthrottled
+     * live path (stats intact); everything else rebuilds from state.
+     */
+    private fun refreshNotification() {
+        if (stateFlow.value == ConnectionState.CONNECTED) {
+            notificationManager.updateLiveNow(
+                ConnectionState.CONNECTED, activeServer?.name, statsFlow.value
+            )
+        } else {
+            notificationManager.updateState(
+                stateFlow.value, activeServer?.name, lastSessionSnapshot()
+            )
+        }
     }
 
     private fun parseConfig(configJson: String): VpnServer? =
