@@ -20,6 +20,7 @@ import com.securenet.vpn.di.AppContainer
 import com.securenet.vpn.guide.GuideSignalsData
 import com.securenet.vpn.guide.GuideSignalsMerge
 import com.securenet.vpn.guide.GuideStoreProvider
+import com.securenet.vpn.nativelib.EngineStatus
 import com.securenet.vpn.ui.splittunnel.SplitTunnelDialogFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -252,7 +253,47 @@ class SettingsFragment : Fragment(), BackupDialogFragment.Host {
                 "1.0.0"
             }
         )
-        binding.tvNativeInfo.text = getString(R.string.settings_native_lib, ui.nativeInfo)
+        binding.tvNativeInfo.text = getString(R.string.settings_native_lib, ui.engine.cppVersion ?: "?")
+        binding.tvNativeInfo.visibility = if (ui.engine.cppVersion != null) View.VISIBLE else View.GONE
+
+        // v1.8.25 — the engine card: honest mode + async self-test verdict +
+        // the free & open-source license line. The collector repaints the
+        // card when the KAT verdict lands off the main thread.
+        renderEngine(ui.engine)
+        viewModel.runEngineSelfTest()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.ui.collect { renderEngine(it.engine) }
+        }
+    }
+
+    /** v1.8.25 — the WireGuard engine card, localized from a pure snapshot. */
+    private fun renderEngine(engine: EngineStatus.Snapshot) {
+        binding.tvEngineMode.text = if (engine.isReal) {
+            getString(R.string.settings_engine_mode_real, engine.wgVersion ?: "?")
+        } else {
+            getString(
+                R.string.settings_engine_mode_simulated,
+                getString(engine.reason.res())
+            )
+        }
+        when (engine.selfTestPassed) {
+            true -> {
+                binding.tvEngineSelfTest.visibility = View.VISIBLE
+                binding.tvEngineSelfTest.text = getString(R.string.settings_engine_selftest_ok)
+            }
+            false -> {
+                binding.tvEngineSelfTest.visibility = View.VISIBLE
+                binding.tvEngineSelfTest.text = getString(R.string.settings_engine_selftest_fail)
+            }
+            null -> binding.tvEngineSelfTest.visibility = View.GONE
+        }
+        binding.tvEngineFree.text = getString(R.string.settings_engine_free)
+    }
+
+    private fun EngineStatus.Reason.res(): Int = when (this) {
+        EngineStatus.Reason.CORE_MISSING -> R.string.engine_reason_core_missing
+        EngineStatus.Reason.GLUE_MISSING -> R.string.engine_reason_glue_missing
+        EngineStatus.Reason.NONE -> R.string.engine_reason_none
     }
 
     private fun bindTheme(mode: Int) {
