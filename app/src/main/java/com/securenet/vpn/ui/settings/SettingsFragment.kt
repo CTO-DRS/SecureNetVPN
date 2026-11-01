@@ -1,5 +1,6 @@
 package com.securenet.vpn.ui.settings
 
+import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -146,6 +147,31 @@ class SettingsFragment : Fragment(), BackupDialogFragment.Host {
         }
         renderNotifSummary()
 
+        // v1.8.24: monthly data quota + app lock («الحدود والحماية»).
+        binding.rowQuota.setOnClickListener {
+            QuotaDialogFragment().show(parentFragmentManager, "quota_dialog")
+        }
+        renderQuotaSummary()
+
+        val keyguard = requireContext()
+            .getSystemService(Context.KEYGUARD_SERVICE) as android.app.KeyguardManager
+        binding.switchAppLock.isEnabled = keyguard.isDeviceSecure
+        binding.switchAppLock.isChecked =
+            keyguard.isDeviceSecure && appContainer().securePrefs.appLockEnabled
+        binding.switchAppLock.setOnCheckedChangeListener { _, checked ->
+            appContainer().securePrefs.appLockEnabled = checked
+            renderAppLockSummary()
+            if (checked) {
+                Toast.makeText(
+                    requireContext(), R.string.applock_hint, Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+        binding.rowAppLockTimeout.setOnClickListener {
+            AppLockDialogFragment().show(parentFragmentManager, "applock_timeout")
+        }
+        renderAppLockSummary()
+
         // v1.4: multi-hop + hotspot sharing
         binding.rowMultiHop.setOnClickListener {
             MultiHopDialogFragment().show(parentFragmentManager, "multihop_dialog")
@@ -270,6 +296,33 @@ class SettingsFragment : Fragment(), BackupDialogFragment.Host {
         )
     }
 
+    /** v1.8.24: the stored quota cap as the row's summary line. */
+    private fun renderQuotaSummary() {
+        val prefs = appContainer().securePrefs
+        binding.tvQuotaState.text = getString(
+            R.string.quota_summary,
+            getString(com.securenet.vpn.stats.DataQuotaEngine.presetLabelRes(prefs.dataQuotaBytes))
+        )
+    }
+
+    /** v1.8.24: app-lock state — unavailable / off / on with its timing. */
+    private fun renderAppLockSummary() {
+        val prefs = appContainer().securePrefs
+        val keyguard = requireContext()
+            .getSystemService(Context.KEYGUARD_SERVICE) as android.app.KeyguardManager
+        binding.tvAppLockState.text = when {
+            !keyguard.isDeviceSecure -> getString(R.string.applock_no_device_lock)
+            !prefs.appLockEnabled -> getString(R.string.applock_off)
+            else -> getString(
+                R.string.applock_summary,
+                getString(
+                    com.securenet.vpn.security.AppLockPolicy
+                        .timeoutLabelRes(prefs.appLockTimeout)
+                )
+            )
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         // Refresh the split-tunnel summary in case the dialog changed it.
@@ -283,6 +336,9 @@ class SettingsFragment : Fragment(), BackupDialogFragment.Host {
         binding.tvMultiHopState.text = viewModel.ui.value.multiHopSummary
         // v1.8.23: refresh the notification-style summary after the sheet saved.
         renderNotifSummary()
+        // v1.8.24: refresh the quota + app-lock lines after their sheets saved.
+        renderQuotaSummary()
+        renderAppLockSummary()
         refreshHotspotState()
  }
 

@@ -1,10 +1,19 @@
 package com.securenet.vpn
 
 import android.Manifest
+import android.app.KeyguardManager
+import android.content.Context
 import android.content.Intent
 import android.net.VpnService
 import android.os.Bundle
+import android.os.CancellationSignal
+import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -44,6 +53,30 @@ class MainActivity : AppCompatActivity(), PermissionRequestHost {
 
     /** Callback parked while the system VPN dialog is on screen. */
     private var vpnConsentCallback: ((Boolean) -> Unit)? = null
+
+    // ------------------------------------------------------------------
+    // v1.8.24 — app lock («قفل التطبيق»)
+    // ------------------------------------------------------------------
+
+    /** Opaque cover added over the whole shell while the lock is engaged. */
+    private var lockOverlay: View? = null
+
+    /**
+     * True while a device-credential round trip (platform BiometricPrompt
+     * or the legacy confirm-credential screen) is in flight. The legacy
+     * screen backgrounds this activity — without the flag, onStop would
+     * record a fresh pause and onStart would immediately re-lock, looping
+     * forever. BiometricPrompt itself is an in-place overlay, but the flag
+     * shields both paths uniformly.
+     */
+    private var unlockInFlight = false
+
+    private val appLockCredentialLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            unlockInFlight = false
+            if (result.resultCode == RESULT_OK) hideLockOverlay()
+            // Anything else: the overlay stays with its Unlock button.
+        }
 
     private val vpnConsentLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -101,6 +134,21 @@ class MainActivity : AppCompatActivity(), PermissionRequestHost {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         consumeWidgetDetailIntent(intent)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        maybeShowAppLock()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        // Record the backgrounding instant the lock decision will weigh —
+        // but never during an in-flight credential screen (see the flag).
+        if (!unlockInFlight) {
+            (application as com.securenet.vpn.di.AppProvider).provideContainer()
+                .securePrefs.appLockLastPausedAt = System.currentTimeMillis()
+        }
     }
 
     override fun onResume() {
@@ -190,6 +238,187 @@ class MainActivity : AppCompatActivity(), PermissionRequestHost {
             .commitAllowingStateLoss()
         setBottomNavVisible(false)
     }
+
+    // ------------------------------------------------------------------
+    // v1.8.24 — app lock: gate, overlay, credential round trip
+    // ------------------------------------------------------------------
+
+    /** The pure [AppLockPolicy] decision, evaluated on every foregrounding. */
+    private fun maybeShowAppLock() {
+        if (unlockInFlight) return // a credential screen is mid-round-trip
+        val prefs = (application as com.securenet.vpn.di.AppProvider)
+            .provideContainer().securePrefs
+        val locked = com.securenet.vpn.security.AppLockPolicy.shouldLock(
+            enabled = prefs.appLockEnabled,
+            timeout = com.securenet.vpn.security.AppLockPolicy
+                .Timeout.from(prefs.appLockTimeout),
+            lastPausedAt = prefs.appLockLastPausedAt,
+            nowMillis = System.currentTimeMillis()
+        )
+        if (!locked) return
+        showLockOverlay()
+        authenticateUnlock()
+    }
+
+    /**
+     * Opaque full-screen cover: while it is up, no dashboard content is
+     * visible or touchable — the app lock is a privacy gate, not a joke.
+     */
+    private fun showLockOverlay() {
+        if (lockOverlay != null) return
+        val overlay = FrameLayout(this).apply {
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+            setBackgroundColor(resolveBackgroundArgb())
+            isClickable = true
+            isFocusable = true
+        }
+        val column = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER_HORIZONTAL
+        }
+        val icon = ImageView(this).apply {
+            setImageResource(com.securenet.vpn.R.drawable.ic_lock)
+            setColorFilter(resolveColorAttr(com.google.android.material.R.attr.colorPrimary))
+        }
+        val iconParams = LinearLayout.LayoutParams(dp(56), dp(56))
+        iconParams.setMargins(0, 0, 0, dp(16))
+        icon.layoutParams = iconParams
+        column.addView(icon)
+
+        column.addView(TextView(this).apply {
+            text = getString(com.securenet.vpn.R.string.applock_overlay_title)
+            setTextColor(resolveColorAttr(android.R.attr.textColorPrimary))
+            textSize = 18f
+            gravity = Gravity.CENTER
+        })
+        column.addView(TextView(this).apply {
+            text = getString(com.securenet.vpn.R.string.applock_overlay_desc)
+            setTextColor(resolveColorAttr(android.R.attr.textColorSecondary))
+            textSize = 13f
+            gravity = Gravity.CENTER
+            setPadding(dp(24), dp(6), dp(24), 0)
+        })
+        column.addView(com.google.android.material.button.MaterialButton(this).apply {
+            text = getString(com.securenet.vpn.R.string.applock_unlock)
+            setOnClickListener { authenticateUnlock() }
+        }.also { button ->
+            val params = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+            params.setMargins(0, dp(24), 0, 0)
+            button.layoutParams = params
+        })
+
+        overlay.addView(
+            column,
+            FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                Gravity.CENTER
+            )
+        )
+        (binding.root as? ViewGroup)?.addView(overlay)
+        lockOverlay = overlay
+    }
+
+    private fun hideLockOverlay() {
+        lockOverlay?.let { cover ->
+            (cover.parent as? ViewGroup)?.removeView(cover)
+        }
+        lockOverlay = null
+    }
+
+    /**
+     * Platform BiometricPrompt (API 28+, minSdk 30) with a biometric-or-
+     * credential authenticator set: fingerprint first, device PIN/pattern
+     * as the equal fallback. Devices without either land on the legacy
+     * confirm-credential screen; OEMs that throw land there too.
+     */
+    private fun authenticateUnlock() {
+        val keyguard = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+        if (!keyguard.isDeviceSecure) {
+            // The device lock disappeared under us — an impossible gate
+            // must never trap the user.
+            hideLockOverlay()
+            return
+        }
+        unlockInFlight = true
+        val cancellation = CancellationSignal()
+        try {
+            val prompt = android.hardware.biometrics.BiometricPrompt.Builder(this)
+                .setTitle(getString(com.securenet.vpn.R.string.applock_prompt_title))
+                .setSubtitle(getString(com.securenet.vpn.R.string.applock_prompt_sub))
+                .setDescription(getString(com.securenet.vpn.R.string.applock_prompt_desc))
+                .setAllowedAuthenticators(
+                    android.hardware.biometrics.BiometricManager.Authenticators.BIOMETRIC_WEAK
+                        or android.hardware.biometrics.BiometricManager.Authenticators.DEVICE_CREDENTIAL
+                )
+                .build()
+            prompt.authenticate(
+                cancellation,
+                mainExecutor,
+                object : android.hardware.biometrics.BiometricPrompt.AuthenticationCallback() {
+                    override fun onAuthenticationSucceeded(
+                        result: android.hardware.biometrics.BiometricPrompt.AuthenticationResult
+                    ) {
+                        unlockInFlight = false
+                        runOnUiThread { hideLockOverlay() }
+                    }
+
+                    override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                        when (errorCode) {
+                            // Platform constants (BiometricConstants, inherited):
+                            // no enrolled biometrics / no device credential at all
+                            // → the prompt cannot run here, try the legacy screen.
+                            android.hardware.biometrics.BiometricPrompt.BIOMETRIC_ERROR_NO_BIOMETRICS,
+                            android.hardware.biometrics.BiometricPrompt.BIOMETRIC_ERROR_NO_DEVICE_CREDENTIAL ->
+                                legacyUnlock(keyguard)
+                            else -> {
+                                // User cancel / timeout / lockout: the cover
+                                // stays; the Unlock button retries at will.
+                                unlockInFlight = false
+                            }
+                        }
+                    }
+                }
+            )
+        } catch (_: Exception) {
+            legacyUnlock(keyguard)
+        }
+    }
+
+    /** Confirm-credential fallback for devices where the prompt path is unusable. */
+    private fun legacyUnlock(keyguard: KeyguardManager) {
+        val intent = keyguard.createConfirmDeviceCredentialIntent(
+            getString(com.securenet.vpn.R.string.applock_prompt_title),
+            getString(com.securenet.vpn.R.string.applock_prompt_desc)
+        )
+        if (intent == null) {
+            unlockInFlight = false
+            hideLockOverlay()
+            return
+        }
+        appLockCredentialLauncher.launch(intent)
+    }
+
+    private fun resolveColorAttr(attr: Int): Int {
+        val value = android.util.TypedValue()
+        theme.resolveAttribute(attr, value, true)
+        return value.data
+    }
+
+    private fun resolveBackgroundArgb(): Int {
+        val value = android.util.TypedValue()
+        theme.resolveAttribute(android.R.attr.colorBackground, value, true)
+        return value.data
+    }
+
+    private fun dp(value: Int): Int =
+        (value * resources.displayMetrics.density).toInt()
 
     companion object {
         /**

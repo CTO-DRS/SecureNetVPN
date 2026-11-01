@@ -51,6 +51,9 @@ class SecureNetVpnService : VpnService() {
     private lateinit var logger: ConnectionLogger
     private lateinit var networkMonitor: NetworkMonitor
 
+    /** v1.8.24 — monthly data-quota alert, checked on tunnel-up and in the sampler. */
+    private lateinit var quotaAlerts: QuotaAlertNotifier
+
     private var tunFd: ParcelFileDescriptor? = null
     private var wgHandle: Int = INVALID_HANDLE
     private var activeServer: VpnServer? = null
@@ -89,6 +92,7 @@ class SecureNetVpnService : VpnService() {
         notificationManager = VpnNotificationManager(this)
         logger = container.connectionLogger
         networkMonitor = container.networkMonitor
+        quotaAlerts = QuotaAlertNotifier(this)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -250,6 +254,10 @@ class SecureNetVpnService : VpnService() {
         )
         startStatsSampler()
         startNetworkWatcher()
+
+        // v1.8.24 — a fresh session is the natural moment for a fresh quota
+        // verdict (forced: the 10-minute throttle must not swallow it).
+        quotaAlerts.evaluateSoon(force = true)
     }
 
     /**
@@ -345,6 +353,10 @@ class SecureNetVpnService : VpnService() {
                 usageAccumRx += rxSpeed
                 usageAccumTx += txSpeed
                 maybeFlushUsage()
+
+                // v1.8.24 — cheap and throttled: the notifier itself only
+                // really checks once per 10 minutes, off the main thread.
+                quotaAlerts.evaluateSoon()
 
                 val current = statsFlow.value
                 publishStats(

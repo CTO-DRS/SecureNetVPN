@@ -169,6 +169,35 @@ class SecurePrefs(context: Context) {
         set(value) = prefs.edit().putLong(KEY_LAST_SESSION_TX, value).apply()
 
     // ------------------------------------------------------------------
+    // v1.8.24: monthly data quota + app lock
+    // ------------------------------------------------------------------
+
+    /** Monthly data cap in bytes — 0 = off (DataQuotaEngine.Preset values). */
+    var dataQuotaBytes: Long
+        get() = prefs.getLong(KEY_DATA_QUOTA, 0L)
+        set(value) = prefs.edit().putLong(KEY_DATA_QUOTA, value).apply()
+
+    /** DataQuotaEngine.Level.stored — last alerted rung (re-arms on regress). */
+    var dataQuotaLevel: Int
+        get() = prefs.getInt(KEY_DATA_QUOTA_LEVEL, 0)
+        set(value) = prefs.edit().putInt(KEY_DATA_QUOTA_LEVEL, value).apply()
+
+    /** App lock master switch (AppLockPolicy) — gate MainActivity behind the device lock. */
+    var appLockEnabled: Boolean
+        get() = prefs.getBoolean(KEY_APP_LOCK, false)
+        set(value) = prefs.edit().putBoolean(KEY_APP_LOCK, value).apply()
+
+    /** AppLockPolicy.Timeout.stored — grace window between backgrounding and the next lock. */
+    var appLockTimeout: Int
+        get() = prefs.getInt(KEY_APP_LOCK_TIMEOUT, 0)
+        set(value) = prefs.edit().putInt(KEY_APP_LOCK_TIMEOUT, value).apply()
+
+    /** When the app was last backgrounded — the timestamp AppLockPolicy weighs. */
+    var appLockLastPausedAt: Long
+        get() = prefs.getLong(KEY_APP_LOCK_PAUSED_AT, 0L)
+        set(value) = prefs.edit().putLong(KEY_APP_LOCK_PAUSED_AT, value).apply()
+
+    // ------------------------------------------------------------------
     // v1.1: local intelligence + new features
     // ------------------------------------------------------------------
 
@@ -331,6 +360,11 @@ class SecurePrefs(context: Context) {
         private const val KEY_LAST_SESSION_MS = "last_session_duration_ms"
         private const val KEY_LAST_SESSION_RX = "last_session_rx"
         private const val KEY_LAST_SESSION_TX = "last_session_tx"
+        private const val KEY_DATA_QUOTA = "data_quota_bytes"
+        private const val KEY_DATA_QUOTA_LEVEL = "data_quota_level"
+        private const val KEY_APP_LOCK = "app_lock_enabled"
+        private const val KEY_APP_LOCK_TIMEOUT = "app_lock_timeout"
+        private const val KEY_APP_LOCK_PAUSED_AT = "app_lock_last_paused_at"
         private const val KEY_LAST_SCAN = "last_scan_at"
         private const val KEY_LAST_SCAN_SUMMARY = "last_scan_summary"
         private const val KEY_LAST_SCAN_JSON = "last_scan_json"
