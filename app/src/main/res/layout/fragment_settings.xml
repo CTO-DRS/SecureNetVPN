@@ -499,6 +499,113 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- v1.8.24: monthly data quota + app lock (limits & protection) -->
+        <TextView style="@style/SectionTitle" android:text="@string/settings_section_limits" />
+
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.SecureNet.GlassCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                style="@style/SettingRow"
+                android:id="@+id/rowQuota"
+                android:background="?attr/selectableItemBackground">
+
+                <ImageView
+                    android:layout_width="34dp"
+                    android:layout_height="34dp"
+                    android:background="@drawable/bg_icon_circle"
+                    android:importantForAccessibility="no"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_chart"
+                    app:tint="@color/on_glass_primary" />
+
+                <LinearLayout style="@style/SettingTextColumn">
+                    <TextView style="@style/SettingTitle" android:text="@string/settings_row_quota_title" />
+                    <TextView style="@style/SettingDesc" android:text="@string/settings_row_quota_sub" />
+                    <TextView
+                        style="@style/SettingDesc"
+                        android:id="@+id/tvQuotaState" />
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_arrow_right"
+                    app:tint="@color/on_glass_secondary" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.SecureNet.GlassCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    style="@style/SettingRow"
+                    android:id="@+id/rowAppLock">
+
+                    <ImageView
+                        android:layout_width="34dp"
+                        android:layout_height="34dp"
+                        android:background="@drawable/bg_icon_circle"
+                        android:importantForAccessibility="no"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_lock"
+                        app:tint="@color/on_glass_primary" />
+
+                    <LinearLayout style="@style/SettingTextColumn">
+                        <TextView style="@style/SettingTitle" android:text="@string/settings_row_applock_title" />
+                        <TextView style="@style/SettingDesc" android:text="@string/settings_row_applock_sub" />
+                    </LinearLayout>
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/switchAppLock"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="68dp"
+                    android:layout_marginEnd="16dp"
+                    android:alpha="0.2"
+                    android:background="@color/on_glass_secondary" />
+
+                <LinearLayout
+                    style="@style/SettingRow"
+                    android:id="@+id/rowAppLockTimeout"
+                    android:background="?attr/selectableItemBackground">
+
+                    <Space
+                        android:layout_width="34dp"
+                        android:layout_height="34dp" />
+
+                    <LinearLayout style="@style/SettingTextColumn">
+                        <TextView style="@style/SettingTitle" android:text="@string/applock_timeout_row" />
+                        <TextView
+                            style="@style/SettingDesc"
+                            android:id="@+id/tvAppLockState" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_arrow_right"
+                        app:tint="@color/on_glass_secondary" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
         <!-- v1.8: standalone WireGuard config-sources guide -->
         <TextView style="@style/SectionTitle" android:text="@string/settings_section_guide" />
 

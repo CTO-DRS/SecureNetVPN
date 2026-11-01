@@ -24,7 +24,7 @@ import com.securenet.vpn.R
 object WhatsNew {
 
     /** The version this build ships; differs from the stored marker ⇒ auto-open once. */
-    const val CURRENT_VERSION = "1.8.23"
+    const val CURRENT_VERSION = "1.8.24"
 
     /** Where every shipped release lives (GitHub Releases), used by the share button. */
     const val RELEASES_URL = "https://github.com/CTO-DRS/SecureNetVPN/releases"
@@ -60,6 +60,13 @@ object WhatsNew {
 
     /** Shipped releases, newest first (only versions that added user-facing features). */
     val releases: List<Release> = listOf(
+        Release(
+            "1.8.24",
+            listOf(
+                R.string.whatsnew_1824_1,
+                R.string.whatsnew_1824_2
+            )
+        ),
         Release(
             "1.8.23",
             listOf(
