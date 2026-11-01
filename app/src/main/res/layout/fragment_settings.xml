@@ -798,6 +798,33 @@
                     android:layout_marginTop="@dimen/spacing_xs"
                     android:textColor="@color/on_glass_secondary"
                     android:textSize="12sp" />
+
+                <!-- v1.8.25 — the engine card: honest mode, self-test verdict,
+                     and the free & open-source license line. -->
+                <TextView
+                    android:id="@+id/tvEngineMode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:textColor="@color/on_glass_primary"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/tvEngineSelfTest"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:visibility="gone"
+                    android:textColor="@color/on_glass_secondary"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/tvEngineFree"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:textColor="@color/on_glass_secondary"
+                    android:textSize="12sp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

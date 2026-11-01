@@ -4,14 +4,18 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.securenet.vpn.data.local.ConnectionLogger
 import com.securenet.vpn.data.local.SecurePrefs
 import com.securenet.vpn.di.AppContainer
+import com.securenet.vpn.nativelib.EngineStatus
 import com.securenet.vpn.nativelib.NativeBridge
 import com.securenet.vpn.nativelib.WgNative
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class SettingsViewModel(
     private val securePrefs: SecurePrefs,
@@ -25,7 +29,10 @@ class SettingsViewModel(
         val autoReconnect: Boolean = true,
         val dnsCache: Boolean = true,
         val autoMtu: Boolean = true,
-        val nativeInfo: String = "",
+        val engine: EngineStatus.Snapshot = EngineStatus.Snapshot(
+            glueLoaded = false,
+            coreLoaded = false
+        ),
         val logsCleared: Boolean = false,
         val languageTag: String = "",
         val killSwitch: Boolean = false,
@@ -43,17 +50,40 @@ class SettingsViewModel(
     private val _ui = MutableStateFlow(load())
     val ui: StateFlow<SettingsUi> = _ui.asStateFlow()
 
-    fun load(): SettingsUi {
-        val nativeInfo = buildString {
-            if (WgNative.isAvailable) {
-                append("WireGuard core ").append(runCatching { WgNative.wgVersion() }.getOrDefault("?"))
-            } else {
-                append("simulation mode (Go backend not built)")
-            }
-            if (NativeBridge.isAvailable) {
-                append(" | C++ ").append(runCatching { NativeBridge.nativeVersion() }.getOrDefault("?"))
-            }
+    /**
+     * v1.8.25 — runs the C++ crypto self-test (RFC 8439 ChaCha20 + SHA-256
+     * known answers) off the main thread and stamps the verdict into the
+     * engine card. One shot per screen life: a KAT result does not change
+     * while the libraries stay resident, so re-renders never re-run it.
+     * In simulation mode there is nothing to verify — the verdict stays
+     * unset and the card hides the line.
+     */
+    fun runEngineSelfTest() {
+        val current = _ui.value.engine
+        if (current.selfTestPassed != null || !current.isReal) return
+        viewModelScope.launch(Dispatchers.IO) {
+            val passed = runCatching { NativeBridge.selfTest() }.getOrDefault(false)
+            _ui.value = _ui.value.copy(
+                engine = EngineStatus.withSelfTest(_ui.value.engine, passed)
+            )
         }
+    }
+
+    fun load(): SettingsUi {
+        // v1.8.25 — the engine card's structured reading: which native
+        // libraries are resident, which versions reported. Localized
+        // rendering happens in the fragment; this stays factual.
+        WgNative.tryLoad()
+        val engine = EngineStatus.Snapshot(
+            glueLoaded = WgNative.glueLoaded,
+            coreLoaded = WgNative.coreLoaded,
+            wgVersion = if (WgNative.isAvailable) {
+                runCatching { WgNative.wgVersion() }.getOrNull()
+            } else null,
+            cppVersion = if (NativeBridge.isAvailable) {
+                runCatching { NativeBridge.nativeVersion() }.getOrNull()
+            } else null
+        )
         return SettingsUi(
             themeMode = securePrefs.themeMode,
             batterySaver = securePrefs.batterySaverMode,
@@ -61,7 +91,7 @@ class SettingsViewModel(
             autoReconnect = securePrefs.autoReconnect,
             dnsCache = securePrefs.dnsCacheEnabled,
             autoMtu = securePrefs.autoMtu,
-            nativeInfo = nativeInfo,
+            engine = engine,
             languageTag = securePrefs.languageTag,
             killSwitch = securePrefs.killSwitchEnabled,
             autoLaunch = securePrefs.autoConnectOnLaunch,

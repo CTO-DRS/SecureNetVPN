@@ -94,6 +94,15 @@
     <string name="settings_protocol">Protocol: WireGuard® (wireguard-go userspace)</string>
     <string name="settings_native_lib">Crypto core: %1$s</string>
     <string name="settings_backend_unavailable">Go backend not loaded – simulation mode</string>
+    <!-- v1.8.25 — the engine card: the app's own WireGuard, honestly labeled -->
+    <string name="settings_engine_mode_real">WireGuard engine: real — %1$s</string>
+    <string name="settings_engine_mode_simulated">WireGuard engine: simulation — %1$s</string>
+    <string name="engine_reason_none">engine unavailable</string>
+    <string name="engine_reason_core_missing">Go backend library missing (build without wireguard-go)</string>
+    <string name="engine_reason_glue_missing">JNI bridge library missing</string>
+    <string name="settings_engine_selftest_ok">Integrity self-test: passed (RFC 8439 + SHA-256)</string>
+    <string name="settings_engine_selftest_fail">Integrity self-test: FAILED</string>
+    <string name="settings_engine_free">Free &amp; open source — wireguard-go (MIT) built into the app. No subscription, no external app.</string>
 
     <!-- Onboarding -->
     <string name="onboarding_skip">Skip</string>
@@ -871,4 +880,6 @@
     <string name="applock_prompt_desc">Confirm it\'s you with your device lock</string>
     <string name="whatsnew_1824_1">A monthly data quota (حصة البيانات الشهرية): pick a 1/5/10/50 GB cap and the app watches this month\'s real traffic — the same encrypted log the stats dashboard draws — and raises its own heads-up at 80% and at 100%, once per threshold, always saying what\'s left; the alert only ever moves forward, and a new cap or a new month re-arms it silently.</string>
     <string name="whatsnew_1824_2">An app lock (قفل التطبيق): opening SecureNet can now demand your device lock (fingerprint or PIN) first — three timing choices (immediately / after 1 / after 5 minutes), an opaque cover that hides the dashboard while locked, and zero new permissions: the gate simply is your phone\'s own lock.</string>
+    <string name="whatsnew_1825_1">The engine card (بطاقة المحرك): Settings now proves in your hand that SecureNet runs its own free, open-source WireGuard (wireguard-go, MIT) built into the app — real vs simulation, the backend version, and an integrity self-test (RFC 8439 + SHA-256) on an honest card.</string>
+    <string name="whatsnew_1825_2">Cold-start fix: auto-connect from boot, the quick widget or the tile now loads the native bridge before the tunnel — no more crash risk on a fresh process, and the session log records the real engine version carrying your traffic.</string>
 </resources>

@@ -6,9 +6,16 @@ package com.securenet.vpn.nativelib
  * The symbols below are exported by libwgcore.so, which is produced from
  * go/libwg (a c-shared build wrapping golang.zx2c4.com/wireguard). The JNI
  * glue that maps these Java methods onto the C ABI lives in
- * cpp/wg_bridge.c. When the .so is absent (clean checkout without running
- * go/build-wireguard-go.sh), [tryLoad] returns false and the service runs
- * in clearly-logged simulation mode so the UI remains demonstrable.
+ * cpp/securenet-jni.c, compiled into libsecurenet.so.
+ *
+ * v1.8.25 — loading order is part of correctness: the `Java_..._WgNative_*`
+ * symbols exist ONLY in libsecurenet.so, and ART resolves `external fun`
+ * calls against the libraries registered in the process. A cold service
+ * start (boot auto-connect, quick widget, tile, schedule fire) may never
+ * have run an activity that touched NativeBridge — so [tryLoad] brings the
+ * glue in FIRST and reports availability only when both libraries are
+ * resident. When either is absent the service runs in clearly-logged
+ * simulation mode so the UI remains demonstrable.
  */
 object WgNative {
 
@@ -18,7 +25,17 @@ object WgNative {
     @Volatile
     private var attempted = false
 
-    /** True when libwgcore.so is resident and the WireGuard API is live. */
+    /** v1.8.25 — true when libsecurenet.so (the JNI glue) is resident. */
+    @Volatile
+    var glueLoaded = false
+        private set
+
+    /** v1.8.25 — true when libwgcore.so (the wireguard-go data plane) is resident. */
+    @Volatile
+    var coreLoaded = false
+        private set
+
+    /** True when the JNI glue AND the WireGuard core are both resident. */
     val isAvailable: Boolean
         get() {
             if (!attempted) tryLoad()
@@ -29,7 +46,16 @@ object WgNative {
     fun tryLoad(): Boolean {
         if (attempted) return loaded
         attempted = true
-        loaded = try {
+        // v1.8.25 — glue first (idempotent with NativeBridge's own load), so
+        // the Java_..._WgNative_* symbols are registered before any call.
+        glueLoaded = try {
+            System.loadLibrary("securenet")
+            true
+        } catch (t: Throwable) {
+            android.util.Log.w(TAG, "libsecurenet.so (JNI glue) unavailable", t)
+            false
+        }
+        coreLoaded = try {
             System.loadLibrary("wgcore")
             true
         } catch (t: UnsatisfiedLinkError) {
@@ -39,6 +65,7 @@ object WgNative {
             android.util.Log.e(TAG, "Failed to load WireGuard Go backend", t)
             false
         }
+        loaded = glueLoaded && coreLoaded
         return loaded
     }
 

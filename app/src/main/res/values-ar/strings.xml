@@ -94,6 +94,15 @@
     <string name="settings_protocol">البروتوكول: WireGuard® (نطاق المستخدم wireguard-go)</string>
     <string name="settings_native_lib">نواة التشفير: %1$s</string>
     <string name="settings_backend_unavailable">نواة Go غير محمّلة — وضع المحاكاة</string>
+    <!-- v1.8.25 — بطاقة المحرك: WireGuard الخاص بالتطبيق بوسم صادق -->
+    <string name="settings_engine_mode_real">محرك WireGuard: حقيقي — %1$s</string>
+    <string name="settings_engine_mode_simulated">محرك WireGuard: محاكاة — %1$s</string>
+    <string name="engine_reason_none">المحرك غير متاح</string>
+    <string name="engine_reason_core_missing">مكتبة نواة Go غير موجودة (بناء بدون wireguard-go)</string>
+    <string name="engine_reason_glue_missing">مكتبة جسر JNI غير موجودة</string>
+    <string name="settings_engine_selftest_ok">فحص السلامة: ناجح (RFC 8439 + SHA-256)</string>
+    <string name="settings_engine_selftest_fail">فحص السلامة: فاشل</string>
+    <string name="settings_engine_free">مجاني ومفتوح المصدر — wireguard-go (MIT) مدمج داخل التطبيق. بلا اشتراك وبلا تطبيق خارجي.</string>
 
     <!-- Onboarding -->
     <string name="onboarding_skip">تخطي</string>
@@ -871,4 +880,6 @@
     <string name="applock_prompt_desc">أكّد هويتك بقفل جهازك</string>
     <string name="whatsnew_1824_1">حصة بيانات شهرية: اختر حداً 1/5/10/50 غيغابايت وسيلاحظ التطبيق حركة هذا الشهر الحقيقية — نفس السجل المشفر الذي يرسمه لوحة الإحصاءات — ويرفع تنبيهه الخاص عند 80% وعند 100%، مرة واحدة لكل عتبة، وبيّناً دائماً ما تبقى؛ التنبيه لا يتقدم إلا للأمام، وحدّ جديد أو شهر جديد يعيد تسليحه بصمت.</string>
     <string name="whatsnew_1824_2">قفل التطبيق: يمكن الآن أن يطلب فتح SecureNet قفل جهازك (بصمة أو رمز) أولاً — ثلاثة اختيارات للتوقيت (فوراً / بعد دقيقة / بعد 5 دقائق)، وغطاء معتم يخفي لوحة التطبيق أثناء القفل، وبلا أي صلاحيات جديدة: البوابة هي قفل هاتفك نفسه.</string>
+    <string name="whatsnew_1825_1">بطاقة المحرك: الإعدادات تُثبت الآن بين يديك أن SecureNet يشغّل WireGuard الخاص به المجاني المفتوح المصدر (wireguard-go — MIT) مدمجاً داخل التطبيق — حقيقي أم محاكاة، إصدار النواة، وفحص سلامة (RFC 8439 + SHA-256) على بطاقة صادقة.</string>
+    <string name="whatsnew_1825_2">إصلاح البداية الباردة: الاتصال التلقائي من الإقلاع أو الويدجت السريع أو البلاطة يحمّل الآن الجسر الأصلي قبل النفق — لا مزيد من خطر الانهيار في عملية طازجة، وسجل الجلسة يوثّق إصدار المحرك الحقيقي الذي يحمل حركتك.</string>
 </resources>

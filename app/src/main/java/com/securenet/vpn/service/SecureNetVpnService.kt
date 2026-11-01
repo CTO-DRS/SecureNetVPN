@@ -211,6 +211,12 @@ class SecureNetVpnService : VpnService() {
         // 3. Hand the fd to wireguard-go (or simulate when the Go .so is absent).
         serviceScope.launch {
             if (WgNative.isAvailable) {
+                // v1.8.25 — the positive fact is logged too: which real engine
+                // version is carrying this session's traffic.
+                logger.appendCustom(
+                    "engine",
+                    "real:" + runCatching { WgNative.wgVersion() }.getOrDefault("?")
+                )
                 val fd = runCatching { tunFd!!.detachFd() }.getOrElse {
                     publishState(ConnectionState.FAILED, "fd_error")
                     return@launch
