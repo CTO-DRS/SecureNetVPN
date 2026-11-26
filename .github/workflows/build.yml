@@ -75,6 +75,40 @@ jobs:
           path: SecureNetVPN-debug-v*.apk
           if-no-files-found: error
 
+      - name: Build signed release APK (only when signing secrets are set)
+        id: signed
+        continue-on-error: true
+        if: github.event_name != 'pull_request'
+        env:
+          KS_B64: ${{ secrets.SECURENET_KEYSTORE_BASE64 }}
+          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.SECURENET_KEYSTORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.SECURENET_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.SECURENET_KEY_PASSWORD }}
+        run: |
+          if [ -z "$KS_B64" ]; then echo "Signing secrets not set: skipping signed release build."; exit 0; fi
+          echo "$KS_B64" | base64 -d > "$RUNNER_TEMP/release.keystore"
+          chmod 600 "$RUNNER_TEMP/release.keystore"
+          export RELEASE_KEYSTORE_PATH="$RUNNER_TEMP/release.keystore"
+          ./gradlew assembleRelease --no-daemon --stacktrace
+          APKSIGNER=$(ls "$ANDROID_HOME"/build-tools/*/apksigner 2>/dev/null | tail -1)
+          if [ -n "$APKSIGNER" ]; then for f in app/build/outputs/apk/release/*.apk; do "$APKSIGNER" verify --print-certs "$f" | grep -i 'SHA-256'; done; fi
+          rm -f "$RUNNER_TEMP/release.keystore"
+      - name: Upload signed release APK
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: signed-release-apk
+          path: app/build/outputs/apk/release/*.apk
+          if-no-files-found: ignore
+
+      - name: Attach signed APK to release (tag builds only)
+        if: startsWith(github.ref, 'refs/tags/') && steps.signed.outcome == 'success'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: app/build/outputs/apk/release/*.apk
+          fail_on_unmatched_files: false
+
       - name: Create GitHub Release with APK (tag builds only)
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2

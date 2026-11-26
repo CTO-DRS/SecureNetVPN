@@ -73,6 +73,20 @@ android {
         buildConfig = true
     }
 
+    // Release signing from CI/env only (RELEASE_KEYSTORE_PATH/PASSWORD/KEY_ALIAS/KEY_PASSWORD). No secrets in the repo.
+    val relKs = System.getenv("RELEASE_KEYSTORE_PATH")
+    val hasRelKs = !relKs.isNullOrEmpty() && file(relKs).exists()
+    if (hasRelKs) {
+        signingConfigs.create("release") {
+            storeFile = file(relKs!!)
+            storePassword = System.getenv("RELEASE_KEYSTORE_PASSWORD")
+            keyAlias = System.getenv("RELEASE_KEY_ALIAS")
+            keyPassword = System.getenv("RELEASE_KEY_PASSWORD")
+        }
+        buildTypes.getByName("release").signingConfig = signingConfigs.getByName("release")
+    }
+
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
